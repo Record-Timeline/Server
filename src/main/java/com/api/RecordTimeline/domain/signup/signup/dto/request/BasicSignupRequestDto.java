@@ -1,8 +1,7 @@
-package com.api.RecordTimeline.domain.signup.dto.request;
+package com.api.RecordTimeline.domain.signup.signup.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +14,9 @@ import lombok.Setter;
 @Setter //후에 빌더패턴으로 변경
 public class BasicSignupRequestDto extends KakaoSignupRequestDto {
 
+    @NotBlank
+    private String memberId;
+
     @Email
     @NotBlank
     private String email;
@@ -26,8 +28,6 @@ public class BasicSignupRequestDto extends KakaoSignupRequestDto {
     @NotBlank
     private String name;
 
-    @NotBlank
-    private String phoneNumber;
 
     @NotBlank
     private String certificationNumber;

@@ -1,15 +1,15 @@
-package com.api.RecordTimeline.domain.signup.service.implement;
+package com.api.RecordTimeline.domain.signup.signup.service;
 
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
-import com.api.RecordTimeline.domain.signup.dto.request.BasicSignupRequestDto;
-import com.api.RecordTimeline.domain.signup.dto.request.EmailCheckResquestDto;
-import com.api.RecordTimeline.domain.signup.dto.request.KakaoSignupRequestDto;
-import com.api.RecordTimeline.domain.signup.dto.request.NicknameCheckResquestDto;
-import com.api.RecordTimeline.domain.signup.dto.response.EmailCheckResponseDto;
-import com.api.RecordTimeline.domain.signup.dto.response.NicknameCheckResponseDto;
-import com.api.RecordTimeline.domain.signup.dto.response.ResponseDto;
-import com.api.RecordTimeline.domain.signup.dto.response.SignupResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.IdCheckResquestDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.NicknameCheckResquestDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.IdCheckResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.NicknameCheckResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.ResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,26 +17,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
-public class SignupServiceImplement implements SignupService {
+public class SignupServiceImpl implements SignupService {
 
     private final MemberRepository memberRepository;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public ResponseEntity<? super EmailCheckResponseDto> emailCheck(EmailCheckResquestDto dto) {
+    public ResponseEntity<? super IdCheckResponseDto> idCheck(IdCheckResquestDto dto) {
 
         try{
-            String email = dto.getEmail();
-            boolean isExistEmail = memberRepository.existsByEmail(email);
-            if(isExistEmail)
-                return EmailCheckResponseDto.duplicateEmail();
+            String memberId = dto.getMemberId();
+            boolean isExistId = memberRepository.existsByMemberId(memberId);
+            if(isExistId)
+                return IdCheckResponseDto.duplicateId();
 
         } catch (Exception exception){
             exception.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return EmailCheckResponseDto.success();
+        return IdCheckResponseDto.success();
     }
 
     @Override

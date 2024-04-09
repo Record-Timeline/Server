@@ -6,6 +6,8 @@ import com.api.RecordTimeline.domain.follow.domain.Follow;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.member.editor.MemberEditor;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -22,7 +24,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String memberId;
 
     @Email
     private String email;
@@ -30,8 +32,8 @@ public class Member extends BaseEntity {
     private String name;
     private String password;
     private String nickname;
-    private String phoneNumber;
-
+    //private String phoneNumber;
+    private String loginType;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
     private Profile profile;
@@ -59,5 +61,22 @@ public class Member extends BaseEntity {
         return MemberEditor.builder()
                 .nickname(nickname)
                 .interest(interest);
+    }
+
+    public Member(BasicSignupRequestDto basicDto) {
+        this.memberId = basicDto.getMemberId();
+        this.email = basicDto.getEmail();
+        this.password = basicDto.getPassword();
+        this.name = basicDto.getName();
+        //this.phoneNumber = basicDto.getPhoneNumber();
+        this.nickname = basicDto.getNickname();
+        this.interest = basicDto.getInterest();
+        this.loginType = "app";
+    }
+
+    public Member(KakaoSignupRequestDto kakaoDto) {
+        this.nickname = kakaoDto.getNickname();
+        this.interest = kakaoDto.getInterest();
+        this.loginType = "kakao";
     }
 }
