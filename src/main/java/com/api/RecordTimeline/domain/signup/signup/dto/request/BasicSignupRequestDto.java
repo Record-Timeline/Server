@@ -22,7 +22,7 @@ public class BasicSignupRequestDto extends KakaoSignupRequestDto {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.[a-zA-Z])(?=.[0-9])[a-zA-Z0-9]{8,}$")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,}$")
     private String password;
 
     @NotBlank
