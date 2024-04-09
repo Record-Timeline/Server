@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @Builder
-@Setter //후에 빌더패턴으로 변경
+@Setter
 public class BasicSignupRequestDto extends KakaoSignupRequestDto {
 
     @NotBlank

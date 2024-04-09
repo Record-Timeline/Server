@@ -1,4 +1,4 @@
-package com.api.RecordTimeline.domain.signup.signup.dto.request;
+package com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

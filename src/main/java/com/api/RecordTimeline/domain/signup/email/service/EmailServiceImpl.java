@@ -9,7 +9,7 @@ import com.api.RecordTimeline.domain.signup.email.dto.response.CheckCertificatio
 import com.api.RecordTimeline.domain.signup.email.dto.response.EmailCertificationResponseDto;
 import com.api.RecordTimeline.domain.signup.email.provider.EmailProvider;
 import com.api.RecordTimeline.domain.signup.email.repository.EmailCertificationRepository;
-import com.api.RecordTimeline.domain.signup.signup.dto.response.ResponseDto;
+import com.api.RecordTimeline.domain.common.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

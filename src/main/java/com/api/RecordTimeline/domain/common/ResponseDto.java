@@ -1,7 +1,5 @@
-package com.api.RecordTimeline.domain.signup.signup.dto.response;
+package com.api.RecordTimeline.domain.common;
 
-import com.api.RecordTimeline.domain.common.ResponseCode;
-import com.api.RecordTimeline.domain.common.ResponseMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

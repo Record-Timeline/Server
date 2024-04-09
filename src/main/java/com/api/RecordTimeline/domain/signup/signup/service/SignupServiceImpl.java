@@ -3,57 +3,25 @@ package com.api.RecordTimeline.domain.signup.signup.service;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.request.IdCheckResquestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.request.NicknameCheckResquestDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.response.IdCheckResponseDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.response.NicknameCheckResponseDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.response.ResponseDto;
+import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 @RequiredArgsConstructor
 public class SignupServiceImpl implements SignupService {
 
     private final MemberRepository memberRepository;
-
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    @Override
-    public ResponseEntity<? super IdCheckResponseDto> idCheck(IdCheckResquestDto dto) {
-
-        try{
-            String memberId = dto.getMemberId();
-            boolean isExistId = memberRepository.existsByMemberId(memberId);
-            if(isExistId)
-                return IdCheckResponseDto.duplicateId();
-
-        } catch (Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-        return IdCheckResponseDto.success();
-    }
-
-    @Override
-    public ResponseEntity<? super NicknameCheckResponseDto> nicknameCheck(NicknameCheckResquestDto dto) {
-        try{
-            String nickname = dto.getNickname();
-            boolean isExistNickname = memberRepository.existsByNickname(nickname);
-            if(isExistNickname)
-                return NicknameCheckResponseDto.duplicateNickname();
-
-        } catch (Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-        return NicknameCheckResponseDto.success();
-    }
-
+    private static final String PASSWORD_PATTERN = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,}$";
 
     @Override
     public ResponseEntity<? super SignupResponseDto> basicSignup(BasicSignupRequestDto basicDto) {
@@ -70,8 +38,14 @@ public class SignupServiceImpl implements SignupService {
                 return SignupResponseDto.duplicateNickname();
 
             String password = basicDto.getPassword();
+            Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+            Matcher matcher = pattern.matcher(password);
+            if (!matcher.matches()) {
+                return SignupResponseDto.invalidPasswordPattern();
+            }
+
             String encodedPassword = passwordEncoder.encode(password);
-            basicDto.setPassword(encodedPassword); //후에 빌더 패턴으로 변경
+            basicDto.setPassword(encodedPassword);
 
             Member member = new Member(basicDto);
             memberRepository.save(member);
