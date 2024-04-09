@@ -1,4 +1,4 @@
-package com.api.RecordTimeline.domain.signup.dto.response;
+package com.api.RecordTimeline.domain.signup.signup.dto.response;
 
 import com.api.RecordTimeline.domain.common.ResponseCode;
 import com.api.RecordTimeline.domain.common.ResponseMessage;
