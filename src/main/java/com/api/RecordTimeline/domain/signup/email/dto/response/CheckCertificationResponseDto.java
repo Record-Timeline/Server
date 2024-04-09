@@ -1,5 +1,7 @@
 package com.api.RecordTimeline.domain.signup.email.dto.response;
 
+import com.api.RecordTimeline.domain.common.ResponseCode;
+import com.api.RecordTimeline.domain.common.ResponseMessage;
 import com.api.RecordTimeline.domain.signup.email.dto.request.CheckCertificationRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.ResponseDto;
 import lombok.Getter;
@@ -17,7 +19,7 @@ public class CheckCertificationResponseDto extends ResponseDto {
     }
 
     public static ResponseEntity<ResponseDto> certificationFail() {
-        ResponseDto responseBody = new ResponseDto();
+        ResponseDto responseBody = new ResponseDto(ResponseCode.CERTIFICATION_FAILED, ResponseMessage.CERTIFICATION_FAILED);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
     }
 }
