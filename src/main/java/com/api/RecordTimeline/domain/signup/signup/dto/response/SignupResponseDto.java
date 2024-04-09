@@ -15,8 +15,13 @@ public class SignupResponseDto extends ResponseDto {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDto> duplicateEmail() {
-        ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
+    public static ResponseEntity<ResponseDto> duplicateId() {
+        ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_ID, ResponseMessage.DUPLICATE_ID);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+    }
+
+    public static ResponseEntity<ResponseDto> duplicateNickname() {
+        ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
 }

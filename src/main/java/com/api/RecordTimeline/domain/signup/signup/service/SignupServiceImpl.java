@@ -59,10 +59,15 @@ public class SignupServiceImpl implements SignupService {
     public ResponseEntity<? super SignupResponseDto> basicSignup(BasicSignupRequestDto basicDto) {
 
         try {
-            String email = basicDto.getEmail();
-            boolean isExistEmail = memberRepository.existsByEmail(email);
-            if (isExistEmail)
-                return SignupResponseDto.duplicateEmail();
+            String memberId = basicDto.getMemberId();
+            boolean isExistMemberId = memberRepository.existsByMemberId(memberId);
+            if (isExistMemberId)
+                return SignupResponseDto.duplicateId();
+
+            String nickname = basicDto.getNickname();
+            boolean isExistNickname = memberRepository.existsByNickname(nickname);
+            if (isExistNickname)
+                return SignupResponseDto.duplicateNickname();
 
             String password = basicDto.getPassword();
             String encodedPassword = passwordEncoder.encode(password);
