@@ -24,13 +24,16 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String memberId;
+
     @Email
     private String email;
 
     private String name;
     private String password;
     private String nickname;
-    private String phoneNumber;
+    //private String phoneNumber;
+    private String loginType;
 
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
