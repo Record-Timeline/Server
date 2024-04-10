@@ -18,18 +18,25 @@ public class JwtProvider {
     @Value("{secret-key}")
     private String secretKey;
 
-    public String create(String userEmail) {
+    @Value("${expiration.hours}")
+    private int expirationHours;
 
-        Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+    /** jwt 생성 **/
+    public String create(String memberId) {
+
+        Date expiredDate = Date.from(Instant.now().plus(expirationHours, ChronoUnit.HOURS));
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         String jwt = Jwts.builder()
                 .signWith(key, SignatureAlgorithm.HS256)
-                .setSubject(userEmail).setIssuedAt(new Date()).setExpiration(expiredDate)
+                .setSubject(memberId).setIssuedAt(new Date()).setExpiration(expiredDate)
                 .compact();
 
         return jwt;
     }
+
+
+    /** jwt 검증 **/
     public String validate(String jwt) {
 
         String subject = null;
