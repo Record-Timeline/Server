@@ -31,6 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+            // Publicuri일 경우 검증 안함
+            String requestURI = request.getRequestURI();
+            if (isPublicUri(requestURI)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             try {
                 String token = parseBearerToken(request);
                 if(token == null) {
@@ -38,18 +45,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                String userEmail = jwtProvider.validate(token);
-                if(userEmail == null) {
+                String memberId = jwtProvider.validate(token);
+                if(memberId == null) {
                     filterChain.doFilter(request, response);
                     return;
                 }
 
-                Optional<Member> member = memberRepository.findByEmail(userEmail);
+                Member member = memberRepository.findByMemberId(memberId);
 
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
                 AbstractAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userEmail, null);
+                        new UsernamePasswordAuthenticationToken(memberId, null);
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 securityContext.setAuthentication(authenticationToken);
@@ -73,8 +80,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean isBearer = authorization.startsWith("Bearer ");
         if(!isBearer)
             return null;
-
         String token = authorization.substring(7); //"Bearer " 뒤부터 토큰 값 가져옴.
         return token;
+    }
+
+
+    private boolean isPublicUri(final String requestURI) {
+        return
+                requestURI.startsWith("/swagger-ui/**") ||
+                        requestURI.startsWith("/api/v1/**"); //개발 기간 동안만 임시로 적어놓음.
     }
 }
