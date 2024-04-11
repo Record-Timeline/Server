@@ -13,6 +13,7 @@ import com.api.RecordTimeline.domain.common.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class EmailServiceImpl implements EmailService {
     private final EmailCertificationRepository emailCertificationRepository;
 
     @Override
+    @Transactional
     public ResponseEntity<? super EmailCertificationResponseDto> emailCertification(EmailCertificationRequestDto dto) {
         try {
             String email = dto.getEmail();
@@ -46,6 +48,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<? super CheckCertificationResponseDto> checkCertification(CheckCertificationRequestDto dto) {
         try{
 

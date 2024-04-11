@@ -26,6 +26,7 @@ public class EmailCertification {
     private String certificationNumber;
 
     public EmailCertification(String email, String certificationNumber) {
-
+        this.email = email;
+        this.certificationNumber = certificationNumber;
     }
 }
