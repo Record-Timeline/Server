@@ -1,7 +1,8 @@
 package com.api.RecordTimeline.domain.signup.email.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.api.RecordTimeline.domain.member.domain.Member;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Getter
@@ -10,9 +11,21 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class EmailCertification {
+
     @Id
-    private String memberId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @Email
     private String email;
+
     private String certificationNumber;
 
+    public EmailCertification(String email, String certificationNumber) {
+
+    }
 }

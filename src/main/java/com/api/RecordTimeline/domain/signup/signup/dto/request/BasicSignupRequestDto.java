@@ -15,10 +15,6 @@ import lombok.Setter;
 @Setter
 public class BasicSignupRequestDto extends KakaoSignupRequestDto {
 
-    @Schema(description = "사용자 아이디", example = "사용자 아이디 예시")
-    @NotBlank
-    private String memberId;
-
     @Schema(description = "사용자 이메일", example = "사용자 이메일 예시")
     @Email
     @NotBlank

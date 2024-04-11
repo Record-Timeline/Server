@@ -24,18 +24,17 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public ResponseEntity<? super EmailCertificationResponseDto> emailCertification(EmailCertificationRequestDto dto) {
         try {
-            String memberId = dto.getMemberId();
             String email = dto.getEmail();
 
-            boolean isExistId = memberRepository.existsByMemberId(memberId);
-            if (isExistId)
-                return EmailCertificationResponseDto.duplicateId();
+            boolean isExistEmail = memberRepository.existsByEmail(email);
+            if (isExistEmail)
+                return EmailCertificationResponseDto.duplicateEmail();
 
             String certificationNumber = CertificationNumber.getCertificationNumber();
             boolean isSuccessed = emailProvider.sendCertificationMail(email, certificationNumber);
             if(!isSuccessed) return EmailCertificationResponseDto.mailSendFail();
 
-            EmailCertification emailCertification = new EmailCertification(memberId, email,certificationNumber);
+            EmailCertification emailCertification = new EmailCertification(email,certificationNumber);
             emailCertificationRepository.save(emailCertification);
 
 
@@ -50,13 +49,12 @@ public class EmailServiceImpl implements EmailService {
     public ResponseEntity<? super CheckCertificationResponseDto> checkCertification(CheckCertificationRequestDto dto) {
         try{
 
-            String memberId = dto.getMemberId();
             String email = dto.getEmail();
             String certificationNumber = dto.getCertificationNumber();
 
-            EmailCertification emailCertification = emailCertificationRepository.findByMemberId(memberId);
+            EmailCertification emailCertification = emailCertificationRepository.findByEmail(email);
             if(emailCertification == null)
-                return CheckCertificationResponseDto.certificationFail();
+                return CheckCertificationResponseDto.memberNotFound();
 
             boolean isMatched = emailCertification.getEmail().equals(email) && emailCertification.getCertificationNumber().equals(certificationNumber);
             if(!isMatched)

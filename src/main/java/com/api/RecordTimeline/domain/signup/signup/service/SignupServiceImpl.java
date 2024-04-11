@@ -11,7 +11,6 @@ import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.DeleteMemberResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,10 +32,10 @@ public class SignupServiceImpl implements SignupService {
     public ResponseEntity<? super SignupResponseDto> basicSignup(BasicSignupRequestDto basicDto) {
 
         try {
-            String memberId = basicDto.getMemberId();
-            boolean isExistMemberId = memberRepository.existsByMemberId(memberId);
-            if (isExistMemberId)
-                return SignupResponseDto.duplicateId();
+            String email = basicDto.getEmail();
+            boolean isExistEmail = memberRepository.existsByEmail(email);
+            if (isExistEmail)
+                return SignupResponseDto.duplicateEmail();
 
             String nickname = basicDto.getNickname();
             boolean isExistNickname = memberRepository.existsByNickname(nickname);
@@ -53,9 +52,8 @@ public class SignupServiceImpl implements SignupService {
             String encodedPassword = passwordEncoder.encode(password);
             basicDto.setPassword(encodedPassword);
 
-            String email = basicDto.getEmail();
             String certificationNumber = basicDto.getCertificationNumber();
-            boolean isCertificationNumberValid = emailCertificationRepository.existsByMemberIdAndEmailAndCertificationNumber(memberId, email, certificationNumber);
+            boolean isCertificationNumberValid = emailCertificationRepository.existsByEmailAndCertificationNumber(email, certificationNumber);
             if (!isCertificationNumberValid) {
                 return CheckCertificationResponseDto.certificationFail();
             }
@@ -72,32 +70,6 @@ public class SignupServiceImpl implements SignupService {
     @Override
     public ResponseEntity<? super SignupResponseDto> kakaoSignup(KakaoSignupRequestDto kakaoDto) {
         return null; //이후에 구현
-    }
-
-    @Override
-    public ResponseEntity<? super DeleteMemberResponseDto> memberDelete(DeleteMemberRequestDto dto) {
-        try {
-
-            Member member = memberRepository.findByMemberId(dto.getMemberId());
-
-            if (member == null) {
-                return DeleteMemberResponseDto.memberNotFound();
-            }
-
-            boolean isMatched = passwordEncoder.matches(dto.getPassword(), member.getPassword());
-
-            if (!isMatched) {
-                return DeleteMemberResponseDto.passwordMismatch();
-            }
-
-            memberRepository.delete(member);
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return DeleteMemberResponseDto.success();
     }
 
 }

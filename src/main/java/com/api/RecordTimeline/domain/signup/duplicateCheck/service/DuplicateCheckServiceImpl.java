@@ -1,9 +1,9 @@
 package com.api.RecordTimeline.domain.signup.duplicateCheck.service;
 
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
-import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.IdCheckResquestDto;
+import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.EmailCheckResquestDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.NicknameCheckResquestDto;
-import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.IdCheckResponseDto;
+import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.EmailCheckResponseDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.NicknameCheckResponseDto;
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -15,19 +15,19 @@ import org.springframework.stereotype.Service;
 public class DuplicateCheckServiceImpl implements DuplicateCheckService{
     private final MemberRepository memberRepository;
     @Override
-    public ResponseEntity<? super IdCheckResponseDto> idCheck(IdCheckResquestDto dto) {
+    public ResponseEntity<? super EmailCheckResponseDto> emailCheck(EmailCheckResquestDto dto) {
 
         try{
-            String memberId = dto.getMemberId();
-            boolean isExistId = memberRepository.existsByMemberId(memberId);
-            if(isExistId)
-                return IdCheckResponseDto.duplicateId();
+            String email = dto.getEmail();
+            boolean isExistEmail = memberRepository.existsByEmail(email);
+            if(isExistEmail)
+                return EmailCheckResponseDto.duplicateEmail();
 
         } catch (Exception exception){
             exception.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return IdCheckResponseDto.success();
+        return EmailCheckResponseDto.success();
     }
 
     @Override
