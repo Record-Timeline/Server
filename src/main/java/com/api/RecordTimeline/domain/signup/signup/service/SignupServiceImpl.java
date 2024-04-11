@@ -10,6 +10,7 @@ import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupReques
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.DeleteMemberResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
+import com.api.RecordTimeline.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,12 +26,14 @@ public class SignupServiceImpl implements SignupService {
 
     private final MemberRepository memberRepository;
     private final EmailCertificationRepository emailCertificationRepository;
+    private final JwtProvider jwtProvider;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private static final String PASSWORD_PATTERN = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,}$";
 
     @Override
     public ResponseEntity<? super SignupResponseDto> basicSignup(BasicSignupRequestDto basicDto) {
 
+        String token;
         try {
             String email = basicDto.getEmail();
             boolean isExistEmail = memberRepository.existsByEmail(email);
@@ -60,11 +63,15 @@ public class SignupServiceImpl implements SignupService {
 
             Member member = new Member(basicDto);
             memberRepository.save(member);
+
+            token = jwtProvider.create(email);
+
+
         } catch (Exception exception) {
             exception.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return SignupResponseDto.success();
+        return SignupResponseDto.success(token);
     }
 
     @Override
