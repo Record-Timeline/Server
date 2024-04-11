@@ -1,0 +1,39 @@
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+server:
+  tomcat:
+    use-relative-redirects: true
+    protocol-header: x-forwarded-proto
+    remoteip:
+      remote-ip-header: x-forwarded-for
+  forward-headers-strategy: native
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://recordtimelinedb.cmtsxdcfhtim.ap-northeast-2.rds.amazonaws.com:3306/RecordTimelineDB
+    username: RecordTimeline
+    password: bellabindung9901
+  #    url: jdbc:mysql://34.64.219.215:3306
+  #    username: root
+  #    password: bellabindung9901
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+#  coolsms:
+#    api:
+#      key: NCSJXUQ4OAK4XSJL
+#      secret: 2WETA82U43HLSSTWGVJGSDXZUNUNPDD8
+
