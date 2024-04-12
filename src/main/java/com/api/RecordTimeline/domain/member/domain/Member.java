@@ -36,8 +36,6 @@ public class Member extends BaseEntity {
     private String nickname;
     private String loginType;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmailCertification> emailCertifications = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
     private Profile profile;
