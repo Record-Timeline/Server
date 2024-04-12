@@ -18,6 +18,6 @@ public class EmailCheckResponseDto extends ResponseDto {
     }
     public static ResponseEntity<ResponseDto> duplicateEmail() {
         ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 }

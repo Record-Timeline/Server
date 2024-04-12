@@ -18,6 +18,6 @@ public class NicknameCheckResponseDto extends ResponseDto {
     }
     public static ResponseEntity<ResponseDto> duplicateNickname() {
         ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 }
