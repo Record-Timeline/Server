@@ -42,7 +42,7 @@ public class SignupController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Long.class)))
     })
-    @PostMapping("/id-check")
+    @PostMapping("/email-check")
     public ResponseEntity<? super EmailCheckResponseDto> emailCheck (@RequestBody @Valid EmailCheckResquestDto requestBody) {
         ResponseEntity<? super EmailCheckResponseDto> response = duplicateCheckService.emailCheck(requestBody);
         return response;
