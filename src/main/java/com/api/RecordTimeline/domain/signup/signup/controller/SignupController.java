@@ -7,10 +7,10 @@ import com.api.RecordTimeline.domain.signup.email.dto.response.CheckCertificatio
 import com.api.RecordTimeline.domain.signup.email.dto.response.EmailCertificationResponseDto;
 import com.api.RecordTimeline.domain.signup.email.service.EmailService;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
-import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.IdCheckResquestDto;
+import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.EmailCheckResquestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.NicknameCheckResquestDto;
-import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.IdCheckResponseDto;
+import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.EmailCheckResponseDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.NicknameCheckResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.service.SignupService;
@@ -42,9 +42,9 @@ public class SignupController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Long.class)))
     })
-    @PostMapping("/id-check")
-    public ResponseEntity<? super IdCheckResponseDto> emailCheck (@RequestBody @Valid IdCheckResquestDto requestBody) {
-        ResponseEntity<? super IdCheckResponseDto> response = duplicateCheckService.idCheck(requestBody);
+    @PostMapping("/email-check")
+    public ResponseEntity<? super EmailCheckResponseDto> emailCheck (@RequestBody @Valid EmailCheckResquestDto requestBody) {
+        ResponseEntity<? super EmailCheckResponseDto> response = duplicateCheckService.emailCheck(requestBody);
         return response;
     }
 

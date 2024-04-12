@@ -1,18 +1,24 @@
 package com.api.RecordTimeline.domain.signup.email.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.api.RecordTimeline.domain.member.domain.Member;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class EmailCertification {
+
     @Id
-    private String memberId;
+    @Email
     private String email;
+
     private String certificationNumber;
 
+    public EmailCertification(String email, String certificationNumber) {
+        this.email = email;
+        this.certificationNumber = certificationNumber;
+    }
 }
