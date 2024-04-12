@@ -8,12 +8,10 @@ import com.api.RecordTimeline.domain.signup.email.dto.response.EmailCertificatio
 import com.api.RecordTimeline.domain.signup.email.service.EmailService;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.EmailCheckResquestDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.request.DeleteMemberRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.NicknameCheckResquestDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.EmailCheckResponseDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.NicknameCheckResponseDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.response.DeleteMemberResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.service.SignupService;
 import io.swagger.v3.oas.annotations.Operation;

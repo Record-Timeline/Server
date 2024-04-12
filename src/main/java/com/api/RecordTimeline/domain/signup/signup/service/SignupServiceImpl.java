@@ -5,10 +5,8 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.signup.email.dto.response.CheckCertificationResponseDto;
 import com.api.RecordTimeline.domain.signup.email.repository.EmailCertificationRepository;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.request.DeleteMemberRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
 import com.api.RecordTimeline.domain.common.ResponseDto;
-import com.api.RecordTimeline.domain.signup.signup.dto.response.DeleteMemberResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
 import com.api.RecordTimeline.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -78,5 +76,6 @@ public class SignupServiceImpl implements SignupService {
     public ResponseEntity<? super SignupResponseDto> kakaoSignup(KakaoSignupRequestDto kakaoDto) {
         return null; //이후에 구현
     }
+
 
 }
