@@ -1,6 +1,5 @@
 package com.api.RecordTimeline.global.security.jwt;
 
-import io.jsonwebtoken.*;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -15,21 +14,22 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    @Value("{secret-key}")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
-    @Value("${expiration.hours}")
-    private int expirationHours;
+    //@Value("${expiration.hours}")
+    //private int expirationHours;
 
     /** jwt 생성 **/
-    public String create(String memberId) {
+    public String create(String email) {
 
-        Date expiredDate = Date.from(Instant.now().plus(expirationHours, ChronoUnit.HOURS));
+        Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         String jwt = Jwts.builder()
                 .signWith(key, SignatureAlgorithm.HS256)
-                .setSubject(memberId).setIssuedAt(new Date()).setExpiration(expiredDate)
+                .setSubject(email).setIssuedAt(new Date()).setExpiration(expiredDate)
                 .compact();
 
         return jwt;

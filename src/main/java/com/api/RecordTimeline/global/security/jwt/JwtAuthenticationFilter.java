@@ -45,18 +45,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                String memberId = jwtProvider.validate(token);
-                if(memberId == null) {
+                String email = jwtProvider.validate(token);
+                if(email == null) {
                     filterChain.doFilter(request, response);
                     return;
                 }
 
-                Member member = memberRepository.findByMemberId(memberId);
+                Member member = memberRepository.findByEmail(email);
 
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
                 AbstractAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(memberId, null);
+                        new UsernamePasswordAuthenticationToken(email, null);
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 securityContext.setAuthentication(authenticationToken);
