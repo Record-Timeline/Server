@@ -7,18 +7,15 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
 
 @Getter
 public class AppLoginResponseDto extends ResponseDto {
 
     private String token;
-    private int expirationTime;
 
     private AppLoginResponseDto(String token){
         super();
         this.token = token;
-        this.expirationTime = 3600;
     }
 
     public static ResponseEntity<AppLoginResponseDto> success (String token) {
