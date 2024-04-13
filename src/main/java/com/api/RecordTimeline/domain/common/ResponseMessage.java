@@ -11,6 +11,7 @@ public interface ResponseMessage {
     String APP_LOGIN_FAIL = "로그인에 실패했습니다.";
     String CERTIFICATION_FAILED = "이메일 인증번호가 유효하지 않습니다.";
     String PASSWORD_MISMATCH = "비밀번호가 틀립니다.";
+    String NOT_AUTHORIZED = "권한이 없습니다.";
     String MEMBER_DELETED_FAELED = "회원 탈퇴에 실패했습니다.";
     String MAIL_FAIL = "메일 전송에 실패했습니다.";
     String DATABASE_ERROR = "데이터베이스 오류입니다.";

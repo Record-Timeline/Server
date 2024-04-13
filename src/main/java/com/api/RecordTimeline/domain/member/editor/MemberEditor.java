@@ -31,9 +31,7 @@ public class MemberEditor {
         }
 
         public MemberEditorBuilder interest(final Interest interest) {
-            if (StringUtils.hasText(String.valueOf(interest))) {
-                this.interest = interest;
-            }
+            this.interest = interest;
             return this;
         }
 
