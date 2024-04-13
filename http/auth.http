@@ -13,10 +13,49 @@ Content-Type: application/json
 {
   "email":  "eastflag@gmail.com",
   "password": "1234abcd",
-  "certificationNumber": "xOD9St",
+  "certificationNumber": "RMKqWi",
   "name": "ldk",
   "nickname": "eastflag",
   "interest": "IT_Data"
 }
 
-### > {% client.global.set("token", response.body.token);  %}
+### app-login
+POST http://localhost:8081/api/v1/auth/app-login
+Content-Type: application/json
+
+{
+  "email":  "eastflag@gmail.com",
+  "password": "1234abcd"
+}
+
+> {% client.global.set("token", response.body.token);  %}
+
+### update-memberInfo
+PATCH http://localhost:8081/api/v1/auth/update-memberInfo
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "newNickname": "dk",
+  "newInterest": "Business_Sales_Trade"
+}
+
+### update-password
+PATCH http://localhost:8081/api/v1/auth/update-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "1234abcd",
+  "newPassword": "abcd1234"
+}
+
+### update-password revoke
+PATCH http://localhost:8081/api/v1/auth/update-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "abcd1234",
+  "newPassword": "1234abcd"
+}
