@@ -78,7 +78,6 @@ public class Member extends BaseEntity {
         this.email = basicDto.getEmail();
         this.password = basicDto.getPassword();
         this.name = basicDto.getName();
-        //this.phoneNumber = basicDto.getPhoneNumber();
         this.nickname = basicDto.getNickname();
         this.interest = basicDto.getInterest();
         this.loginType = "app";
