@@ -7,7 +7,9 @@ import com.api.RecordTimeline.domain.signup.email.repository.EmailCertificationR
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupRequestDto;
 import com.api.RecordTimeline.domain.common.ResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.UnRegisterRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.UnRegisterResponseDto;
 import com.api.RecordTimeline.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +77,32 @@ public class SignupServiceImpl implements SignupService {
     @Override
     public ResponseEntity<? super SignupResponseDto> kakaoSignup(KakaoSignupRequestDto kakaoDto) {
         return null; //이후에 구현
+    }
+
+    @Override
+    public ResponseEntity<? super UnRegisterResponseDto> unRegister(String email, UnRegisterRequestDto dto) {
+        try {
+
+            Member member = memberRepository.findByEmail(email);
+
+            if (member == null) {
+                return UnRegisterResponseDto.memberNotFound();
+            }
+
+            boolean isMatched = passwordEncoder.matches(dto.getPassword(), member.getPassword());
+
+            if (!isMatched) {
+                return UnRegisterResponseDto.passwordMismatch();
+            }
+
+            memberRepository.delete(member);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return UnRegisterResponseDto.success();
     }
 
 
