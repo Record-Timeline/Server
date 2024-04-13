@@ -11,8 +11,6 @@ import lombok.Getter;
 @Builder
 public class UpdateMemberRequestDto {
 
-
-    @NotBlank
     private String newNickname;
     private Interest newInterest;
 }
