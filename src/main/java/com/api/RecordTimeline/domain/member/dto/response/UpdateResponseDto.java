@@ -6,14 +6,14 @@ import com.api.RecordTimeline.domain.common.ResponseMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class UpdateMemberResponseDto extends ResponseDto{
+public class UpdateResponseDto extends ResponseDto{
 
-    private UpdateMemberResponseDto() {
+    private UpdateResponseDto() {
         super();
     }
 
-    public static ResponseEntity<UpdateMemberResponseDto> success() {
-        UpdateMemberResponseDto responseBody = new UpdateMemberResponseDto();
+    public static ResponseEntity<UpdateResponseDto> success() {
+        UpdateResponseDto responseBody = new UpdateResponseDto();
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
@@ -29,6 +29,11 @@ public class UpdateMemberResponseDto extends ResponseDto{
 
     public static ResponseEntity<ResponseDto> duplicateNickname() {
         ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    public static ResponseEntity<ResponseDto> passwordMismatch() {
+        ResponseDto responseBody = new ResponseDto(ResponseCode.PASSWORD_MISMATCH, ResponseMessage.PASSWORD_MISMATCH);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 }

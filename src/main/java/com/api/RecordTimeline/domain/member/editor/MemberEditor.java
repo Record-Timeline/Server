@@ -11,6 +11,7 @@ public class MemberEditor {
 
     private final String nickname;
     private final Interest interest;
+    private final String password;
 
     public static MemberEditorBuilder builder() {
         return new MemberEditorBuilder();
@@ -19,6 +20,7 @@ public class MemberEditor {
     public static class MemberEditorBuilder {
         private String nickname;
         private Interest interest;
+        private String password;
         MemberEditorBuilder(){
 
         }
@@ -35,7 +37,12 @@ public class MemberEditor {
             return this;
         }
 
+        public MemberEditorBuilder password(final String password) {
+            this.password = password;
+            return this;
+        }
+
         public MemberEditor build() {
-            return new MemberEditor(nickname,interest);}
+            return new MemberEditor(nickname,interest,password);}
     }
 }
