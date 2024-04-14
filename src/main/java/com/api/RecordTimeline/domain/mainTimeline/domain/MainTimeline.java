@@ -14,7 +14,7 @@ import java.util.List;
 /** 연관관계를 매핑을 위해 작성. 완성된 코드 X **/
 @Entity
 @Getter
-@SuperBuilder
+//@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 /*@AllArgsConstructor(access = AccessLevel.PRIVATE)*/
 @Table(name = "main_timeline") // DB 테이블 이름 명시
