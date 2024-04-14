@@ -19,34 +19,24 @@ public class UpdateMemberServiceImpl implements UpdateMemberService {
 
     @Override
     public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(String email, UpdateMemberRequestDto dto) {
-            try {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                String loggedInMemberEmail = authentication.getName(); // 현재 로그인 한 사용자 이메일
+        try {
 
-                if (!email.equals(loggedInMemberEmail)) {
-                    return UpdateResponseDto.notAuthorized();
-                }
+            Member member = memberRepository.findByEmail(email);
 
-                Member member = memberRepository.findByEmail(email);
+            String nickname = dto.getNewNickname();
+            boolean isExistNickname = memberRepository.existsByNickname(nickname);
+            if (isExistNickname)
+                return UpdateResponseDto.duplicateNickname();
 
-                if (member == null) {
-                    return UpdateResponseDto.memberNotFound();
-                }
+            member.update(dto.getNewNickname(), dto.getNewInterest());
+            memberRepository.save(member);
 
-                String nickname = dto.getNewNickname();
-                boolean isExistNickname = memberRepository.existsByNickname(nickname);
-                if (isExistNickname)
-                    return UpdateResponseDto.duplicateNickname();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.databaseError();
+        }
 
-                member.update(dto.getNewNickname(), dto.getNewInterest());
-                memberRepository.save(member);
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                return ResponseDto.databaseError();
-            }
-
-            return UpdateResponseDto.success();
+        return UpdateResponseDto.success();
     }
 }
 

@@ -23,18 +23,8 @@ public class UpdatePasswordServiceImpl implements UpdatePasswordService{
     @Override
     public ResponseEntity<? super UpdateResponseDto> updatePassword(String email, UpdatePasswordRequestDto dto) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String loggedInMemberEmail = authentication.getName(); // 현재 로그인 한 사용자 이메일
-
-            if (!email.equals(loggedInMemberEmail)) {
-                return UpdateResponseDto.notAuthorized();
-            }
 
             Member member = memberRepository.findByEmail(email);
-
-            if (member == null) {
-                return UpdateResponseDto.memberNotFound();
-            }
 
             if (!passwordEncoder.matches(dto.getOldPassword(), member.getPassword())) {
                 return UpdateResponseDto.passwordMismatch();
