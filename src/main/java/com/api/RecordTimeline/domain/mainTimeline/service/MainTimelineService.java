@@ -47,4 +47,9 @@ public class MainTimelineService {
                 .orElseThrow(() -> new NoSuchElementException("해당 ID로 메인 타임라인을 찾을 수 없습니다: " + id));
         mainTimelineRepository.delete(mainTimeline);
     }
+
+    // 메인 타임라인 조회 - 정렬 로직 포함
+    public List<MainTimeline> getTimelinesByMemberId(Long memberId) {
+        return mainTimelineRepository.findByMemberIdOrderByStartDate(memberId);
+    }
 }
