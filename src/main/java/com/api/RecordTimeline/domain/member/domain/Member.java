@@ -12,13 +12,14 @@ import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupReques
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -87,5 +88,11 @@ public class Member extends BaseEntity {
         this.nickname = kakaoDto.getNickname();
         this.interest = kakaoDto.getInterest();
         this.loginType = "kakao";
+    }
+
+    public Member updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
+        return this.toBuilder()
+                .password(passwordEncoder.encode(newPassword))
+                .build();
     }
 }

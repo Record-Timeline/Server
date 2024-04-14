@@ -22,7 +22,7 @@ public class BasicSignupRequestDto extends KakaoSignupRequestDto {
 
     @Schema(description = "사용자 비밀번호", example = "abcde12345 (영문,숫자 포함 8글자 이상)")
     @NotBlank
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,}$")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9\\p{Punct}]{8,}$")
     private String password;
 
     @Schema(description = "사용자 이름", example = "사용자 이름 예시")

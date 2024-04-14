@@ -10,6 +10,7 @@ public interface ResponseCode {
     String APP_LOGIN_FAIL = "ALF";
     String CERTIFICATION_FAILED = "CF";
     String PASSWORD_MISMATCH = "PM";
+    String NOT_AUTHORIZED = "NA";
 
     String MEMBER_DELETED_FAELED = "MDF";
 
