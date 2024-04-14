@@ -2,22 +2,18 @@ package com.api.RecordTimeline.domain.mainTimeline.controller;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@RequiredArgsConstructor // 롬복의 RequiredArgsConstructor 어노테이션 사용
 @RequestMapping("/api/v1/main-timelines")
 public class MainTimelineController {
 
     private final MainTimelineService mainTimelineService;
-
-    @Autowired
-    public MainTimelineController(MainTimelineService mainTimelineService) {
-        this.mainTimelineService = mainTimelineService;
-    }
 
     @PostMapping
     public ResponseEntity<MainTimeline> createMainTimeline(@RequestBody MainTimeline mainTimeline) {
