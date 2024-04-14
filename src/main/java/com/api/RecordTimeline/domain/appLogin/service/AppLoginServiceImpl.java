@@ -27,7 +27,7 @@ public class AppLoginServiceImpl implements AppLoginService {
         try {
 
             String email = dto.getEmail();
-            Member member = memberRepository.findByEmail(email);
+            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
             if(member == null)
                 return AppLoginResponseDto.memberNotFound();
 

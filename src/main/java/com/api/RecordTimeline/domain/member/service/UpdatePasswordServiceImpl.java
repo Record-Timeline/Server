@@ -2,7 +2,6 @@ package com.api.RecordTimeline.domain.member.service;
 
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.member.domain.Member;
-import com.api.RecordTimeline.domain.member.dto.request.UpdateMemberRequestDto;
 import com.api.RecordTimeline.domain.member.dto.request.UpdatePasswordRequestDto;
 import com.api.RecordTimeline.domain.member.dto.response.UpdateResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -30,7 +29,7 @@ public class UpdatePasswordServiceImpl implements UpdatePasswordService{
                 return UpdateResponseDto.notAuthorized();
             }
 
-            Member member = memberRepository.findByEmail(email);
+            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
 
             if (member == null) {
                 return UpdateResponseDto.memberNotFound();

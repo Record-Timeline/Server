@@ -27,14 +27,14 @@ public class UpdateMemberServiceImpl implements UpdateMemberService {
                     return UpdateResponseDto.notAuthorized();
                 }
 
-                Member member = memberRepository.findByEmail(email);
+                Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
 
                 if (member == null) {
                     return UpdateResponseDto.memberNotFound();
                 }
 
                 String nickname = dto.getNewNickname();
-                boolean isExistNickname = memberRepository.existsByNickname(nickname);
+                boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
                 if (isExistNickname)
                     return UpdateResponseDto.duplicateNickname();
 

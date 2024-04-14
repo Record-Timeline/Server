@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             String email = dto.getEmail();
 
-            boolean isExistEmail = memberRepository.existsByEmail(email);
+            boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
             if (isExistEmail)
                 return EmailCertificationResponseDto.duplicateEmail();
 
