@@ -41,7 +41,7 @@ Content-Type: application/json
 }
 
 ### update-password
-PATCH http://localhost:8081/api/v1/auth/update-password
+PUT http://localhost:8081/api/v1/auth/update-password
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 }
 
 ### update-password revoke
-PATCH http://localhost:8081/api/v1/auth/update-password
+PUT http://localhost:8081/api/v1/auth/update-password
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
