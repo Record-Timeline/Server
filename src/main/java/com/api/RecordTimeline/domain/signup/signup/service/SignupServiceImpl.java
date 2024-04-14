@@ -36,12 +36,12 @@ public class SignupServiceImpl implements SignupService {
         String token;
         try {
             String email = basicDto.getEmail();
-            boolean isExistEmail = memberRepository.existsByEmail(email);
+            boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
             if (isExistEmail)
                 return SignupResponseDto.duplicateEmail();
 
             String nickname = basicDto.getNickname();
-            boolean isExistNickname = memberRepository.existsByNickname(nickname);
+            boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
             if (isExistNickname)
                 return SignupResponseDto.duplicateNickname();
 
@@ -83,19 +83,19 @@ public class SignupServiceImpl implements SignupService {
     public ResponseEntity<? super UnRegisterResponseDto> unRegister(String email, UnRegisterRequestDto dto) {
         try {
 
-            Member member = memberRepository.findByEmail(email);
+            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
 
-            if (member == null) {
+            if (member == null || member.isDeleted()) {
                 return UnRegisterResponseDto.memberNotFound();
             }
 
             boolean isMatched = passwordEncoder.matches(dto.getPassword(), member.getPassword());
-
             if (!isMatched) {
                 return UnRegisterResponseDto.passwordMismatch();
             }
 
-            memberRepository.delete(member);
+            member.markAsDeleted();
+            memberRepository.save(member);
 
         } catch (Exception exception) {
             exception.printStackTrace();
