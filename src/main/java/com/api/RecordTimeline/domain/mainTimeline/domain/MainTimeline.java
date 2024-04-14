@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,13 @@ public class MainTimeline extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false) // 연관 관계의 주인을 명시
     private Member member;
 
-    //@OneToMany 관계에서 cascade = CascadeType.ALL은 연관된 SubTimeline 엔티티가 MainTimeline 엔티티의 생명주기를 따르도록 하고
+    @Column(nullable = false)
+    private LocalDate startDate; // 시작 날짜
+
+    @Column(nullable = false)
+    private LocalDate endDate; // 종료 날짜
+
+    //@OneToMany 관계에서 cascade = CascadeType. ALL은 연관된 SubTimeline 엔티티가 MainTimeline 엔티티의 생명주기를 따르도록 하고
     // orphanRemoval = true는 MainTimeline과의 연관이 끊긴 SubTimeline 엔티티를 DB에서 자동으로 삭제
     @OneToMany(mappedBy = "mainTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubTimeline> subTimelines = new ArrayList<>();
