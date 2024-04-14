@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/main-timelines")
+@RequestMapping("/api/v1/main-timelines")
 public class MainTimelineController {
 
     private final MainTimelineService mainTimelineService;
