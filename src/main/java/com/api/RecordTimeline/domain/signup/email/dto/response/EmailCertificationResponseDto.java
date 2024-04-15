@@ -4,14 +4,13 @@ import com.api.RecordTimeline.domain.common.ResponseCode;
 import com.api.RecordTimeline.domain.common.ResponseMessage;
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Getter
+@RequiredArgsConstructor
 public class EmailCertificationResponseDto extends ResponseDto {
-    private EmailCertificationResponseDto() {
-        super();
-    }
 
     public static ResponseEntity<EmailCertificationResponseDto> success() {
         EmailCertificationResponseDto responseBody = new EmailCertificationResponseDto();
