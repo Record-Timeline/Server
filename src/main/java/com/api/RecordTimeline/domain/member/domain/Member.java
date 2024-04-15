@@ -37,6 +37,8 @@ public class Member extends BaseEntity {
     private String nickname;
     private String loginType;
 
+    private boolean isDeleted = false; // 탈퇴 여부 (탈퇴 시 db 자체를 삭제하지 않기 위함)
+
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
     private Profile profile;
@@ -82,17 +84,31 @@ public class Member extends BaseEntity {
         this.nickname = basicDto.getNickname();
         this.interest = basicDto.getInterest();
         this.loginType = "app";
+        this.isDeleted = false;
     }
 
     public Member(KakaoSignupRequestDto kakaoDto) {
         this.nickname = kakaoDto.getNickname();
         this.interest = kakaoDto.getInterest();
         this.loginType = "kakao";
+        this.isDeleted = false;
     }
 
     public Member updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
         return this.toBuilder()
                 .password(passwordEncoder.encode(newPassword))
                 .build();
+    }
+
+    @Builder
+    public Member(String email, String password, String nickname, boolean isDeleted) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.isDeleted = isDeleted;
+    }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
     }
 }

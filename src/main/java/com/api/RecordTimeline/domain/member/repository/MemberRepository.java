@@ -4,7 +4,7 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Member findByEmail (String email);
-    boolean existsByEmail(String email);
-    boolean existsByNickname(String nickname);
+    Member findByEmailAndIsDeletedFalse(String email);
+    boolean existsByEmailAndIsDeletedFalse(String email);
+    boolean existsByNicknameAndIsDeletedFalse(String nickname);
 }

@@ -21,12 +21,12 @@ public class UpdateMemberServiceImpl implements UpdateMemberService {
     public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(String email, UpdateMemberRequestDto dto) {
         try {
 
-            Member member = memberRepository.findByEmail(email);
+                Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
 
-            String nickname = dto.getNewNickname();
-            boolean isExistNickname = memberRepository.existsByNickname(nickname);
-            if (isExistNickname)
-                return UpdateResponseDto.duplicateNickname();
+                String nickname = dto.getNewNickname();
+                boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
+                if (isExistNickname)
+                    return UpdateResponseDto.duplicateNickname();
 
             member.update(dto.getNewNickname(), dto.getNewInterest());
             memberRepository.save(member);
