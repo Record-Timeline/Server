@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final UpdateMemberServiceImpl updateMemberService;
     private final UpdatePasswordServiceImpl updatePasswordService;
-    @PatchMapping("/update-memberInfo")
+    @PutMapping("/update-memberInfo")
     public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(@Valid @RequestBody UpdateMemberRequestDto requestBody) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
         return updateMemberService.updateMemberInfo(email, requestBody);
     }
 
-    @PatchMapping("/update-password")
+    @PutMapping("/update-password")
     public ResponseEntity<? super UpdateResponseDto> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto requestBody) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
