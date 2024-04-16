@@ -2,19 +2,14 @@ package com.api.RecordTimeline.domain.profile.service;
 
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.member.domain.Member;
-import com.api.RecordTimeline.domain.member.editor.MemberEditor;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
-import com.api.RecordTimeline.domain.member.service.UpdateMemberServiceImpl;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
-import com.api.RecordTimeline.domain.profile.dto.request.ProfileRequestDto;
 import com.api.RecordTimeline.domain.profile.dto.response.ProfileResponseDto;
 import com.api.RecordTimeline.global.s3.S3FileUploader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,14 +34,22 @@ public class ProfileService {
     // 소개글 등록 및 수정
     public ResponseEntity<ResponseDto> updateIntroduction(String email, String introduction) {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member != null) {
-            Profile.builder().introduction(introduction).build();
-            memberRepository.save(member);
-            return ProfileResponseDto.success();
-        } else {
+        if (member == null) {
             return ProfileResponseDto.memberNotFound();
         }
+
+        Profile profile = member.getProfile();
+        if (profile == null) {
+            profile = Profile.builder()
+                    .member(member)
+                    .build(); // 처음 프로필 생성하는 경우
+        }
+        profile.updateIntroduction(introduction); // 기존 또는 새 프로필 소개글 업데이트
+
+        memberRepository.save(member);
+        return ProfileResponseDto.success();
     }
+
 
     // 프로필 이미지 삭제
     public ResponseEntity<ResponseDto> deleteProfileImage(String email) {
@@ -71,61 +74,4 @@ public class ProfileService {
             return ProfileResponseDto.memberNotFound();
         }
     }
-
-
-
-
-    /*@Transactional
-    public ResponseEntity<ResponseDto> createOrUpdateProfile(String email, MultipartFile file, String introduction) {
-        try {
-            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-            if (member == null) {
-                return ProfileResponseDto.memberNotFound();
-            }
-
-            String profileImgUrl = null;
-            if (file != null && !file.isEmpty()) {
-                profileImgUrl = s3FileUploader.uploadMultipartFile(file);
-            }
-
-            Profile newProfile = new Profile(member, profileImgUrl, introduction);
-            member.updateProfile(newProfile);
-
-            return ProfileResponseDto.success();
-        } catch (Exception e) {
-            return ProfileResponseDto.updateFailed();
-        }
-    }
-
-
-    @Transactional
-    public ResponseEntity<ResponseDto> deleteProfileImage(String email) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member == null) {
-            return ProfileResponseDto.memberNotFound();
-        }
-
-        Profile profile = member.getProfile();
-        if (profile != null && profile.getProfileImgUrl() != null) {
-            s3FileUploader.deleteFileFromS3(profile.getProfileImgUrl());
-            profile.changeProfile(null, profile.getIntroduction());
-            return ProfileResponseDto.imageDeleted();
-        }
-        return ProfileResponseDto.noImageFound();
-    }
-
-    @Transactional
-    public ResponseEntity<ResponseDto> clearIntroduction(String email) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member == null) {
-            return ProfileResponseDto.memberNotFound();
-        }
-
-        Profile profile = member.getProfile();
-        if (profile != null) {
-            profile.changeProfile(profile.getProfileImgUrl(), null);
-            return ProfileResponseDto.introductionCleared();
-        }
-        return ProfileResponseDto.noProfileFound();
-    }*/
 }

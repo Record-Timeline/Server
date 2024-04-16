@@ -22,6 +22,7 @@ public class Profile extends BaseEntity {
 
     private String profileImgUrl;
 
+    @Column(columnDefinition = "TEXT")
     private String introduction;
 
     public Profile(Member member, String profileImgUrl, String introduction) {
@@ -44,5 +45,10 @@ public class Profile extends BaseEntity {
     public void deleteProfileImage() {
         this.profileImgUrl = null;
     }
+
+    public void updateIntroduction(String newIntroduction) {
+        this.introduction = newIntroduction;
+    }
+
 
 }
