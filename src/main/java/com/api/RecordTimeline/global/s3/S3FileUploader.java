@@ -121,9 +121,7 @@ public class S3FileUploader {
 
     private String putS3(final File uploadFile, final String fileName) {
         amazonS3.putObject(
-                new PutObjectRequest(bucket, fileName, uploadFile)
-                        .withCannedAcl(CannedAccessControlList.PublicRead)
-        );
+                new PutObjectRequest(bucket, fileName, uploadFile));
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
