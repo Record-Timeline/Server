@@ -66,12 +66,16 @@ public class ProfileService {
     // 소개글 삭제
     public ResponseEntity<ResponseDto> deleteIntroduction(String email) {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member != null) {
-            Profile.builder().introduction(null).build();
+        if (member == null) {
+            return ProfileResponseDto.memberNotFound();
+        }
+        Profile profile = member.getProfile();
+        if (profile != null) {
+            profile.updateIntroduction(null);
             memberRepository.save(member);
             return ProfileResponseDto.introductionCleared();
         } else {
-            return ProfileResponseDto.memberNotFound();
+            return ProfileResponseDto.noProfileFound();
         }
     }
 }
