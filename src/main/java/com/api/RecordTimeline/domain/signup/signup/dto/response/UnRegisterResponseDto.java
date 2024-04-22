@@ -3,13 +3,12 @@ package com.api.RecordTimeline.domain.signup.signup.dto.response;
 import com.api.RecordTimeline.domain.common.ResponseCode;
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.common.ResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@RequiredArgsConstructor
 public class UnRegisterResponseDto extends ResponseDto {
-    private UnRegisterResponseDto() {
-        super();
-    }
 
     public static ResponseEntity<UnRegisterResponseDto> success() {
         UnRegisterResponseDto responseBody = new UnRegisterResponseDto();

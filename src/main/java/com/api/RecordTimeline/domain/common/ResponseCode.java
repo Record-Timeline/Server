@@ -15,5 +15,9 @@ public interface ResponseCode {
     String MEMBER_DELETED_FAELED = "MDF";
 
     String MAIL_FAIL = "MF";
+    String UPDATE_FAILED = "UF";
+
+    String NO_IMAGE_FOUND = "NIF";
+    String NO_PROFILE_FOUND = "NPF";
     String DATABASE_ERROR = "DBE";
 }

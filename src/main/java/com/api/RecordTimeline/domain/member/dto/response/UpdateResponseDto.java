@@ -3,14 +3,11 @@ package com.api.RecordTimeline.domain.member.dto.response;
 import com.api.RecordTimeline.domain.common.ResponseCode;
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.common.ResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+@RequiredArgsConstructor
 public class UpdateResponseDto extends ResponseDto{
-
-    private UpdateResponseDto() {
-        super();
-    }
 
     public static ResponseEntity<UpdateResponseDto> success() {
         UpdateResponseDto responseBody = new UpdateResponseDto();
