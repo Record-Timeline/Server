@@ -2,6 +2,7 @@ package com.api.RecordTimeline.domain.signup.signup.service;
 
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.domain.profile.domain.Profile;
 import com.api.RecordTimeline.domain.signup.email.dto.response.CheckCertificationResponseDto;
 import com.api.RecordTimeline.domain.signup.email.repository.EmailCertificationRepository;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
@@ -63,6 +64,9 @@ public class SignupServiceImpl implements SignupService {
 
             Member member = new Member(basicDto);
             memberRepository.save(member);
+
+            Profile profile = new Profile(); // Member 객체 생성될 때 Profile 객체도 생성
+            profile.setMember(member);
 
             token = jwtProvider.create(email);
 
