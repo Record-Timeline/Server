@@ -26,17 +26,22 @@ public class Profile extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    public Profile(Member member, String profileImgUrl, String introduction) {
+    private boolean isDeleted = false;
+
+    public Profile(Member member, String profileImgUrl, String introduction, boolean isDeleted) {
         this.member = member;
         this.profileImgUrl = profileImgUrl;
         this.introduction = introduction;
+        this.isDeleted = isDeleted;
     }
 
-    public static Profile of(final Member member, final String profileImgUrl, final String introduction) {
+
+    public static Profile of(final Member member, final String profileImgUrl, final String introduction, boolean isDeleted) {
         return Profile.builder()
                 .member(member)
                 .profileImgUrl(profileImgUrl)
                 .introduction(introduction)
+                .isDeleted(isDeleted)
                 .build();
     }
     public void changeProfileImage(String profileImgUrl) {
