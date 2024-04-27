@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.mainTimeline.controller;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
+import com.api.RecordTimeline.domain.mainTimeline.dto.MainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,14 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequiredArgsConstructor // 롬복의 RequiredArgsConstructor 어노테이션 사용
 @RequestMapping("/api/v1/main-timelines")
+@RequiredArgsConstructor // 롬복의 RequiredArgsConstructor 어노테이션 사용
+
 public class MainTimelineController {
 
     private final MainTimelineService mainTimelineService;
 
     @PostMapping
-    public ResponseEntity<MainTimeline> createMainTimeline(@RequestBody MainTimeline mainTimeline) {
+    public ResponseEntity<MainTimeline> createMainTimeline(@RequestBody MainTimelineRequestDTO mainTimelineRequestDTO) {
+        MainTimeline mainTimeline = mainTimelineRequestDTO.toEntity();
         MainTimeline created = mainTimelineService.createMainTimeline(mainTimeline);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
