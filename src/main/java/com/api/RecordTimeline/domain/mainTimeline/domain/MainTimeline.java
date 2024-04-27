@@ -22,7 +22,6 @@ public class MainTimeline extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "main_timeline_id") // 컬럼 이름 명시
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
