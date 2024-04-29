@@ -12,8 +12,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByEmailAndIsDeletedFalse(String email);
     boolean existsByNicknameAndIsDeletedFalse(String nickname);
 
-    @Query("SELECT m FROM Member m WHERE m.interest = ?1 AND m.email != ?2 AND m.isDeleted = false")
-    List<Member> findMembersWithSameInterest(Interest interest, String email);
+    @Query(value = "SELECT * FROM member WHERE interest = ?1 AND email != ?2 AND is_deleted = false ORDER BY RAND() LIMIT 5", nativeQuery = true)
+    List<Member> findMembersWithSameInterest(String interest, String email);
 
 
 }

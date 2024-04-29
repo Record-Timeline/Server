@@ -31,11 +31,12 @@ public class SearchServiceImpl implements SearchService {
             throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
         }
 
-        List<Member> membersWithSameInterest = memberRepository.findMembersWithSameInterest(member.getInterest(), email);
-        Collections.shuffle(membersWithSameInterest);
-        List<Member> selectedMembers = membersWithSameInterest.stream().limit(5).collect(Collectors.toList());
+        List<Member> membersWithSameInterest = memberRepository.findMembersWithSameInterest(member.getInterest().name(), email);
+        if (membersWithSameInterest.isEmpty()) {
+            throw new ApiException(ErrorType._NO_RECOMMENDER_FOUND);
+        }
 
-        List<SearchPageRecommendDto> result = selectedMembers.stream().map(m -> {
+        List<SearchPageRecommendDto> result = membersWithSameInterest.stream().map(m -> {
             Profile profile = profileRepository.findByMember(m);
             return new SearchPageRecommendDto(
                     m.getNickname(),
