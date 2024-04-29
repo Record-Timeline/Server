@@ -19,7 +19,7 @@ public class DuplicateCheckServiceImpl implements DuplicateCheckService{
 
         try{
             String email = dto.getEmail();
-            boolean isExistEmail = memberRepository.existsByEmail(email);
+            boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
             if(isExistEmail)
                 return EmailCheckResponseDto.duplicateEmail();
 
@@ -35,7 +35,7 @@ public class DuplicateCheckServiceImpl implements DuplicateCheckService{
 
         try{
             String nickname = dto.getNickname();
-            boolean isExistNickname = memberRepository.existsByNickname(nickname);
+            boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
             if(isExistNickname)
                 return NicknameCheckResponseDto.duplicateNickname();
 

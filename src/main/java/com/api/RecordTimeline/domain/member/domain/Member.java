@@ -12,13 +12,14 @@ import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupReques
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -35,6 +36,8 @@ public class Member extends BaseEntity {
     private String password;
     private String nickname;
     private String loginType;
+
+    private boolean isDeleted = false; // 탈퇴 여부 (탈퇴 시 db 자체를 삭제하지 않기 위함)
 
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
@@ -81,11 +84,32 @@ public class Member extends BaseEntity {
         this.nickname = basicDto.getNickname();
         this.interest = basicDto.getInterest();
         this.loginType = "app";
+        this.isDeleted = false;
     }
 
     public Member(KakaoSignupRequestDto kakaoDto) {
         this.nickname = kakaoDto.getNickname();
         this.interest = kakaoDto.getInterest();
         this.loginType = "kakao";
+        this.isDeleted = false;
+    }
+
+    public Member updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
+        return this.toBuilder()
+                .password(passwordEncoder.encode(newPassword))
+                .build();
+    }
+
+    @Builder
+    public Member(String email, String password, String nickname, boolean isDeleted) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.isDeleted = isDeleted;
+        this.profile = new Profile(this, null, ""); // 초기 프로필 이미지, 소개글 없음
+    }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
     }
 }
