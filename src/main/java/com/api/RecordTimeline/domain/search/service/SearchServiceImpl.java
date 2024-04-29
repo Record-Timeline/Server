@@ -36,7 +36,7 @@ public class SearchServiceImpl implements SearchService {
         List<Member> selectedMembers = membersWithSameInterest.stream().limit(5).collect(Collectors.toList());
 
         List<SearchPageRecommendDto> result = selectedMembers.stream().map(m -> {
-            Profile profile = profileRepository.findByMemberAndIsDeletedFalse(m);
+            Profile profile = profileRepository.findByMember(m);
             return new SearchPageRecommendDto(
                     m.getNickname(),
                     profile != null ? profile.getProfileImgUrl() : "",

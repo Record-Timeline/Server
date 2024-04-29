@@ -26,24 +26,20 @@ public class Profile extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    private boolean isDeleted = false;
-
-    public Profile(Member member, String profileImgUrl, String introduction, boolean isDeleted) {
+    public Profile(Member member, String profileImgUrl, String introduction) {
         this.member = member;
         this.profileImgUrl = profileImgUrl;
         this.introduction = introduction;
-        this.isDeleted = isDeleted;
     }
 
-
-    public static Profile of(final Member member, final String profileImgUrl, final String introduction, boolean isDeleted) {
+    public static Profile of(final Member member, final String profileImgUrl, final String introduction) {
         return Profile.builder()
                 .member(member)
                 .profileImgUrl(profileImgUrl)
                 .introduction(introduction)
-                .isDeleted(isDeleted)
                 .build();
     }
+
     public void changeProfileImage(String profileImgUrl) {
         this.profileImgUrl = profileImgUrl;
     }
@@ -55,6 +51,4 @@ public class Profile extends BaseEntity {
     public void updateIntroduction(String newIntroduction) {
         this.introduction = newIntroduction;
     }
-
-
 }
