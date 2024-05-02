@@ -37,16 +37,13 @@ public class MainTimeline extends BaseEntity {
     @OneToMany(mappedBy = "mainTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubTimeline> subTimelines = new ArrayList<>();
 
-    // Lombok의 @Builder 어노테이션으로 인해 자동으로 생성자가 생성됩니다.
-    // 추가적인 로직이 필요하다면 아래와 같이 생성자를 직접 선언할 수 있습니다.
     @Builder
     public MainTimeline(String title, String description, LocalDate startDate, LocalDate endDate, Member member) {
         this.title = title;
-        this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.member = member;
-        // 서브타임라인 리스트 초기화는 필드 선언 시점에서 이루어집니다.
+
     }
 
     // 서브 타임라인을 추가하는 메서드:
