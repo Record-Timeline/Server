@@ -29,6 +29,7 @@ public class MainTimeline extends BaseEntity {
     @Column(nullable = false)
     private LocalDate endDate; // 종료 날짜
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false) // 연관 관계의 주인을 명시
     private Member member;

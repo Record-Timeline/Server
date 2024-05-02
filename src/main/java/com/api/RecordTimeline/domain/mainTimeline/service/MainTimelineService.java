@@ -2,7 +2,13 @@ package com.api.RecordTimeline.domain.mainTimeline.service;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
+import com.api.RecordTimeline.domain.member.domain.Member;
+import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -11,15 +17,30 @@ import java.util.NoSuchElementException;
 public class MainTimelineService {
 
     private final MainTimelineRepository mainTimelineRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public MainTimelineService(MainTimelineRepository mainTimelineRepository) {
+    public MainTimelineService(MainTimelineRepository mainTimelineRepository, MemberRepository memberRepository) {
         this.mainTimelineRepository = mainTimelineRepository;
+        this.memberRepository = memberRepository;
     }
 
     // 메인 타임라인 생성
     public MainTimeline createMainTimeline(MainTimeline mainTimeline) {
-        return mainTimelineRepository.save(mainTimeline);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof UserDetails) {
+            String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername(); // UserDetails를 사용하여 이메일 가져오기
+            Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail); // 이메일을 통해 활성 상태의 Member 조회
+
+            if (member == null) {
+                throw new NoSuchElementException("활성 상태의 해당 이메일로 등록된 사용자를 찾을 수 없습니다: " + userEmail);
+            }
+
+            mainTimeline.setMember(member); // MainTimeline 객체에 Member 설정
+            return mainTimelineRepository.save(mainTimeline); // MainTimeline 저장
+        } else {
+            throw new IllegalArgumentException("인증 정보를 확인할 수 없습니다.");
+        }
     }
 
     // ID를 이용해 메인 타임라인 조회
