@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/main-timelines")
 @RequiredArgsConstructor // 롬복의 RequiredArgsConstructor 어노테이션 사용
@@ -24,7 +26,23 @@ public class MainTimelineController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    // 멤버 ID로 모든 메인 타임라인 조회
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<MainTimeline>> getTimelinesByMemberId(@PathVariable Long memberId) {
+        try {
+            List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(memberId);
+            if (timelines.isEmpty()) {
+                return ResponseEntity.noContent().build(); // 내용이 없을 경우 No Content 상태 반환
+            }
+            return ResponseEntity.ok(timelines);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No timelines found for the member", ex);
+        }
+    }
+
+
+//전체 메인타임라인 조회 필요 -> 시간별로 나열 / response만 정리 / 삭제, 수정, 조회 확인 / common package 확인
+    @GetMapping("/{id}") //메인타임라인 ID
     public ResponseEntity<MainTimeline> getMainTimelineById(@PathVariable Long id) {
         try {
             MainTimeline timeline = mainTimelineService.getMainTimelineById(id);
