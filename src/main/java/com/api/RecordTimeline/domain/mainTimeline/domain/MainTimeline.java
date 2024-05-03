@@ -38,12 +38,19 @@ public class MainTimeline extends BaseEntity {
     private List<SubTimeline> subTimelines = new ArrayList<>();
 
     @Builder
-    public MainTimeline(String title, String description, LocalDate startDate, LocalDate endDate, Member member) {
+    public MainTimeline(String title, LocalDate startDate, LocalDate endDate, Member member) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
         this.member = member;
 
+    }
+
+    public void setMember(Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("Member cannot be null");
+        }
+        this.member = member;
     }
 
     // 서브 타임라인을 추가하는 메서드:
