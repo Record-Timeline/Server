@@ -27,8 +27,7 @@ public class MainTimelineService {
     // 메인 타임라인 생성
     public MainTimeline createMainTimeline(MainTimeline mainTimeline) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof UserDetails) {
-            String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername(); // UserDetails를 사용하여 이메일 가져오기
+            String userEmail = authentication.getName();
             Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail); // 이메일을 통해 활성 상태의 Member 조회
 
             if (member != null) {
@@ -37,9 +36,6 @@ public class MainTimelineService {
             } else {
                 throw new NoSuchElementException("활성 상태의 해당 이메일로 등록된 사용자를 찾을 수 없습니다: " + userEmail);
             }
-        } else {
-            throw new IllegalArgumentException("인증 정보를 확인할 수 없습니다.");
-        }
     }
 
     // ID를 이용해 메인 타임라인 조회
