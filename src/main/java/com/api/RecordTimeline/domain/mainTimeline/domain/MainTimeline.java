@@ -21,7 +21,6 @@ public class MainTimeline extends BaseEntity {
     private Long id;
 
     private String title;
-    private String description;
 
     @Column(nullable = false)
     private LocalDate startDate; // 시작 날짜
