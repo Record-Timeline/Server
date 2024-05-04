@@ -1,7 +1,7 @@
 package com.api.RecordTimeline.domain.mainTimeline.controller;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
-import com.api.RecordTimeline.domain.mainTimeline.dto.MainTimelineRequestDTO;
+import com.api.RecordTimeline.domain.mainTimeline.dto.request.MainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
