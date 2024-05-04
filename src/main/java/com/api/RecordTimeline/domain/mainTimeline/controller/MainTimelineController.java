@@ -36,7 +36,7 @@ public class MainTimelineController {
             }
             return ResponseEntity.ok(timelines);
         } catch (RuntimeException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No timelines found for the member", ex);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자의 메인 타임라인을 찾을 수 없습니다.", ex);
         }
     }
 
