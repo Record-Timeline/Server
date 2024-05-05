@@ -44,7 +44,7 @@ public class MainTimelineController {
 //        }
 //        return ResponseEntity.ok(ReadResponseDTO.from(timelines));
 //    }
-    // 멤버 ID로 모든 메인 타임라인 조회
+    // 멤버 ID로 모든 메인 타임라인 조회 수정본
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<ReadResponseDTO.TimelineDetails>> getTimelinesByMemberId(@PathVariable Long memberId) {
         List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(memberId);
