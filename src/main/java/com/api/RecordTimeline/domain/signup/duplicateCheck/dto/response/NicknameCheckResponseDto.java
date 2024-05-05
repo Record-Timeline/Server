@@ -4,14 +4,13 @@ import com.api.RecordTimeline.domain.common.ResponseCode;
 import com.api.RecordTimeline.domain.common.ResponseMessage;
 import com.api.RecordTimeline.domain.common.ResponseDto;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Getter
+@RequiredArgsConstructor
 public class NicknameCheckResponseDto extends ResponseDto {
-    private NicknameCheckResponseDto() {
-        super();
-    }
     public static ResponseEntity<NicknameCheckResponseDto> success() {
         NicknameCheckResponseDto responseBody = new NicknameCheckResponseDto();
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);

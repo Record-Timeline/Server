@@ -12,7 +12,9 @@ import com.api.RecordTimeline.domain.signup.signup.dto.request.KakaoSignupReques
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.request.NicknameCheckResquestDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.EmailCheckResponseDto;
 import com.api.RecordTimeline.domain.signup.duplicateCheck.dto.response.NicknameCheckResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.UnRegisterRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.SignupResponseDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.UnRegisterResponseDto;
 import com.api.RecordTimeline.domain.signup.signup.service.SignupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +25,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,5 +110,18 @@ public class SignupController {
     public ResponseEntity<? super CheckCertificationResponseDto> checkCertification (@RequestBody @Valid CheckCertificationRequestDto requestBody) {
         ResponseEntity<? super CheckCertificationResponseDto> response = emailService.checkCertification(requestBody);
         return response;
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "레코드 타임라인에 회원 탈퇴 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Long.class)))
+    })
+    @PostMapping("/unRegister")
+    public ResponseEntity<? super UnRegisterResponseDto> unRegister (@RequestBody @Valid UnRegisterRequestDto requestBody) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
+        return signupService.unRegister(email, requestBody);
     }
 }
