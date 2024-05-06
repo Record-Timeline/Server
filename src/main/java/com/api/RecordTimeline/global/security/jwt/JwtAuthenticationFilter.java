@@ -86,6 +86,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPublicUri(final String requestURI) {
         return
                 requestURI.startsWith("/swagger-ui/**") ||
-                        requestURI.startsWith("/api/v1"); //개발 기간 동안만 임시로 적어놓음.
+                        requestURI.startsWith("/api/v1/auth/**"); //개발 기간 동안만 임시로 적어놓음.
     }
 }

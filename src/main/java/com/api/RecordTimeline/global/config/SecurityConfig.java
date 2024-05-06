@@ -38,8 +38,7 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/favicon.ico"
                                         ,"/swagger-ui/**"
-                                        ,"/oauth/**"
-                                        ,"/login/**"
+                                        ,"/api/v1/auth/**"
                                         , "/**"
                                 ).permitAll()
                                 .anyRequest().permitAll());
