@@ -2,6 +2,10 @@ package com.api.RecordTimeline.domain.mainPage.service;
 
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainPageMemberDto;
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainPageSubTimelineDto;
+import com.api.RecordTimeline.domain.mainPage.dto.response.MainTimelineDto;
+import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
+import com.api.RecordTimeline.domain.mainTimeline.dto.response.ReadResponseDTO;
+import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
 import com.api.RecordTimeline.domain.member.domain.Interest;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -23,6 +27,7 @@ public class MainPageServiceImpl implements MainPageService {
 
     private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
+    private final MainTimelineService mainTimelineService;
 
     @Transactional
     public ResponseEntity<List<MainPageMemberDto>> recommendMembersByInterest(Interest interest) {
@@ -33,11 +38,19 @@ public class MainPageServiceImpl implements MainPageService {
 
         List<MainPageMemberDto> responseDtos = membersWithInterest.stream().map(member -> {
             Profile profile = profileRepository.findByMember(member);
+            List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(member.getId());
+            List<MainTimelineDto> timelineDtos = timelines.stream().map(timeline -> new MainTimelineDto(
+                    timeline.getId(),
+                    timeline.getTitle(),
+                    timeline.getStartDate(),
+                    timeline.getEndDate()
+            )).collect(Collectors.toList());
+
             MainPageMemberDto dto = new MainPageMemberDto(
                     member.getNickname(),
                     profile != null ? profile.getProfileImgUrl() : "",
                     profile != null ? profile.getIntroduction() : "",
-                    null // 메인 타임라인 구현 후 추가
+                    timelineDtos
             );
             return dto;
         }).collect(Collectors.toList());
