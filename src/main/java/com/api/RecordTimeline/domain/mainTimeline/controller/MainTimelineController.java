@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/main-timelines")
@@ -34,16 +35,28 @@ public class MainTimelineController {
         }
     }
 
-
     // 멤버 ID로 모든 메인 타임라인 조회
+//    @GetMapping("/member/{memberId}")
+//    public ResponseEntity<ReadResponseDTO> getTimelinesByMemberId(@PathVariable Long memberId) {
+//        List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(memberId);
+//        if (timelines.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
+//        return ResponseEntity.ok(ReadResponseDTO.from(timelines));
+//    }
+    // 멤버 ID로 모든 메인 타임라인 조회 수정본
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<ReadResponseDTO> getTimelinesByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<List<ReadResponseDTO.TimelineDetails>> getTimelinesByMemberId(@PathVariable Long memberId) {
         List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(memberId);
         if (timelines.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();  // 내용이 없을 경우 No Content 상태 반환
         }
-        return ResponseEntity.ok(ReadResponseDTO.from(timelines));
+        List<ReadResponseDTO.TimelineDetails> details = timelines.stream()
+                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(details);
     }
+
 
     @GetMapping("/{id}") //메인타임라인 ID
     public ResponseEntity<ReadResponseDTO> getMainTimelineById(@PathVariable Long id) {
@@ -78,4 +91,3 @@ public class MainTimelineController {
         }
     }
 }
-
