@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,11 +31,17 @@ public class MainPageServiceImpl implements MainPageService {
     private final MainTimelineService mainTimelineService;
 
     @Transactional
-    public ResponseEntity<List<MainPageMemberDto>> recommendMembersByInterest(Interest interest) {
-        List<Member> membersWithInterest = memberRepository.findRandomMembersByInterest(interest.toString());
+    public ResponseEntity<List<MainPageMemberDto>> recommendMembersByInterest(Interest interest, Optional<String> loggedInEmail) {
+        List<Member> membersWithInterest;
+        if (loggedInEmail.isPresent()) {
+            membersWithInterest = memberRepository.findMembersWithSameInterest(interest.toString(), loggedInEmail.get());
+        } else {
+            membersWithInterest = memberRepository.findRandomMembersByInterest(interest.toString());
+        }
         if (membersWithInterest.isEmpty()) {
             throw new ApiException(ErrorType._NO_RECOMMENDER_FOUND);
         }
+
 
         List<MainPageMemberDto> responseDtos = membersWithInterest.stream().map(member -> {
             Profile profile = profileRepository.findByMember(member);

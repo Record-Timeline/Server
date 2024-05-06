@@ -6,12 +6,16 @@ import com.api.RecordTimeline.domain.mainPage.service.MainPageServiceImpl;
 import com.api.RecordTimeline.domain.member.domain.Interest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +27,16 @@ public class MainPageController {
     //유저 추천 (사용자 닉네임, 프로필 이미지, 소개글, 메인 타임라인)
     @GetMapping("/member/{interest}")
     public ResponseEntity<List<MainPageMemberDto>> getRecommendMembersByInterest(@PathVariable Interest interest) {
-        return mainPageService.recommendMembersByInterest(interest);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            // 로그인하지 않은 경우 모든 유저를 대상으로 추천
+            return mainPageService.recommendMembersByInterest(interest, Optional.empty());
+        } else {
+            // 로그인한 경우 로그인한 유저를 제외하고 추천
+            String email = authentication.getName();
+            return mainPageService.recommendMembersByInterest(interest, Optional.of(email));
+        }
     }
 
 
