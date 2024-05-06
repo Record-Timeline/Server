@@ -1,4 +1,4 @@
-package com.api.RecordTimeline.domain.mainTimeline.dto;
+package com.api.RecordTimeline.domain.mainTimeline.dto.request;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor // 기본 생성자를 만들어줍니다.
+@NoArgsConstructor
 public class MainTimelineRequestDTO {
     private String title;
     private LocalDate startDate;
