@@ -111,17 +111,4 @@ public class SignupController {
         ResponseEntity<? super CheckCertificationResponseDto> response = emailService.checkCertification(requestBody);
         return response;
     }
-
-    @Operation(summary = "회원 탈퇴", description = "레코드 타임라인에 회원 탈퇴 합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Long.class)))
-    })
-    @PostMapping("/unRegister")
-    public ResponseEntity<? super UnRegisterResponseDto> unRegister (@RequestBody @Valid UnRegisterRequestDto requestBody) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
-        return signupService.unRegister(email, requestBody);
-    }
 }

@@ -36,10 +36,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(
-                                        "/favicon.ico"
-                                        ,"/swagger-ui/**"
-                                        ,"/oauth/**"
-                                        ,"/login/**"
+                                        "/swagger-ui/**"
+                                        ,"/api/v1/auth/**"
                                         , "/**"
                                 ).permitAll()
                                 .anyRequest().permitAll());
