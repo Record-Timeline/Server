@@ -15,5 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "SELECT * FROM member WHERE interest = ?1 AND email != ?2 AND is_deleted = false ORDER BY RAND() LIMIT 5", nativeQuery = true)
     List<Member> findMembersWithSameInterest(String interest, String email);
 
-
+    @Query(value = "SELECT * FROM member WHERE interest = ?1 AND is_deleted = false ORDER BY RAND() LIMIT 4", nativeQuery = true)
+    List<Member> findRandomMembersByInterest(String interest);
 }

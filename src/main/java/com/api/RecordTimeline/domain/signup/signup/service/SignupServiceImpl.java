@@ -71,7 +71,7 @@ public class SignupServiceImpl implements SignupService {
             profile.setMember(member);
             profileRepository.save(profile);
 
-            token = jwtProvider.create(email);
+            token = jwtProvider.generateJwtToken(email);
 
         } catch (Exception exception) {
             exception.printStackTrace();

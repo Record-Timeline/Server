@@ -2,6 +2,7 @@ package com.api.RecordTimeline.global.security.jwt;
 
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +14,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
 @Component
@@ -28,60 +27,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
 
-            // Publicuri일 경우 검증 안함
-            String requestURI = request.getRequestURI();
-            if (isPublicUri(requestURI)) {
-                filterChain.doFilter(request, response);
+        if (isPublicUri(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && isBearer(authorizationHeader)) {
+            try {
+                String jwtToken = authorizationHeader.substring(7);
+                jwtProvider.validateToken(jwtToken); // 토큰 검증
+
+                String email = jwtProvider.getUserEmailFromToken(jwtToken);
+                Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
+                if (member != null) {
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
+                    AbstractAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(email, null);
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    securityContext.setAuthentication(authenticationToken);
+                    SecurityContextHolder.setContext(securityContext);
+                }
+            } catch (ApiException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
                 return;
             }
-
-            try {
-                String token = parseBearerToken(request);
-                if(token == null) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
-
-                String email = jwtProvider.validate(token);
-                if(email == null) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
-
-                Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-
-                AbstractAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(email, null);
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                securityContext.setAuthentication(authenticationToken);
-                SecurityContextHolder.setContext(securityContext);
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-
-            filterChain.doFilter(request, response);
+        }
+        filterChain.doFilter(request, response);
     }
 
-    private String parseBearerToken(HttpServletRequest request) {
-
-        String authorization = request.getHeader("Authorization");
-
-        boolean hasAuthorization = StringUtils.hasText(authorization);
-        if(!hasAuthorization)
-            return null;
-
-        boolean isBearer = authorization.startsWith("Bearer ");
-        if(!isBearer)
-            return null;
-        String token = authorization.substring(7); //"Bearer " 뒤부터 토큰 값 가져옴.
-        return token;
+    private boolean isBearer(final String authorizationHeader) {
+        return authorizationHeader.startsWith("Bearer ");
     }
-
 
     private boolean isPublicUri(final String requestURI) {
         return
