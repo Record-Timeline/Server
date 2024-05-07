@@ -8,8 +8,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
@@ -40,8 +43,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtProvider.getUserEmailFromToken(jwtToken);
                 Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
                 if (member != null) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member, null);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
+                    AbstractAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(email, null);
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    securityContext.setAuthentication(authenticationToken);
+                    SecurityContextHolder.setContext(securityContext);
                 }
             } catch (ApiException e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
@@ -57,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isPublicUri(final String requestURI) {
         return
-                requestURI.startsWith("/swagger-ui/**") ||
+                requestURI.startsWith("/swagger-ui") ||
                         requestURI.startsWith("/api/v1/auth"); //개발 기간 동안만 임시로 적어놓음.
     }
 }
