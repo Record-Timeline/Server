@@ -1,14 +1,19 @@
 package com.api.RecordTimeline.domain.mainTimeline.service;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
+import com.api.RecordTimeline.domain.mainTimeline.dto.request.UpdateMainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -50,9 +55,15 @@ public class MainTimelineService {
     }
 
     // 기존 메인 타임라인 업데이트
-    public MainTimeline updateMainTimeline(Long id, MainTimeline updatedMainTimeline) {
+    public MainTimeline updateMainTimeline(Long id, UpdateMainTimelineRequestDTO requestDTO) {
         MainTimeline mainTimeline = mainTimelineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID로 메인 타임라인을 찾을 수 없습니다: " + id));
+
+        checkOwnership(mainTimeline.getMember().getEmail());
+
+        mainTimeline.setTitle(requestDTO.getTitle());
+        mainTimeline.setStartDate(requestDTO.getStartDate());
+        mainTimeline.setEndDate(requestDTO.getEndDate());
 
         return mainTimelineRepository.save(mainTimeline);
     }
@@ -61,11 +72,22 @@ public class MainTimelineService {
     public void deleteMainTimeline(Long id) {
         MainTimeline mainTimeline = mainTimelineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID로 메인 타임라인을 찾을 수 없습니다: " + id));
+
+        checkOwnership(mainTimeline.getMember().getEmail());
+
         mainTimelineRepository.delete(mainTimeline);
     }
 
     // 메인 타임라인 조회 - 정렬 로직 포함
     public List<MainTimeline> getTimelinesByMemberId(Long memberId) {
         return mainTimelineRepository.findByMemberIdOrderByStartDate(memberId);
+    }
+
+    private void checkOwnership(String ownerEmail) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        if (!userEmail.equals(ownerEmail)) {
+            throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
+        }
     }
 }
