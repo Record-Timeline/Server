@@ -1,1 +1,0 @@
-INSERT INTO RecordTimelineDB.main_timeline (status, created_date, id, last_modified_date, member_id, created_by, last_modified_by, end_date, start_date, description, title) VALUES (false, '2024-04-30 01:41:29.334821', 1, '2024-04-30 01:41:29.334821', null, 'basilla0617@naver.com', 'basilla0617@naver.com', '2024-05-10', '2024-04-30', 'dddd', '스프링부트');
