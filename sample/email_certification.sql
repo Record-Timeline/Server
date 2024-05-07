@@ -1,0 +1,16 @@
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('iNCxeh', '20200991@sungshin.ac.kr');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('uM5cuc', 'a5a5@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('4lET0E', 'aaaaaa@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('wLJd5c', 'b7@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('McmkFZ', 'basilla061@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('wGdTxa', 'basilla0617@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('yMxDoM', 'bㅠㅠ@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('hTt4hz', 'gkgk061@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('7iQ516', 'hh061@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('pVGM11', 'kk061@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('4vajau', 'nbjfnkwfnjvrfbhvnsrlkjdfniu3tbgkjvdsnflkcmdnbh4htreoksd@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('xgwrls', 'youkyung0510@gmail.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('ujDjzo', 'youkyung0510@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('4Xzo56', 'youkyungoh0510@naver.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('xsD7VW', 'ㄱ@gmail.com');
+INSERT INTO RecordTimelineDB.email_certification (certification_number, email) VALUES ('HrwRPI', '하하@naver.com');
