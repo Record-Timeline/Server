@@ -32,6 +32,9 @@ public enum ErrorType {
     _NO_PROFILE_FOUND(OK, "PROFILE4041", "사용자의 프로필이 존재하지 않습니다."),
     _UPDATE_FAILED(OK, "PROFILE5050", "업데이트에 실패했습니다."),
 
+    // ------------------------------------------ Timeline ------------------------------------------
+    _DO_NOT_HAVE_PERMISSION (OK, "Timeline4000", "해당 작업에 권한이 없습니다."),
+
     // ------------------------------------------ Recommend ------------------------------------------
     _NO_RECOMMENDER_FOUND(OK, "RECOMMEND4040", "해당 관심사를 가진 사용자가 없습니다."),
 

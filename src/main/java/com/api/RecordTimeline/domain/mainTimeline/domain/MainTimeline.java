@@ -12,7 +12,9 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "main_timeline") // DB 테이블 이름 명시
 public class MainTimeline extends BaseEntity {
 
@@ -38,7 +40,7 @@ public class MainTimeline extends BaseEntity {
     private List<SubTimeline> subTimelines = new ArrayList<>();
 
     @Builder
-    public MainTimeline(String title, LocalDate startDate, LocalDate endDate, Member member) {
+    public MainTimeline(Long id, String title, LocalDate startDate, LocalDate endDate, Member member) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;

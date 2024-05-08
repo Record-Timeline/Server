@@ -106,7 +106,7 @@ public class Member extends BaseEntity {
         this.password = password;
         this.nickname = nickname;
         this.isDeleted = isDeleted;
-        this.profile = new Profile(this, null, "",false); // 초기 프로필 이미지, 소개글 없음
+        this.profile = new Profile(this, null, ""); // 초기 프로필 이미지, 소개글 없음
     }
 
     public void markAsDeleted() {

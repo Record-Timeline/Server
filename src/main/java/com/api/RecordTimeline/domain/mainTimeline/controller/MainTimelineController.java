@@ -2,11 +2,13 @@ package com.api.RecordTimeline.domain.mainTimeline.controller;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.dto.request.MainTimelineRequestDTO;
+import com.api.RecordTimeline.domain.mainTimeline.dto.request.UpdateMainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.response.CreateResponseDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.response.DeleteResponseDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.response.ReadResponseDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.response.UpdateResponseDTO;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
+import com.api.RecordTimeline.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,12 +75,16 @@ public class MainTimelineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UpdateResponseDTO> updateMainTimeline(@PathVariable Long id, @RequestBody MainTimeline mainTimeline) {
+    public ResponseEntity<UpdateResponseDTO> updateMainTimeline(@PathVariable Long id, @RequestBody UpdateMainTimelineRequestDTO requestDTO) {
         try {
-            MainTimeline updated = mainTimelineService.updateMainTimeline(id, mainTimeline);
-            return ResponseEntity.ok(new UpdateResponseDTO("SU", "Success"));
+            MainTimeline updatedTimeline = mainTimelineService.updateMainTimeline(id, requestDTO);
+            return ResponseEntity.ok(new UpdateResponseDTO("SU", "업데이트에 성공했습니다."));
+        } catch (ApiException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpdateResponseDTO("AD", e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UpdateResponseDTO("NF", "해당 타임라인을 찾을 수 없습니다."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UpdateResponseDTO("UF", "업데이트에 실패했습니다."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UpdateResponseDTO("UE", "업데이트에 실패했습니다."));
         }
     }
 
@@ -85,9 +92,13 @@ public class MainTimelineController {
     public ResponseEntity<DeleteResponseDTO> deleteMainTimeline(@PathVariable Long id) {
         try {
             mainTimelineService.deleteMainTimeline(id);
-            return ResponseEntity.ok(new DeleteResponseDTO("SU", "Success"));
+            return ResponseEntity.ok(new DeleteResponseDTO("SU", "삭제에 성공했습니다."));
+        } catch (ApiException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new DeleteResponseDTO("AD", e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DeleteResponseDTO("NF", "해당 타임라인을 찾을 수 없습니다."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DeleteResponseDTO("UF", "삭제에 실패했습니다."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DeleteResponseDTO("UE", "삭제에 실패했습니다."));
         }
     }
 }

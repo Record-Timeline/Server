@@ -37,7 +37,7 @@ public class AppLoginServiceImpl implements AppLoginService {
             if(!isMatched)
                 return AppLoginResponseDto.appLoginFail();
 
-            token = jwtProvider.create(email);
+            token = jwtProvider.generateJwtToken(email);
 
         } catch (Exception exception) {
             exception.printStackTrace();

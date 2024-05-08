@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class SearchServiceImpl implements SearchService {
         }
 
         List<SearchPageRecommendDto> result = membersWithSameInterest.stream().map(m -> {
-            Profile profile = profileRepository.findByMemberAndIsDeletedFalse(m);
+            Profile profile = profileRepository.findByMember(m);
             return new SearchPageRecommendDto(
                     m.getNickname(),
                     profile != null ? profile.getProfileImgUrl() : "",
