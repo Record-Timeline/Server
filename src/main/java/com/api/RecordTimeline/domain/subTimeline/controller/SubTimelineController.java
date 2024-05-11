@@ -28,6 +28,16 @@ public class SubTimelineController {
         return ResponseEntity.ok(subTimelines);
     }
 
-    // 추가적인 엔드포인트 구현
+    @PutMapping("/{subTimelineId}")
+    public ResponseEntity<SubTimeline> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody SubTimelineCreateRequest request) {
+        SubTimeline updated = subTimelineService.updateSubTimeline(subTimelineId, request);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{subTimelineId}")
+    public ResponseEntity<?> deleteSubTimeline(@PathVariable Long subTimelineId) {
+        subTimelineService.deleteSubTimeline(subTimelineId);
+        return ResponseEntity.noContent().build();  // 204 No Content
+    }
 }
 
