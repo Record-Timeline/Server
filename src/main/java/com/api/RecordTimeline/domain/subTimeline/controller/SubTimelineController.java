@@ -1,7 +1,11 @@
 package com.api.RecordTimeline.domain.subTimeline.controller;
 
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
-import com.api.RecordTimeline.domain.subTimeline.dto.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubCreateResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubDeleteResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubReadResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.service.SubTimelineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,27 +21,43 @@ public class SubTimelineController {
     private SubTimelineService subTimelineService;
 
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<SubTimeline> createSubTimeline(@ModelAttribute SubTimelineCreateRequest request) {
-        SubTimeline created = subTimelineService.createSubTimeline(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<SubCreateResponseDTO> createSubTimeline(@ModelAttribute SubTimelineCreateRequest request) {
+        try {
+            SubTimeline created = subTimelineService.createSubTimeline(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(SubCreateResponseDTO.success(created.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubCreateResponseDTO.failure());
+        }
     }
 
     @GetMapping("/main/{mainTimelineId}")
-    public ResponseEntity<List<SubTimeline>> getSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
-        List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineId(mainTimelineId);
-        return ResponseEntity.ok(subTimelines);
+    public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
+        try {
+            List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineId(mainTimelineId);
+            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PutMapping("/{subTimelineId}")
-    public ResponseEntity<SubTimeline> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody SubTimelineCreateRequest request) {
-        SubTimeline updated = subTimelineService.updateSubTimeline(subTimelineId, request);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<SubUpdateResponseDTO> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody SubTimelineCreateRequest request) {
+        try {
+            SubTimeline updated = subTimelineService.updateSubTimeline(subTimelineId, request);
+            return ResponseEntity.ok(SubUpdateResponseDTO.success());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubUpdateResponseDTO.failure());
+        }
     }
 
     @DeleteMapping("/{subTimelineId}")
-    public ResponseEntity<?> deleteSubTimeline(@PathVariable Long subTimelineId) {
-        subTimelineService.deleteSubTimeline(subTimelineId);
-        return ResponseEntity.noContent().build();  // 204 No Content
+    public ResponseEntity<SubDeleteResponseDTO> deleteSubTimeline(@PathVariable Long subTimelineId) {
+        try {
+            subTimelineService.deleteSubTimeline(subTimelineId);
+            return ResponseEntity.ok(SubDeleteResponseDTO.success());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubDeleteResponseDTO.failure());
+        }
     }
 }
 
