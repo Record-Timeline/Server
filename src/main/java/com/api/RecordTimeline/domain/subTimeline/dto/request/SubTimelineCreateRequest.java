@@ -1,4 +1,4 @@
-package com.api.RecordTimeline.domain.subTimeline.dto;
+package com.api.RecordTimeline.domain.subTimeline.dto.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
