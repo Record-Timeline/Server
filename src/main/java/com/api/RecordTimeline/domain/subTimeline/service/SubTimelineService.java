@@ -3,7 +3,7 @@ package com.api.RecordTimeline.domain.subTimeline.service;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
-import com.api.RecordTimeline.domain.subTimeline.dto.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.s3.S3FileUploader;
 import org.springframework.beans.factory.annotation.Autowired;
