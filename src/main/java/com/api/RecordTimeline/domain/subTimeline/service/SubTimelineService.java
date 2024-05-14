@@ -18,9 +18,6 @@ public class SubTimelineService {
     private final S3FileUploader s3FileUploader;
 
     @Autowired
-    private S3Service s3Service;  // S3Service 클래스 인스턴스 주입
-
-    @Autowired
     public SubTimelineService(SubTimelineRepository subTimelineRepository, MainTimelineRepository mainTimelineRepository, S3FileUploader s3FileUploader) {
         this.subTimelineRepository = subTimelineRepository;
         this.mainTimelineRepository = mainTimelineRepository;
@@ -65,13 +62,12 @@ public class SubTimelineService {
         return subTimelineRepository.save(updatedSubTimeline);
     }
 
-
     public void deleteSubTimeline(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
-        subTimelineRepository.delete(subTimeline);
         // 연관된 이미지 리소스도 S3에서 삭제
-        subTimeline.getImageUrls().forEach(s3Service::deleteFile);
+        subTimeline.getImageUrls().forEach(s3FileUploader::deleteFileFromS3);
+        subTimelineRepository.delete(subTimeline);
     }
 
     public List<SubTimeline> getSubTimelinesByMainTimelineId(Long mainTimelineId) {

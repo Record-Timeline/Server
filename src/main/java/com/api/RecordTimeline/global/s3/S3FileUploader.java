@@ -1,7 +1,6 @@
 package com.api.RecordTimeline.global.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -17,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -135,8 +136,7 @@ public class S3FileUploader {
     }
 
     private String putS3(final File uploadFile, final String fileName) {
-        amazonS3.putObject(
-                new PutObjectRequest(bucket, fileName, uploadFile));
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
@@ -148,8 +148,14 @@ public class S3FileUploader {
         }
     }
 
-    public void deleteFileFromS3(String profileImgUrl) {
-        String key = profileImgUrl.substring(profileImgUrl.lastIndexOf("/") + 1);
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+    public void deleteFileFromS3(String fileUrl) {
+        try {
+            URI uri = new URI(fileUrl);
+            String key = uri.getPath().substring(1);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+        } catch (URISyntaxException e) {
+            log.error("Invalid URL format: {}", fileUrl, e);
+            throw new ApiException(ErrorType.INVALID_FILE_PATH);
+        }
     }
 }
