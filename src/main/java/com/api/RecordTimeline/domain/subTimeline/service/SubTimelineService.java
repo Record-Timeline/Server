@@ -43,23 +43,25 @@ public class SubTimelineService {
     }
 
     public SubTimeline updateSubTimeline(Long subTimelineId, SubTimelineCreateRequest request) {
+        // 기존 서브 타임라인 조회
         SubTimeline existingSubTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
 
+        // 이미지 파일들을 S3에 업로드하고 URL 리스트를 받아옴
         List<String> imageUrls = s3FileUploader.uploadMultipartFiles(request.getImages());
 
+        // 기존 엔티티 정보를 이용하여 빌더를 사용해 새로운 인스턴스 생성
         SubTimeline updatedSubTimeline = SubTimeline.builder()
-                .mainTimeline(existingSubTimeline.getMainTimeline()) // 기존 메인 타임라인 참조
+                .id(existingSubTimeline.getId()) // 기존 ID 유지
+                .mainTimeline(existingSubTimeline.getMainTimeline())
                 .title(request.getTitle())
                 .content(request.getContent())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
-                .imageUrls(imageUrls) // 이미지 URL 업데이트
+                .imageUrls(imageUrls)
                 .build();
 
-        // 기존 엔티티 삭제
-        subTimelineRepository.delete(existingSubTimeline);
-        // 새로운 엔티티 저장
+        // 변경된 엔티티 저장
         return subTimelineRepository.save(updatedSubTimeline);
     }
 
