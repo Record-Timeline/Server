@@ -74,9 +74,12 @@ public class SubTimelineService {
         subTimeline.getImageUrls().forEach(s3Service::deleteFile);
     }
 
-
-
     public List<SubTimeline> getSubTimelinesByMainTimelineId(Long mainTimelineId) {
         return subTimelineRepository.findByMainTimelineId(mainTimelineId);
+    }
+
+    // 서브 타임라인을 시작 날짜 기준으로 정렬하여 조회하는 메소드 추가
+    public List<SubTimeline> getSubTimelinesByMainTimelineIdOrderByStartDate(Long mainTimelineId) {
+        return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
     }
 }
