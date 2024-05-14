@@ -5,8 +5,12 @@ import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineReposit
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.s3.S3FileUploader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +31,7 @@ public class SubTimelineService {
     public SubTimeline createSubTimeline(SubTimelineCreateRequest request) {
         MainTimeline mainTimeline = mainTimelineRepository.findById(request.getMainTimelineId())
                 .orElseThrow(() -> new IllegalArgumentException("Main timeline not found with ID: " + request.getMainTimelineId()));
+        checkOwnership(mainTimeline.getMember().getEmail()); // 권한 검사 추가
         List<String> imageUrls = s3FileUploader.uploadMultipartFiles(request.getImages());
         SubTimeline subTimeline = SubTimeline.builder()
                 .mainTimeline(mainTimeline)
@@ -43,6 +48,7 @@ public class SubTimelineService {
         // 기존 서브 타임라인 조회
         SubTimeline existingSubTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
+        checkOwnership(existingSubTimeline.getMainTimeline().getMember().getEmail()); // 권한 검사 추가
 
         // 이미지 파일들을 S3에 업로드하고 URL 리스트를 받아옴
         List<String> imageUrls = s3FileUploader.uploadMultipartFiles(request.getImages());
@@ -65,6 +71,8 @@ public class SubTimelineService {
     public void deleteSubTimeline(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail()); // 권한 검사 추가
+
         // 연관된 이미지 리소스도 S3에서 삭제
         subTimeline.getImageUrls().forEach(s3FileUploader::deleteFileFromS3);
         subTimelineRepository.delete(subTimeline);
@@ -77,5 +85,12 @@ public class SubTimelineService {
     // 서브 타임라인을 시작 날짜 기준으로 정렬하여 조회하는 메소드 추가
     public List<SubTimeline> getSubTimelinesByMainTimelineIdOrderByStartDate(Long mainTimelineId) {
         return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
+    }
+    private void checkOwnership(String ownerEmail) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        if (!userEmail.equals(ownerEmail)) {
+            throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
+        }
     }
 }

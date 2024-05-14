@@ -7,6 +7,7 @@ import com.api.RecordTimeline.domain.subTimeline.dto.response.SubDeleteResponseD
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubReadResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.service.SubTimelineService;
+import com.api.RecordTimeline.global.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ public class SubTimelineController {
         try {
             SubTimeline created = subTimelineService.createSubTimeline(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(SubCreateResponseDTO.success(created.getId()));
+        } catch (ApiException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(SubCreateResponseDTO.failure());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubCreateResponseDTO.failure());
         }
@@ -55,6 +58,8 @@ public class SubTimelineController {
         try {
             SubTimeline updated = subTimelineService.updateSubTimeline(subTimelineId, request);
             return ResponseEntity.ok(SubUpdateResponseDTO.success());
+        } catch (ApiException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(SubUpdateResponseDTO.failure());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubUpdateResponseDTO.failure());
         }
@@ -65,6 +70,8 @@ public class SubTimelineController {
         try {
             subTimelineService.deleteSubTimeline(subTimelineId);
             return ResponseEntity.ok(SubDeleteResponseDTO.success());
+        } catch (ApiException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(SubDeleteResponseDTO.failure());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubDeleteResponseDTO.failure());
         }
