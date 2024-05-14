@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,9 +73,22 @@ public class S3FileUploader {
     private String uploadSingleFile(final MultipartFile multipartFile) {
         try {
             File uploadFile = convert(multipartFile);
-            return upload(uploadFile, dirName);
+            String timestampedFilename = appendTimestampToFilename(uploadFile.getName());
+            return upload(uploadFile, dirName, timestampedFilename);
         } catch (IOException e) {
             throw new ApiException(S3_CONNECT);
+        }
+    }
+
+    private String appendTimestampToFilename(String filename) {
+        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex > 0) {
+            String nameWithoutExtension = filename.substring(0, dotIndex);
+            String extension = filename.substring(dotIndex);
+            return nameWithoutExtension + "_" + timestamp + extension;
+        } else {
+            return filename + "_" + timestamp;
         }
     }
 
@@ -111,8 +126,8 @@ public class S3FileUploader {
         }
     }
 
-    private String upload(final File uploadFile, final String dirName) {
-        String fileName = dirName + "/" + uploadFile.getName();
+    private String upload(final File uploadFile, final String dirName, final String timestampedFilename) {
+        String fileName = dirName + "/" + timestampedFilename;
         String uploadImageUrl = putS3(uploadFile, fileName);
 
         removeNewFile(uploadFile);  // 로컬 File 삭제
