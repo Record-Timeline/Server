@@ -32,7 +32,6 @@ public class Member extends BaseEntity {
     @Email
     private String email;
 
-    private String name;
     private String password;
     private String nickname;
     private String loginType;
@@ -80,7 +79,6 @@ public class Member extends BaseEntity {
     public Member(BasicSignupRequestDto basicDto) {
         this.email = basicDto.getEmail();
         this.password = basicDto.getPassword();
-        this.name = basicDto.getName();
         this.nickname = basicDto.getNickname();
         this.interest = basicDto.getInterest();
         this.loginType = "app";
