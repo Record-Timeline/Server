@@ -25,11 +25,6 @@ public class BasicSignupRequestDto extends KakaoSignupRequestDto {
 //    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9\\p{Punct}]{8,}$")
     private String password;
 
-    @Schema(description = "사용자 이름", example = "사용자 이름 예시")
-    @NotBlank
-    private String name;
-
-
     @Schema(description = "이메일 인증 번호", example = "이메일 인증 번호 예시")
     @NotBlank
     private String certificationNumber;
