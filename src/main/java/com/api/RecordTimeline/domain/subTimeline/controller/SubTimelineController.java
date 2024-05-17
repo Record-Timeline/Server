@@ -33,16 +33,6 @@ public class SubTimelineController {
         }
     }
 
-//    @GetMapping("/main/{mainTimelineId}")
-//    public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
-//        try {
-//            List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineId(mainTimelineId);
-//            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
-
     @GetMapping("/main/{mainTimelineId}/ordered")
     public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
         try {
