@@ -86,6 +86,7 @@ public class SubTimelineService {
     public List<SubTimeline> getSubTimelinesByMainTimelineIdOrderByStartDate(Long mainTimelineId) {
         return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
     }
+
     private void checkOwnership(String ownerEmail) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
