@@ -160,7 +160,7 @@ public class S3FileUploader {
         }
     }
 
-    // 추가된 부분: Base64 문자열을 업로드하는 메서드
+    // Base64 문자열 업로드
     public String uploadBase64Image(String base64Image) {
         // Base64 문자열에서 파일 확장자 추출
         String[] parts = base64Image.split(",");
@@ -180,7 +180,7 @@ public class S3FileUploader {
             throw new IllegalArgumentException("Unsupported file type");
         }
 
-        // Base64 데이터를 디코딩하여 파일로 변환
+        // Base64 데이터 디코딩하여 파일로 변환
         byte[] imageBytes = Base64.getDecoder().decode(base64Data);
         File tempFile = null;
         try {
@@ -198,7 +198,7 @@ public class S3FileUploader {
         }
     }
 
-    // 기존 메서드를 재사용하도록 추가
+    // 기존 메서드 재사용
     private String uploadFile(final File file) {
         String timestampedFilename = appendTimestampToFilename(file.getName());
         return upload(file, dirName, timestampedFilename);
