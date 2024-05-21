@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) //JPA 스펙에 맞춘 기본 생성자
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // 빌더를 사용하기 위해 모든 인자를 받는 생성자를 private으로 설정
-@Builder
+@Builder(toBuilder = true)
 public class SubTimeline extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +25,11 @@ public class SubTimeline extends BaseEntity {
     private MainTimeline mainTimeline;
 
     @Column(nullable = false)
-    private String title; // 서브 타임라인의 제목
+    private String title;
 
-    @Column(nullable = false)
-    private String content; // 서브 타임라인의 내용
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    private String content;
+
 
     @Column(nullable = false)
     private LocalDate startDate;

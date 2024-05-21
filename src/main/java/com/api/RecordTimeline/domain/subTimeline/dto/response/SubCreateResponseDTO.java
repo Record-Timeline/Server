@@ -1,6 +1,5 @@
 package com.api.RecordTimeline.domain.subTimeline.dto.response;
 
-import com.api.RecordTimeline.domain.mainTimeline.dto.response.CreateResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,12 +9,13 @@ public class SubCreateResponseDTO {
     private String code;
     private String message;
     private Long subTimelineId;
+    private String errorDetails;
 
     public static SubCreateResponseDTO success(Long subTimelineId) {
-        return new SubCreateResponseDTO("SU", "Success", subTimelineId);
+        return new SubCreateResponseDTO("SU", "Success", subTimelineId, null);
     }
 
-    public static SubCreateResponseDTO failure() {
-        return new SubCreateResponseDTO("UF", "Update Failed", null);
+    public static SubCreateResponseDTO failure(String message, String errorDetails) {
+        return new SubCreateResponseDTO("UF", message, null, errorDetails);
     }
 }
