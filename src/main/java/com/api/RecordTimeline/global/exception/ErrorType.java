@@ -16,6 +16,7 @@ public enum ErrorType {
     S3_UPLOAD(INTERNAL_SERVER_ERROR, "S5001", "서버오류, S3 사진 업로드 에러입니다."),
     S3_CONNECT(INTERNAL_SERVER_ERROR, "S5002", "서버오류, S3 연결 에러입니다."),
     S3_CONVERT(INTERNAL_SERVER_ERROR, "S5003", "서버오류, S3 변환 에러입니다."),
+    INVALID_FILE_PATH(INTERNAL_SERVER_ERROR, "S5004", "잘못된 파일 경로입니다."),
 
     // ---------------------------------------- JWT TOKEN ----------------------------------------
     _JWT_PARSING_ERROR(BAD_REQUEST, "JWT_4001", "JWT Token이 올바르지 않습니다."),
@@ -42,9 +43,9 @@ public enum ErrorType {
     _NO_SEARCH_RESULTS(OK, "SEARCH4040", "검색 결과가 없습니다."),
 
     // ------------------------------------------ _DATABASE ------------------------------------------
-    _DATABASE_ERROR(OK, "DATABASE5050", "데이터베이스 오류입니다."),
+    _DATABASE_ERROR(OK, "DATABASE5050", "데이터베이스 오류입니다.");
 
-    ;
+
 
     private final HttpStatus status;
     private final String errorCode;

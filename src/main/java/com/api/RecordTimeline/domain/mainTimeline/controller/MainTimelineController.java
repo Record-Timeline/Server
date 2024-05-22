@@ -38,15 +38,6 @@ public class MainTimelineController {
         }
     }
 
-    // 멤버 ID로 모든 메인 타임라인 조회
-//    @GetMapping("/member/{memberId}")
-//    public ResponseEntity<ReadResponseDTO> getTimelinesByMemberId(@PathVariable Long memberId) {
-//        List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(memberId);
-//        if (timelines.isEmpty()) {
-//            return ResponseEntity.noContent().build();
-//        }
-//        return ResponseEntity.ok(ReadResponseDTO.from(timelines));
-//    }
     // 멤버 ID로 모든 메인 타임라인 조회 수정본
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<ReadResponseDTO.TimelineDetails>> getTimelinesByMemberId(@PathVariable Long memberId) {

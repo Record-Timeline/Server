@@ -1,7 +1,6 @@
 package com.api.RecordTimeline.global.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -10,14 +9,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +28,6 @@ import static com.api.RecordTimeline.global.exception.ErrorType.*;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-@Service
 public class S3FileUploader {
 
     private final AmazonS3 amazonS3;
@@ -71,13 +71,9 @@ public class S3FileUploader {
     }
 
     private String uploadSingleFile(final MultipartFile multipartFile) {
-        try {
-            File uploadFile = convert(multipartFile);
-            String timestampedFilename = appendTimestampToFilename(uploadFile.getName());
-            return upload(uploadFile, dirName, timestampedFilename);
-        } catch (IOException e) {
-            throw new ApiException(S3_CONNECT);
-        }
+        File uploadFile = convert(multipartFile);
+        String timestampedFilename = appendTimestampToFilename(uploadFile.getName());
+        return upload(uploadFile, dirName, timestampedFilename);
     }
 
     private String appendTimestampToFilename(String filename) {
@@ -92,7 +88,7 @@ public class S3FileUploader {
         }
     }
 
-    private File convert(final MultipartFile file) throws IOException {
+    private File convert(final MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         originalFilename = validFileName(originalFilename);
 
@@ -101,6 +97,8 @@ public class S3FileUploader {
 
         try (FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(file.getBytes());
+        } catch (IOException e) {
+            throw new ApiException(S3_CONNECT);
         }
         return convertFile;
     }
@@ -120,8 +118,12 @@ public class S3FileUploader {
         return "";
     }
 
-    private void validGenerateLocalFile(final File convertFile) throws IOException {
-        if (!convertFile.createNewFile()) {
+    private void validGenerateLocalFile(final File convertFile) {
+        try {
+            if (!convertFile.createNewFile()) {
+                throw new ApiException(S3_CONVERT);
+            }
+        } catch (IOException e) {
             throw new ApiException(S3_CONVERT);
         }
     }
@@ -135,8 +137,7 @@ public class S3FileUploader {
     }
 
     private String putS3(final File uploadFile, final String fileName) {
-        amazonS3.putObject(
-                new PutObjectRequest(bucket, fileName, uploadFile));
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
@@ -148,8 +149,58 @@ public class S3FileUploader {
         }
     }
 
-    public void deleteFileFromS3(String profileImgUrl) {
-        String key = profileImgUrl.substring(profileImgUrl.lastIndexOf("/") + 1);
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+    public void deleteFileFromS3(String fileUrl) {
+        try {
+            URI uri = new URI(fileUrl);
+            String key = uri.getPath().substring(1);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
+        } catch (URISyntaxException e) {
+            log.error("Invalid URL format: {}", fileUrl, e);
+            throw new ApiException(ErrorType.INVALID_FILE_PATH);
+        }
+    }
+
+    // Base64 문자열 업로드
+    public String uploadBase64Image(String base64Image) {
+        // Base64 문자열에서 파일 확장자 추출
+        String[] parts = base64Image.split(",");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid base64 format");
+        }
+
+        String metadata = parts[0];
+        String base64Data = parts[1];
+
+        String extension = "";
+        if (metadata.contains("jpeg")) {
+            extension = "jpg";
+        } else if (metadata.contains("png")) {
+            extension = "png";
+        } else {
+            throw new IllegalArgumentException("Unsupported file type");
+        }
+
+        // Base64 데이터 디코딩하여 파일로 변환
+        byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("upload", "." + extension);
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(imageBytes);
+            }
+            return uploadFile(tempFile);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to convert Base64 to file", e);
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
+    }
+
+    // 기존 메서드 재사용
+    private String uploadFile(final File file) {
+        String timestampedFilename = appendTimestampToFilename(file.getName());
+        return upload(file, dirName, timestampedFilename);
     }
 }
