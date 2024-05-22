@@ -2,6 +2,8 @@ package com.api.RecordTimeline.domain.search.controller;
 
 import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.search.dto.response.SearchPageRecommendDto;
+import com.api.RecordTimeline.domain.search.dto.response.SearchResultDto;
+import com.api.RecordTimeline.domain.search.dto.response.SearchSubTimelineDto;
 import com.api.RecordTimeline.domain.search.service.SearchServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +30,9 @@ public class SearchController {
         return searchService.recommendSameInterestMember(email);
     }
 
-    @GetMapping("/search-members")
-    public ResponseEntity<List<MemberInfoResponseDto>> searchMembers(@RequestParam String keyword) {
-        List<MemberInfoResponseDto> members = searchService.searchMembersByKeyword(keyword);
-        return ResponseEntity.ok(members);
+    @GetMapping("/keyword")
+    public ResponseEntity<SearchResultDto> searchAll(@RequestParam String keyword) {
+        SearchResultDto searchResult = searchService.searchAllByKeyword(keyword);
+        return ResponseEntity.ok(searchResult);
     }
 }
