@@ -62,7 +62,7 @@ public class SearchServiceImpl implements SearchService {
     public List<MemberInfoResponseDto> searchMembersByKeyword(String keyword) {
         List<Member> searchMember = memberRepository.findByNicknameContainingOrProfileIntroductionContaining(keyword);
         if (searchMember.isEmpty()) {
-            throw new ApiException(ErrorType._NO_SEARCH_RESULTS);
+            return List.of();
         }
 
         return searchMember.stream().map(member -> new MemberInfoResponseDto(
@@ -77,7 +77,7 @@ public class SearchServiceImpl implements SearchService {
     public List<SearchSubTimelineDto> searchSubTimelinesByKeyword(String keyword) {
         List<SubTimeline> subTimelines = subTimelineRepository.findByTitleOrContentContaining(keyword);
         if (subTimelines.isEmpty()) {
-            throw new ApiException(ErrorType._NO_SEARCH_RESULTS);
+            return List.of();
         }
 
         return subTimelines.stream().map(subTimeline -> {
