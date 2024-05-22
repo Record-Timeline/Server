@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.search.service;
 
 import com.api.RecordTimeline.domain.member.domain.Member;
+import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
 import com.api.RecordTimeline.domain.profile.repository.ProfileRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,5 +47,21 @@ public class SearchServiceImpl implements SearchService {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(result);
+    }
+
+    @Override
+    public List<MemberInfoResponseDto> searchMembersByKeyword(String keyword) {
+        List<Member> searchMember = memberRepository.findByNicknameContainingOrProfileIntroductionContaining(keyword);
+
+        if (searchMember.isEmpty()) {
+            throw new ApiException(ErrorType._NO_SEARCH_RESULTS);
+        }
+
+        return searchMember.stream().map(member -> new MemberInfoResponseDto(
+                member.getNickname(),
+                member.getInterest().toString(),
+                Optional.ofNullable(member.getProfile().getProfileImgUrl()).orElse(""),
+                Optional.ofNullable(member.getProfile().getIntroduction()).orElse("")
+        )).collect(Collectors.toList());
     }
 }

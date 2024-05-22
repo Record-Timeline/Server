@@ -22,12 +22,13 @@ public class MainTimeline extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
     private LocalDate startDate; // 시작 날짜
 
-    @Column(nullable = false)
+    @Column // NULL도 가능하게 변경
     private LocalDate endDate; // 종료 날짜
 
     @Setter

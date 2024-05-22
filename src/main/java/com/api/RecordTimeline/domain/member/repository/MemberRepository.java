@@ -4,6 +4,7 @@ import com.api.RecordTimeline.domain.member.domain.Interest;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query(value = "SELECT * FROM member WHERE interest = ?1 AND is_deleted = false ORDER BY RAND() LIMIT 4", nativeQuery = true)
     List<Member> findRandomMembersByInterest(String interest);
+
+    @Query("SELECT m FROM Member m JOIN m.profile p WHERE m.nickname LIKE %:keyword% OR p.introduction LIKE %:keyword%")
+    List<Member> findByNicknameContainingOrProfileIntroductionContaining(@Param("keyword") String keyword);
 }
