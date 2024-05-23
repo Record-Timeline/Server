@@ -18,6 +18,12 @@ public interface SubTimelineRepository extends JpaRepository<SubTimeline, Long> 
     @Query("SELECT st FROM SubTimeline st JOIN st.mainTimeline mt JOIN mt.member m WHERE (st.title LIKE %:keyword% OR st.content LIKE %:keyword%) AND m.isDeleted = false")
     List<SubTimeline> findByTitleOrContentContaining(@Param("keyword") String keyword);
 
+    @Query(value = "SELECT st.* FROM sub_timeline st JOIN main_timeline mt ON st.main_timeline_id = mt.id JOIN member m ON mt.member_id = m.id WHERE m.interest = :interest AND m.email != :email AND m.is_deleted = false ORDER BY RAND() LIMIT 4", nativeQuery = true)
+    List<SubTimeline> findSubTimelinesByInterestExcludingEmail(String interest, String email);
+
+    @Query(value = "SELECT st.* FROM sub_timeline st JOIN main_timeline mt ON st.main_timeline_id = mt.id JOIN member m ON mt.member_id = m.id WHERE m.interest = :interest AND m.is_deleted = false ORDER BY RAND() LIMIT 4", nativeQuery = true)
+    List<SubTimeline> findSubTimelinesByInterest(String interest);
+
 }
 
 
