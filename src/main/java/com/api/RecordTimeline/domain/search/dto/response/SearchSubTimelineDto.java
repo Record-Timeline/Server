@@ -15,7 +15,6 @@ public class SearchSubTimelineDto {
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String imageUrl;
     private String authorNickname;
     private String authorInterest;
 }

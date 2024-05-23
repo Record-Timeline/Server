@@ -117,7 +117,6 @@ public class SubTimelineService {
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
         checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
 
-        subTimeline.getImageUrls().forEach(s3FileUploader::deleteFileFromS3);
         subTimelineRepository.delete(subTimeline);
     }
 

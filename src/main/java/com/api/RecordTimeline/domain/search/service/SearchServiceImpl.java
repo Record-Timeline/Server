@@ -88,7 +88,6 @@ public class SearchServiceImpl implements SearchService {
                     subTimeline.getContent(),
                     subTimeline.getStartDate(),
                     subTimeline.getEndDate(),
-                    subTimeline.getImageUrls().isEmpty() ? null : subTimeline.getImageUrls().get(0),
                     author.getNickname(),
                     author.getInterest().name()
             );
