@@ -19,6 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "SELECT * FROM member WHERE interest = ?1 AND is_deleted = false ORDER BY RAND() LIMIT 4", nativeQuery = true)
     List<Member> findRandomMembersByInterest(String interest);
 
-    @Query("SELECT m FROM Member m JOIN m.profile p WHERE m.nickname LIKE %:keyword% OR p.introduction LIKE %:keyword%")
+    @Query("SELECT m FROM Member m JOIN FETCH m.profile p WHERE (m.nickname LIKE %:keyword% OR p.introduction LIKE %:keyword%) AND m.isDeleted = false")
     List<Member> findByNicknameContainingOrProfileIntroductionContaining(@Param("keyword") String keyword);
 }

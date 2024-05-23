@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "main_timeline") // DB 테이블 이름 명시
+@Table(name = "main_timeline")
 public class MainTimeline extends BaseEntity {
 
     @Id
@@ -26,14 +26,14 @@ public class MainTimeline extends BaseEntity {
     private String title;
 
     @Column(nullable = false)
-    private LocalDate startDate; // 시작 날짜
+    private LocalDate startDate;
 
-    @Column // NULL도 가능하게 변경
-    private LocalDate endDate; // 종료 날짜
+    @Column
+    private LocalDate endDate;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false) // 연관 관계의 주인을 명시
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @OneToMany(mappedBy = "mainTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -41,11 +41,11 @@ public class MainTimeline extends BaseEntity {
 
     @Builder
     public MainTimeline(Long id, String title, LocalDate startDate, LocalDate endDate, Member member) {
+        this.id = id;
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
         this.member = member;
-
     }
 
     public void setMember(Member member) {
@@ -54,17 +54,4 @@ public class MainTimeline extends BaseEntity {
         }
         this.member = member;
     }
-
-    // 서브 타임라인을 추가하는 메서드:
-
-    /*public void addSubTimeline(SubTimeline subTimeline) {
-        this.subTimelines.add(subTimeline);
-        subTimeline.setMainTimeline(this);
-    }
-
-    // 서브 타임라인을 제거하는 메서드:
-
-    public void removeSubTimeline(SubTimeline subTimeline) {
-        this.subTimelines.remove(subTimeline);
-        subTimeline.setMainTimeline(null);*/
 }
