@@ -36,28 +36,24 @@ public class Member extends BaseEntity {
     private String nickname;
     private String loginType;
 
-    private boolean isDeleted = false; // 탈퇴 여부 (탈퇴 시 db 자체를 삭제하지 않기 위함)
-
+    private boolean isDeleted = false;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
     private Profile profile;
 
     @Enumerated(EnumType.STRING)
-    private Interest interest; //하나만 선택 가능
+    private Interest interest;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MainTimeline> mainTimelines = new ArrayList<>();
 
-    //북마크 목록
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
-    // 팔로잉 목록
     @OneToMany(mappedBy = "follower")
     private List<Follow> followings = new ArrayList<>();
 
-    // 팔로워 목록
     @OneToMany(mappedBy = "following")
     private List<Follow> followers = new ArrayList<>();
 
@@ -104,7 +100,7 @@ public class Member extends BaseEntity {
         this.password = password;
         this.nickname = nickname;
         this.isDeleted = isDeleted;
-        this.profile = new Profile(this, null, ""); // 초기 프로필 이미지, 소개글 없음
+        this.profile = new Profile(this, null, "");
     }
 
     public void markAsDeleted() {
