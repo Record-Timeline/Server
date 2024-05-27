@@ -40,10 +40,19 @@ public class MainPageController {
     }
 
 
-    /*
-    //게시글 추철 (서브 타임라인 내 게시글)
+
+    //게시글 추천 (서브 타임라인 내 게시글)
     @GetMapping("/post/{interest}")
     public ResponseEntity<List<MainPageSubTimelineDto>> getRecommendPostsByInterest(@PathVariable Interest interest) {
-        return mainPageService.recommendPostsByInterest(interest);
-    }*/
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            // 로그인하지 않은 경우 모든 유저를 대상으로 추천
+            return mainPageService.recommendPostsByInterest(interest, Optional.empty());
+        } else {
+            // 로그인한 경우 로그인한 유저를 제외하고 추천
+            String email = authentication.getName();
+            return mainPageService.recommendPostsByInterest(interest, Optional.of(email));
+        }
+    }
 }
