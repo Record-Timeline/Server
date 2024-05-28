@@ -15,4 +15,6 @@ public class SubtimelineDto {
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String authorNickname;
+    private String authorInterest;
 }
