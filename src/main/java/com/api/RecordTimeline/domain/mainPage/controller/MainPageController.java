@@ -43,7 +43,7 @@ public class MainPageController {
 
     //게시글 추천 (서브 타임라인 내 게시글)
     @GetMapping("/post/{interest}")
-    public ResponseEntity<List<MainPageSubTimelineDto>> getRecommendPostsByInterest(@PathVariable Interest interest) {
+    public ResponseEntity<MainPageSubTimelineDto> getRecommendPostsByInterest(@PathVariable Interest interest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {

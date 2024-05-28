@@ -8,6 +8,7 @@ import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
 import com.api.RecordTimeline.domain.member.domain.Interest;
 import com.api.RecordTimeline.domain.member.domain.Member;
+import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
 import com.api.RecordTimeline.domain.profile.repository.ProfileRepository;
@@ -72,7 +73,7 @@ public class MainPageServiceImpl implements MainPageService {
 
 
     @Override
-    public ResponseEntity<List<MainPageSubTimelineDto>> recommendPostsByInterest(Interest interest, Optional<String> loggedInEmail) {
+    public ResponseEntity<MainPageSubTimelineDto> recommendPostsByInterest(Interest interest, Optional<String> loggedInEmail) {
         List<SubTimeline> subTimelines;
         if (loggedInEmail.isPresent()) {
             subTimelines = subTimelineRepository.findSubTimelinesByInterestExcludingEmail(interest.toString(), loggedInEmail.get());
@@ -85,18 +86,23 @@ public class MainPageServiceImpl implements MainPageService {
         }
 
         List<SubtimelineDto> subTimelineDtos = subTimelines.stream()
-                .map(subTimeline -> new SubtimelineDto(
-                        subTimeline.getId(),
-                        subTimeline.getTitle(),
-                        subTimeline.getContent(),
-                        subTimeline.getStartDate(),
-                        subTimeline.getEndDate()
-                ))
+                .map(subTimeline -> {
+                    Member member = subTimeline.getMainTimeline().getMember();
+                    return new SubtimelineDto(
+                            subTimeline.getId(),
+                            subTimeline.getTitle(),
+                            subTimeline.getContent(),
+                            subTimeline.getStartDate(),
+                            subTimeline.getEndDate(),
+                            member.getNickname(),
+                            member.getInterest().toString()
+                    );
+                })
                 .collect(Collectors.toList());
 
-        List<MainPageSubTimelineDto> responseDtos = List.of(new MainPageSubTimelineDto(subTimelineDtos));
+        MainPageSubTimelineDto responseDto = new MainPageSubTimelineDto(subTimelineDtos);
 
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(responseDto);
     }
 }
 

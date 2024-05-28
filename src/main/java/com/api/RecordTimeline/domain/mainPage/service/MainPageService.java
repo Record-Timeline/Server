@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface MainPageService {
     ResponseEntity<List<MainPageMemberDto>> recommendMembersByInterest(Interest interest, Optional<String> loggedInEmail);
 
-    ResponseEntity<List<MainPageSubTimelineDto>> recommendPostsByInterest(Interest interest, Optional<String> loggedInEmail);
+    ResponseEntity<MainPageSubTimelineDto> recommendPostsByInterest(Interest interest, Optional<String> loggedInEmail);
 }
