@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class MemberInfoResponseDto {
+    private final Long memberId;
     private final String nickname;
     private final String interest;
     private final String profileImageUrl;

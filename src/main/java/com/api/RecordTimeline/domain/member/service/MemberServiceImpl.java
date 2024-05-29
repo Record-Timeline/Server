@@ -82,6 +82,7 @@ public class MemberServiceImpl implements MemberService{
             }
 
             MemberInfoResponseDto responseDto = MemberInfoResponseDto.builder()
+                    .memberId(member.getId())
                     .nickname(member.getNickname())
                     .interest(member.getInterest().toString())
                     .profileImageUrl(Optional.ofNullable(profile.getProfileImgUrl()).orElse(""))
