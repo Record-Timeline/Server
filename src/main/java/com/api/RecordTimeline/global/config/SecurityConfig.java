@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
                     CorsConfiguration cors = new CorsConfiguration();
                     cors.setAllowedOrigins(List.of("*", "http://localhost:3000", "http://localhost:8080", "http://localhost:8081"));
-                    cors.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
+                    cors.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE"));
 
                     cors.setAllowCredentials(false);
 
