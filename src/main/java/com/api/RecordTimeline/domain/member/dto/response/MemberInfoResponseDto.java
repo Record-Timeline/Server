@@ -11,6 +11,7 @@ import lombok.Getter;
 @Builder
 public class MemberInfoResponseDto {
     private final Long memberId;
+    private final String email;
     private final String nickname;
     private final String interest;
     private final String profileImageUrl;
@@ -19,6 +20,7 @@ public class MemberInfoResponseDto {
     public static MemberInfoResponseDto fromMemberAndProfile(Member member, Profile profile) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
+                .email(member.getEmail())
                 .nickname(member.getNickname())
                 .interest(member.getInterest() != null ? member.getInterest().toString() : "")
                 .profileImageUrl(profile != null ? profile.getProfileImgUrl() : "")

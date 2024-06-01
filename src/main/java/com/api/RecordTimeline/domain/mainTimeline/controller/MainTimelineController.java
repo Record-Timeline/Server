@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/main-timelines")
-@RequiredArgsConstructor // 롬복의 RequiredArgsConstructor 어노테이션 사용
-
+@RequiredArgsConstructor
 public class MainTimelineController {
 
     private final MainTimelineService mainTimelineService;

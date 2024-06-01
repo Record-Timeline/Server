@@ -65,13 +65,7 @@ public class SearchServiceImpl implements SearchService {
             return List.of();
         }
 
-        return searchMember.stream().map(member -> new MemberInfoResponseDto(
-                member.getId(),
-                member.getNickname(),
-                member.getInterest().toString(),
-                Optional.ofNullable(member.getProfile().getProfileImgUrl()).orElse(""),
-                Optional.ofNullable(member.getProfile().getIntroduction()).orElse("")
-        )).collect(Collectors.toList());
+        return searchMember.stream().map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile())).toList();
     }
 
     @Override
