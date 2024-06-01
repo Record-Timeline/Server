@@ -37,6 +37,18 @@ public class MainTimelineController {
         }
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<ReadResponseDTO.TimelineDetails>> getMyTimelines() {
+        List<MainTimeline> timelines = mainTimelineService.getMyTimelines();
+        if (timelines.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        List<ReadResponseDTO.TimelineDetails> details = timelines.stream()
+                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(details);
+    }
+
     // 멤버 ID로 모든 메인 타임라인 조회 수정본
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<ReadResponseDTO.TimelineDetails>> getTimelinesByMemberId(@PathVariable Long memberId) {

@@ -78,6 +78,19 @@ public class MainTimelineService {
         mainTimelineRepository.delete(mainTimeline);
     }
 
+    // 현재 로그인된 사용자의 메인 타임라인 조회
+    public List<MainTimeline> getMyTimelines() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail);
+
+        if (member == null) {
+            throw new NoSuchElementException("활성 상태의 해당 이메일로 등록된 사용자를 찾을 수 없습니다: " + userEmail);
+        }
+
+        return mainTimelineRepository.findByMemberIdOrderByStartDate(member.getId());
+    }
+
     // 메인 타임라인 조회 - 정렬 로직 포함
     public List<MainTimeline> getTimelinesByMemberId(Long memberId) {
         return mainTimelineRepository.findByMemberIdOrderByStartDate(memberId);
