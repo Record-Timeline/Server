@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MainPageMemberDto {
+    private Long id;
     private String nickname;
     private String profileImageUrl;
     private String introduction;

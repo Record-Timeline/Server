@@ -60,6 +60,7 @@ public class MainPageServiceImpl implements MainPageService {
             )).collect(Collectors.toList());
 
             MainPageMemberDto dto = new MainPageMemberDto(
+                    member.getId(),
                     member.getNickname(),
                     profile != null ? profile.getProfileImgUrl() : "",
                     profile != null ? profile.getIntroduction() : "",
