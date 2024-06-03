@@ -49,7 +49,7 @@ public class SubTimelineService {
 
     public SubTimeline updateSubTimeline(Long subTimelineId, SubTimelineCreateRequest request) {
         SubTimeline existingSubTimeline = subTimelineRepository.findById(subTimelineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다. : " + subTimelineId));
+                .orElseThrow(() -> new IllegalArgumentException("해당 서브타임라인을 찾을 수 없습니다. : " + subTimelineId));
 
         // 기존 이미지 URL 추출
         List<String> existingImageUrls = extractImageUrls(existingSubTimeline.getContent());
