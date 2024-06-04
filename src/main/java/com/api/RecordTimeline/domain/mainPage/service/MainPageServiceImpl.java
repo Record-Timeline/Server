@@ -95,6 +95,7 @@ public class MainPageServiceImpl implements MainPageService {
                             subTimeline.getContent(),
                             subTimeline.getStartDate(),
                             subTimeline.getEndDate(),
+                            member.getId(),
                             member.getNickname(),
                             member.getInterest().toString()
                     );
