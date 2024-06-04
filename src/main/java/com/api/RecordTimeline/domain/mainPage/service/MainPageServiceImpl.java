@@ -91,6 +91,7 @@ public class MainPageServiceImpl implements MainPageService {
                     Member member = subTimeline.getMainTimeline().getMember();
                     return new SubtimelineDto(
                             subTimeline.getId(),
+                            subTimeline.getMainTimeline().getId(),
                             subTimeline.getTitle(),
                             subTimeline.getContent(),
                             subTimeline.getStartDate(),

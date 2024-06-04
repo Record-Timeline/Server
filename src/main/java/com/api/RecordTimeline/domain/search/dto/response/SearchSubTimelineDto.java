@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class SearchSubTimelineDto {
     private Long id;
+    private Long mainTimelineId;
     private String title;
     private String content;
     private LocalDate startDate;

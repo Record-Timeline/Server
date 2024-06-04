@@ -79,6 +79,7 @@ public class SearchServiceImpl implements SearchService {
             Member author = subTimeline.getMainTimeline().getMember();
             return new SearchSubTimelineDto(
                     subTimeline.getId(),
+                    subTimeline.getMainTimeline().getId(),
                     subTimeline.getTitle(),
                     subTimeline.getContent(),
                     subTimeline.getStartDate(),
