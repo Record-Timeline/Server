@@ -15,6 +15,7 @@ public class SearchSubTimelineDto {
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Long authorId;
     private String authorNickname;
     private String authorInterest;
 }

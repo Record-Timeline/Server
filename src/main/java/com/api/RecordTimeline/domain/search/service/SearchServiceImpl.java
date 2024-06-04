@@ -83,6 +83,7 @@ public class SearchServiceImpl implements SearchService {
                     subTimeline.getContent(),
                     subTimeline.getStartDate(),
                     subTimeline.getEndDate(),
+                    author.getId(),
                     author.getNickname(),
                     author.getInterest().name()
             );
