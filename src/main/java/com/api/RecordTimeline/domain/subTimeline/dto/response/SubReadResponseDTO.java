@@ -18,6 +18,7 @@ public class SubReadResponseDTO {
     public static class SubTimelineDetails {
         private Long id;
         private String title;
+        //private String mainTimelineTitle;
         private String content;
         private LocalDate startDate;
         private LocalDate endDate;
@@ -29,6 +30,7 @@ public class SubReadResponseDTO {
                         subTimeline.getId(),
                         subTimeline.getTitle(),
                         subTimeline.getContent(),
+                        //subTimeline.getMainTimeline().getTitle(),
                         subTimeline.getStartDate(),
                         subTimeline.getEndDate()
                 )).collect(Collectors.toList());
