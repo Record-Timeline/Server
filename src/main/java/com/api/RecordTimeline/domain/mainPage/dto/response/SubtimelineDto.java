@@ -19,4 +19,5 @@ public class SubtimelineDto {
     private Long authorId;
     private String authorNickname;
     private String authorInterest;
+    private String mainTimelineTitle;
 }

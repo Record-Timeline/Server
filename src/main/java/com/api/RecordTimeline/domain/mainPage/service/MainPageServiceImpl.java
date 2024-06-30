@@ -89,6 +89,7 @@ public class MainPageServiceImpl implements MainPageService {
         List<SubtimelineDto> subTimelineDtos = subTimelines.stream()
                 .map(subTimeline -> {
                     Member member = subTimeline.getMainTimeline().getMember();
+                    MainTimeline mainTimeline = subTimeline.getMainTimeline();
                     return new SubtimelineDto(
                             subTimeline.getId(),
                             subTimeline.getMainTimeline().getId(),
@@ -98,7 +99,8 @@ public class MainPageServiceImpl implements MainPageService {
                             subTimeline.getEndDate(),
                             member.getId(),
                             member.getNickname(),
-                            member.getInterest().toString()
+                            member.getInterest().toString(),
+                            mainTimeline.getTitle()
                     );
                 })
                 .collect(Collectors.toList());
