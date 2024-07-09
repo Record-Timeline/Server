@@ -6,10 +6,14 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
 import com.api.RecordTimeline.domain.profile.dto.response.ProfileResponseDto;
 import com.api.RecordTimeline.global.s3.S3FileUploader;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,23 +24,19 @@ public class ProfileService {
 
     // 프로필 이미지 등록 및 수정
     public ResponseEntity<ResponseDto> updateProfileImage(String email, MultipartFile profileImage) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member != null) {
-            String uploadUrl = s3FileUploader.uploadMultipartFile(profileImage);
-            member.getProfile().changeProfileImage(uploadUrl);
-            memberRepository.save(member);
-            return ProfileResponseDto.success();
-        } else {
-            return ProfileResponseDto.memberNotFound();
-        }
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
+
+        String uploadUrl = s3FileUploader.uploadMultipartFile(profileImage);
+        member.getProfile().changeProfileImage(uploadUrl);
+        memberRepository.save(member);
+        return ProfileResponseDto.success();
     }
 
     // 소개글 등록 및 수정
     public ResponseEntity<ResponseDto> updateIntroduction(String email, String introduction) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member == null) {
-            return ProfileResponseDto.memberNotFound();
-        }
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
 
         Profile profile = member.getProfile();
         if (profile == null) {
@@ -50,32 +50,28 @@ public class ProfileService {
         return ProfileResponseDto.success();
     }
 
-
     // 프로필 이미지 삭제
     public ResponseEntity<ResponseDto> deleteProfileImage(String email) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member != null) {
-            member.getProfile().deleteProfileImage();
-            memberRepository.save(member);
-            return ProfileResponseDto.imageDeleted();
-        } else {
-            return ProfileResponseDto.memberNotFound();
-        }
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
+
+        member.getProfile().deleteProfileImage();
+        memberRepository.save(member);
+        return ProfileResponseDto.imageDeleted();
     }
 
     // 소개글 삭제
     public ResponseEntity<ResponseDto> deleteIntroduction(String email) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member == null) {
-            return ProfileResponseDto.memberNotFound();
-        }
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
+
         Profile profile = member.getProfile();
         if (profile != null) {
             profile.updateIntroduction(null);
             memberRepository.save(member);
             return ProfileResponseDto.introductionCleared();
         } else {
-            return ProfileResponseDto.noProfileFound();
+            throw new ApiException(ErrorType._NO_PROFILE_FOUND);
         }
     }
 }

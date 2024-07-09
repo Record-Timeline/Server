@@ -9,117 +9,84 @@ import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.dto.response.UpdateResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
+import com.api.RecordTimeline.domain.signup.signup.dto.request.UnRegisterRequestDto;
+import com.api.RecordTimeline.domain.signup.signup.dto.response.UnRegisterResponseDto;
 import com.api.RecordTimeline.global.exception.ApiException;
-import com.api.RecordTimeline.global.exception.ApiExceptionResponse;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
-    public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(String email, UpdateMemberRequestDto dto) {
-        try {
+    public UpdateResponseDto updateMemberInfo(String email, UpdateMemberRequestDto dto) {
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
 
-            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-
-            String nickname = dto.getNewNickname();
-            boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
-            if (isExistNickname)
-                return UpdateResponseDto.duplicateNickname();
-
-            member.update(dto.getNewNickname(), dto.getNewInterest());
-            memberRepository.save(member);
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
+        String nickname = dto.getNewNickname();
+        boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
+        if (isExistNickname) {
+            throw new ApiException(ErrorType._DUPLICATE_NICKNAME);
         }
 
-        return UpdateResponseDto.success();
+        member.update(dto.getNewNickname(), dto.getNewInterest());
+        memberRepository.save(member);
 
+        return new UpdateResponseDto();
     }
 
     @Override
-    public ResponseEntity<? super UpdateResponseDto> updatePassword(String email, UpdatePasswordRequestDto dto) {
-        try {
+    public UpdateResponseDto updatePassword(String email, UpdatePasswordRequestDto dto) {
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
 
-            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-
-            if (!passwordEncoder.matches(dto.getOldPassword(), member.getPassword())) {
-                return UpdateResponseDto.passwordMismatch();
-            }
-
-            Member updatedMember = member.updatePassword(dto.getNewPassword(), passwordEncoder);
-            memberRepository.save(updatedMember);
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
+        if (!passwordEncoder.matches(dto.getOldPassword(), member.getPassword())) {
+            throw new ApiException(ErrorType._PASSWORD_MISMATCH);
         }
 
-        return UpdateResponseDto.success();
+        Member updatedMember = member.updatePassword(dto.getNewPassword(), passwordEncoder);
+        memberRepository.save(updatedMember);
+
+        return new UpdateResponseDto();
     }
 
     @Override
-    public ResponseEntity<MemberInfoResponseDto> getUserProfile(String email) {
-        try {
-            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-            if (member == null) {
-                throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
-            }
+    public MemberInfoResponseDto getUserProfile(String email) {
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
 
-            Profile profile = member.getProfile();
-            if (profile == null) {
-                throw new ApiException(ErrorType._NO_PROFILE_FOUND);
-            }
+        Profile profile = Optional.ofNullable(member.getProfile())
+                .orElseThrow(() -> new ApiException(ErrorType._NO_PROFILE_FOUND));
 
-            MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile);
-            return ResponseEntity.ok(responseDto);
-
-        } catch (ApiException  e) {
-            throw  e;
-
-        } catch (Exception exception) {
-            throw new ApiException(ErrorType._DATABASE_ERROR);
-        }
+        return MemberInfoResponseDto.fromMemberAndProfile(member, profile);
     }
 
-    public ResponseEntity<MemberInfoResponseDto> getProfileByMemberId(Long memberId) {
-        Member member = memberRepository.findByIdAndIsDeletedFalse(memberId);
-        if (member == null) {
-            throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
-        }
-
-        Profile profile = member.getProfile();
-        if (profile == null) {
-            throw new ApiException(ErrorType._NO_PROFILE_FOUND);
-        }
-
-        MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile);
-        return ResponseEntity.ok(responseDto);
-    }
-
-    // 이메일로 memberId 조회
     @Override
-    public ResponseEntity<MemberIdResponseDto> getMemberIdByEmail(String email) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MemberIdResponseDto(null));
-        }
-        return ResponseEntity.ok(new MemberIdResponseDto(member.getId()));
+    public MemberInfoResponseDto getProfileByMemberId(Long memberId) {
+        Member member = memberRepository.findByIdAndIsDeletedFalse(memberId)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
+
+        Profile profile = Optional.ofNullable(member.getProfile())
+                .orElseThrow(() -> new ApiException(ErrorType._NO_PROFILE_FOUND));
+
+        return MemberInfoResponseDto.fromMemberAndProfile(member, profile);
+    }
+
+    @Override
+    public MemberIdResponseDto getMemberIdByEmail(String email) {
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
+
+        return new MemberIdResponseDto(member.getId());
     }
 
     @Override
@@ -128,5 +95,16 @@ public class MemberServiceImpl implements MemberService{
         return members.stream()
                 .map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile()))
                 .toList();
+    }
+
+    @Override
+    public UnRegisterResponseDto unRegister(String email, UnRegisterRequestDto dto) {
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
+
+        member.markAsDeleted();
+        memberRepository.save(member);
+
+        return new UnRegisterResponseDto();
     }
 }

@@ -5,11 +5,11 @@ import com.api.RecordTimeline.domain.member.dto.request.UpdatePasswordRequestDto
 import com.api.RecordTimeline.domain.member.dto.response.MemberIdResponseDto;
 import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.dto.response.UpdateResponseDto;
-import com.api.RecordTimeline.domain.member.service.MemberServiceImpl;
-import com.api.RecordTimeline.domain.profile.service.ProfileService;
+import com.api.RecordTimeline.domain.member.service.MemberService;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.UnRegisterRequestDto;
 import com.api.RecordTimeline.domain.signup.signup.dto.response.UnRegisterResponseDto;
-import com.api.RecordTimeline.domain.signup.signup.service.SignupServiceImpl;
+import com.api.RecordTimeline.domain.signup.signup.service.SignupService;
+import com.api.RecordTimeline.global.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,61 +29,62 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberServiceImpl memberService;
-    private final SignupServiceImpl signupService;
-    private final ProfileService profileService;
+    private final MemberService memberService;
+    private final SignupService signupService;
 
     @PutMapping("/update-memberInfo")
-    public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(@Valid @RequestBody UpdateMemberRequestDto requestBody) {
+    public ResponseEntity<SuccessResponse<UpdateResponseDto>> updateMemberInfo(@Valid @RequestBody UpdateMemberRequestDto requestBody) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
-        return memberService.updateMemberInfo(email, requestBody);
+        UpdateResponseDto response = memberService.updateMemberInfo(email, requestBody);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<? super UpdateResponseDto> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto requestBody) {
+    public ResponseEntity<SuccessResponse<UpdateResponseDto>> updatePassword(@Valid @RequestBody UpdatePasswordRequestDto requestBody) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
-        return memberService.updatePassword(email, requestBody);
+        UpdateResponseDto response = memberService.updatePassword(email, requestBody);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    // 내 프로필 조회
     @GetMapping("/my-profile")
-    public ResponseEntity<MemberInfoResponseDto> getMyProfile() {
+    public ResponseEntity<SuccessResponse<MemberInfoResponseDto>> getMyProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        return memberService.getUserProfile(email);
+        MemberInfoResponseDto response = memberService.getUserProfile(email);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    // 특정 사용자 프로필 조회
     @GetMapping("/profile/{memberId}")
-    public ResponseEntity<MemberInfoResponseDto> getProfileByMemberId(@PathVariable Long memberId) {
-        return memberService.getProfileByMemberId(memberId);
+    public ResponseEntity<SuccessResponse<MemberInfoResponseDto>> getProfileByMemberId(@PathVariable Long memberId) {
+        MemberInfoResponseDto response = memberService.getProfileByMemberId(memberId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    // 이메일로 memberId 조회
     @GetMapping("/member-id")
-    public ResponseEntity<MemberIdResponseDto> getMemberIdByEmail(@RequestParam String email) {
-        return memberService.getMemberIdByEmail(email);
+    public ResponseEntity<SuccessResponse<MemberIdResponseDto>> getMemberIdByEmail(@RequestParam String email) {
+        MemberIdResponseDto response = memberService.getMemberIdByEmail(email);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/members")
-    public ResponseEntity<List<MemberInfoResponseDto>> getAllMembers() {
+    public ResponseEntity<SuccessResponse<List<MemberInfoResponseDto>>> getAllMembers() {
         List<MemberInfoResponseDto> members = memberService.getAllMembers();
-        return ResponseEntity.ok(members);
+        return ResponseEntity.ok(new SuccessResponse<>(members));
     }
 
     @Operation(summary = "회원 탈퇴", description = "레코드 타임라인에 회원 탈퇴 합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Long.class)))
+                            schema = @Schema(implementation = SuccessResponse.class)))
     })
-    @PostMapping("/unRegister")
-    public ResponseEntity<? super UnRegisterResponseDto> unRegister (@RequestBody @Valid UnRegisterRequestDto requestBody) {
+    @PostMapping("/unregister")
+    public ResponseEntity<SuccessResponse<UnRegisterResponseDto>> unRegister(@RequestBody @Valid UnRegisterRequestDto requestBody) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // 현재 로그인 한 사용자 이메일
-        return signupService.unRegister(email, requestBody);
+        UnRegisterResponseDto response = signupService.unRegister(email, requestBody);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
-
 }
