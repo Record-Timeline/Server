@@ -36,10 +36,8 @@ public class SearchServiceImpl implements SearchService {
     @Transactional
     @Override
     public ResponseEntity<List<SearchPageRecommendDto>> recommendSameInterestMember(String email) {
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-        if (member == null) {
-            throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
-        }
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
 
         List<Member> membersWithSameInterest = memberRepository.findMembersWithSameInterest(member.getInterest().name(), email);
         if (membersWithSameInterest.isEmpty()) {
