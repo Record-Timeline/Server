@@ -2,8 +2,9 @@ package com.api.RecordTimeline.domain.mainPage.controller;
 
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainPageMemberDto;
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainPageSubTimelineDto;
-import com.api.RecordTimeline.domain.mainPage.service.MainPageServiceImpl;
+import com.api.RecordTimeline.domain.mainPage.service.MainPageService;
 import com.api.RecordTimeline.domain.member.domain.Interest;
+import com.api.RecordTimeline.global.success.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -22,37 +23,25 @@ import java.util.Optional;
 @RequestMapping("/api/v1/main")
 public class MainPageController {
 
-    private final MainPageServiceImpl mainPageService;
+    private final MainPageService mainPageService;
 
-    //유저 추천 (사용자 닉네임, 프로필 이미지, 소개글, 메인 타임라인)
     @GetMapping("/member/{interest}")
-    public ResponseEntity<List<MainPageMemberDto>> getRecommendMembersByInterest(@PathVariable Interest interest) {
+    public ResponseEntity<SuccessResponse<List<MainPageMemberDto>>> getRecommendMembersByInterest(@PathVariable Interest interest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            // 로그인하지 않은 경우 모든 유저를 대상으로 추천
-            return mainPageService.recommendMembersByInterest(interest, Optional.empty());
-        } else {
-            // 로그인한 경우 로그인한 유저를 제외하고 추천
-            String email = authentication.getName();
-            return mainPageService.recommendMembersByInterest(interest, Optional.of(email));
-        }
+        Optional<String> email = Optional.ofNullable(authentication)
+                .filter(auth -> !(auth instanceof AnonymousAuthenticationToken))
+                .map(Authentication::getName);
+        List<MainPageMemberDto> recommendedMembers = mainPageService.recommendMembersByInterest(interest, email);
+        return ResponseEntity.ok(new SuccessResponse<>(recommendedMembers));
     }
 
-
-
-    //게시글 추천 (서브 타임라인 내 게시글)
     @GetMapping("/post/{interest}")
-    public ResponseEntity<MainPageSubTimelineDto> getRecommendPostsByInterest(@PathVariable Interest interest) {
+    public ResponseEntity<SuccessResponse<MainPageSubTimelineDto>> getRecommendPostsByInterest(@PathVariable Interest interest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            // 로그인하지 않은 경우 모든 유저를 대상으로 추천
-            return mainPageService.recommendPostsByInterest(interest, Optional.empty());
-        } else {
-            // 로그인한 경우 로그인한 유저를 제외하고 추천
-            String email = authentication.getName();
-            return mainPageService.recommendPostsByInterest(interest, Optional.of(email));
-        }
+        Optional<String> email = Optional.ofNullable(authentication)
+                .filter(auth -> !(auth instanceof AnonymousAuthenticationToken))
+                .map(Authentication::getName);
+        MainPageSubTimelineDto recommendedPosts = mainPageService.recommendPostsByInterest(interest, email);
+        return ResponseEntity.ok(new SuccessResponse<>(recommendedPosts));
     }
 }

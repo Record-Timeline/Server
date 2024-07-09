@@ -3,6 +3,7 @@ package com.api.RecordTimeline.global.security.jwt;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -41,8 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtProvider.validateToken(jwtToken); // 토큰 검증
 
                 String email = jwtProvider.getUserEmailFromToken(jwtToken);
-                Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-                if (member != null) {
+                Optional<Member> optionalMember = memberRepository.findByEmailAndIsDeletedFalse(email);
+
+                optionalMember.ifPresent(member -> {
                     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
                     AbstractAuthenticationToken authenticationToken =
@@ -51,7 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     securityContext.setAuthentication(authenticationToken);
                     SecurityContextHolder.setContext(securityContext);
-                }
+                });
+
             } catch (ApiException e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
                 return;

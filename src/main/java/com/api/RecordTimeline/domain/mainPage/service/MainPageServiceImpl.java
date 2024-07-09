@@ -8,7 +8,6 @@ import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
 import com.api.RecordTimeline.domain.member.domain.Interest;
 import com.api.RecordTimeline.domain.member.domain.Member;
-import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
 import com.api.RecordTimeline.domain.profile.repository.ProfileRepository;
@@ -18,12 +17,10 @@ import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,79 +32,64 @@ public class MainPageServiceImpl implements MainPageService {
     private final MainTimelineService mainTimelineService;
     private final SubTimelineRepository subTimelineRepository;
 
-
+    @Override
     @Transactional
-    public ResponseEntity<List<MainPageMemberDto>> recommendMembersByInterest(Interest interest, Optional<String> loggedInEmail) {
-        List<Member> membersWithInterest;
-        if (loggedInEmail.isPresent()) {
-            membersWithInterest = memberRepository.findMembersWithSameInterest(interest.toString(), loggedInEmail.get());
-        } else {
-            membersWithInterest = memberRepository.findRandomMembersByInterest(interest.toString());
-        }
+    public List<MainPageMemberDto> recommendMembersByInterest(Interest interest, Optional<String> loggedInEmail) {
+        List<Member> membersWithInterest = loggedInEmail
+                .map(email -> memberRepository.findMembersWithSameInterest(interest.toString(), email))
+                .orElseGet(() -> memberRepository.findRandomMembersByInterest(interest.toString()));
+
         if (membersWithInterest.isEmpty()) {
             throw new ApiException(ErrorType._NO_RECOMMENDER_FOUND);
         }
 
-
-        List<MainPageMemberDto> responseDtos = membersWithInterest.stream().map(member -> {
+        return membersWithInterest.stream().map(member -> {
             Profile profile = profileRepository.findByMember(member);
             List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(member.getId());
-            List<MainTimelineDto> timelineDtos = timelines.stream().map(timeline -> new MainTimelineDto(
-                    timeline.getId(),
-                    timeline.getTitle(),
-                    timeline.getStartDate(),
-                    timeline.getEndDate()
-            )).collect(Collectors.toList());
+            List<MainTimelineDto> timelineDtos = timelines.stream()
+                    .map(timeline -> new MainTimelineDto(
+                            timeline.getId(),
+                            timeline.getTitle(),
+                            timeline.getStartDate(),
+                            timeline.getEndDate()))
+                    .collect(Collectors.toList());
 
-            MainPageMemberDto dto = new MainPageMemberDto(
+            return new MainPageMemberDto(
                     member.getId(),
                     member.getNickname(),
                     profile != null ? profile.getProfileImgUrl() : "",
                     profile != null ? profile.getIntroduction() : "",
-                    timelineDtos
-            );
-            return dto;
+                    timelineDtos);
         }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseDtos);
     }
 
-
     @Override
-    public ResponseEntity<MainPageSubTimelineDto> recommendPostsByInterest(Interest interest, Optional<String> loggedInEmail) {
-        List<SubTimeline> subTimelines;
-        if (loggedInEmail.isPresent()) {
-            subTimelines = subTimelineRepository.findSubTimelinesByInterestExcludingEmail(interest.toString(), loggedInEmail.get());
-        } else {
-            subTimelines = subTimelineRepository.findSubTimelinesByInterest(interest.toString());
-        }
+    @Transactional
+    public MainPageSubTimelineDto recommendPostsByInterest(Interest interest, Optional<String> loggedInEmail) {
+        List<SubTimeline> subTimelines = loggedInEmail
+                .map(email -> subTimelineRepository.findSubTimelinesByInterestExcludingEmail(interest.toString(), email))
+                .orElseGet(() -> subTimelineRepository.findSubTimelinesByInterest(interest.toString()));
 
         if (subTimelines.isEmpty()) {
             throw new ApiException(ErrorType._NO_RECOMMENDER_FOUND);
         }
 
-        List<SubtimelineDto> subTimelineDtos = subTimelines.stream()
-                .map(subTimeline -> {
-                    Member member = subTimeline.getMainTimeline().getMember();
-                    MainTimeline mainTimeline = subTimeline.getMainTimeline();
-                    return new SubtimelineDto(
-                            subTimeline.getId(),
-                            subTimeline.getMainTimeline().getId(),
-                            subTimeline.getTitle(),
-                            subTimeline.getContent(),
-                            subTimeline.getStartDate(),
-                            subTimeline.getEndDate(),
-                            member.getId(),
-                            member.getNickname(),
-                            member.getInterest().toString(),
-                            mainTimeline.getTitle()
-                    );
-                })
-                .collect(Collectors.toList());
+        List<SubtimelineDto> subTimelineDtos = subTimelines.stream().map(subTimeline -> {
+            Member member = subTimeline.getMainTimeline().getMember();
+            MainTimeline mainTimeline = subTimeline.getMainTimeline();
+            return new SubtimelineDto(
+                    subTimeline.getId(),
+                    subTimeline.getMainTimeline().getId(),
+                    subTimeline.getTitle(),
+                    subTimeline.getContent(),
+                    subTimeline.getStartDate(),
+                    subTimeline.getEndDate(),
+                    member.getId(),
+                    member.getNickname(),
+                    member.getInterest().toString(),
+                    mainTimeline.getTitle());
+        }).collect(Collectors.toList());
 
-        MainPageSubTimelineDto responseDto = new MainPageSubTimelineDto(subTimelineDtos);
-
-        return ResponseEntity.ok(responseDto);
+        return new MainPageSubTimelineDto(subTimelineDtos);
     }
 }
-
