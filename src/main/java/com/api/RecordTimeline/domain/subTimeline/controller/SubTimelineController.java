@@ -39,7 +39,7 @@ public class SubTimelineController {
     public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
         try {
             List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineIdOrderByStartDate(mainTimelineId);
-            String mainTimelineTitle = subTimelines.isEmpty() ? "" : subTimelines.get(0).getMainTimeline().getTitle();
+            String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId); // 메인타임라인 제목 가져오기
             return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -111,7 +111,6 @@ public class SubTimelineService {
         return result.toString();
     }
 
-
     public void deleteSubTimeline(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
@@ -127,6 +126,13 @@ public class SubTimelineService {
     // 서브 타임라인 시작 날짜 기준으로 정렬
     public List<SubTimeline> getSubTimelinesByMainTimelineIdOrderByStartDate(Long mainTimelineId) {
         return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
+    }
+
+    // 메인타임라인 제목을 가져오는 메서드 추가
+    public String getMainTimelineTitle(Long mainTimelineId) {
+        return mainTimelineRepository.findById(mainTimelineId)
+                .map(MainTimeline::getTitle)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다. : " + mainTimelineId));
     }
 
     private void checkOwnership(String ownerEmail) {
