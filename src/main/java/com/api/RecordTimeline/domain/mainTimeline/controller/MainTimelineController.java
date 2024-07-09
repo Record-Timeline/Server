@@ -71,7 +71,7 @@ public class MainTimelineController {
                     timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate()
             )));
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "메인 타임라인을 찾을 수 없습니다.", e);
         }
     }
