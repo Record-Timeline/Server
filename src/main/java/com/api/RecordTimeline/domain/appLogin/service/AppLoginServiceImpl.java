@@ -2,12 +2,12 @@ package com.api.RecordTimeline.domain.appLogin.service;
 
 import com.api.RecordTimeline.domain.appLogin.dto.request.AppLoginRequestDto;
 import com.api.RecordTimeline.domain.appLogin.dto.response.AppLoginResponseDto;
-import com.api.RecordTimeline.domain.common.ResponseDto;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,33 +17,19 @@ import org.springframework.stereotype.Service;
 public class AppLoginServiceImpl implements AppLoginService {
 
     private final MemberRepository memberRepository;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtProvider jwtProvider;
 
-
     @Override
-    public ResponseEntity<? super AppLoginResponseDto> appLogin(AppLoginRequestDto dto) {
-        String token = null;
-        try {
+    public AppLoginResponseDto appLogin(AppLoginRequestDto dto) {
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(dto.getEmail())
+                .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
 
-            String email = dto.getEmail();
-            Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
-            if(member == null)
-                return AppLoginResponseDto.memberNotFound();
-
-            String password = dto.getPassword();
-            String encodedPassword = member.getPassword();
-            boolean isMatched = passwordEncoder.matches(password, encodedPassword); // password 매칭
-            if(!isMatched)
-                return AppLoginResponseDto.appLoginFail();
-
-            token = jwtProvider.generateJwtToken(email);
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
+        if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
+            throw new ApiException(ErrorType._APP_LOGIN_FAIL);
         }
 
+        String token = jwtProvider.generateJwtToken(dto.getEmail());
         return AppLoginResponseDto.success(token);
     }
 }
