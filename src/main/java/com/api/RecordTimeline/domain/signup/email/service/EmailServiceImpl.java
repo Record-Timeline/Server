@@ -5,13 +5,11 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.signup.email.domain.EmailCertification;
 import com.api.RecordTimeline.domain.signup.email.dto.request.CheckCertificationRequestDto;
 import com.api.RecordTimeline.domain.signup.email.dto.request.EmailCertificationRequestDto;
-import com.api.RecordTimeline.domain.signup.email.dto.response.CheckCertificationResponseDto;
-import com.api.RecordTimeline.domain.signup.email.dto.response.EmailCertificationResponseDto;
 import com.api.RecordTimeline.domain.signup.email.provider.EmailProvider;
 import com.api.RecordTimeline.domain.signup.email.repository.EmailCertificationRepository;
-import com.api.RecordTimeline.domain.common.ResponseDto;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,50 +22,33 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Transactional
-    public ResponseEntity<? super EmailCertificationResponseDto> emailCertification(EmailCertificationRequestDto dto) {
-        try {
-            String email = dto.getEmail();
+    public void emailCertification(EmailCertificationRequestDto dto) {
+        String email = dto.getEmail();
 
-            boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
-            if (isExistEmail)
-                return EmailCertificationResponseDto.duplicateEmail();
-
-            String certificationNumber = CertificationNumber.getCertificationNumber();
-            boolean isSuccessed = emailProvider.sendCertificationMail(email, certificationNumber);
-            if(!isSuccessed) return EmailCertificationResponseDto.mailSendFail();
-
-            EmailCertification emailCertification = new EmailCertification(email,certificationNumber);
-            emailCertificationRepository.save(emailCertification);
-
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
+        boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
+        if (isExistEmail) {
+            throw new ApiException(ErrorType._DUPLICATE_EMAIL);
         }
-        return EmailCertificationResponseDto.success();
+
+        String certificationNumber = CertificationNumber.getCertificationNumber();
+        boolean isSuccess = emailProvider.sendCertificationMail(email, certificationNumber);
+        if (!isSuccess) {
+            throw new ApiException(ErrorType.MAIL_SEND_FAIL);
+        }
+
+        EmailCertification emailCertification = new EmailCertification(email, certificationNumber);
+        emailCertificationRepository.save(emailCertification);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<? super CheckCertificationResponseDto> checkCertification(CheckCertificationRequestDto dto) {
-        try{
+    public void checkCertification(CheckCertificationRequestDto dto) {
+        String email = dto.getEmail();
+        String certificationNumber = dto.getCertificationNumber();
 
-            String email = dto.getEmail();
-            String certificationNumber = dto.getCertificationNumber();
-
-            EmailCertification emailCertification = emailCertificationRepository.findByEmail(email);
-            if(emailCertification == null)
-                return CheckCertificationResponseDto.memberNotFound();
-
-            boolean isMatched = emailCertification.getEmail().equals(email) && emailCertification.getCertificationNumber().equals(certificationNumber);
-            if(!isMatched)
-                return CheckCertificationResponseDto.certificationFail();
-
-
-        } catch (Exception exception){
-            exception.printStackTrace();
-            return ResponseDto.databaseError();
+        EmailCertification emailCertification = emailCertificationRepository.findByEmail(email);
+        if (emailCertification == null || !emailCertification.getCertificationNumber().equals(certificationNumber)) {
+            throw new ApiException(ErrorType.CERTIFICATION_FAILED);
         }
-        return CheckCertificationResponseDto.success();
     }
 }
