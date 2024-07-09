@@ -39,7 +39,8 @@ public class SubTimelineController {
     public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
         try {
             List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineIdOrderByStartDate(mainTimelineId);
-            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines));
+            String mainTimelineTitle = subTimelines.isEmpty() ? "" : subTimelines.get(0).getMainTimeline().getTitle();
+            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

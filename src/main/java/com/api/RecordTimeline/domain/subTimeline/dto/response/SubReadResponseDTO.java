@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SubReadResponseDTO {
     private List<SubTimelineDetails> subTimelines;
+    private String mainTimelineTitle;
 
     @Getter
     @AllArgsConstructor
@@ -23,7 +24,7 @@ public class SubReadResponseDTO {
         private LocalDate endDate;
     }
 
-    public static SubReadResponseDTO from(List<SubTimeline> subTimelines) {
+    public static SubReadResponseDTO from(List<SubTimeline> subTimelines, String mainTimelineTitle) {
         List<SubTimelineDetails> details = subTimelines.stream()
                 .map(subTimeline -> new SubTimelineDetails(
                         subTimeline.getId(),
@@ -32,6 +33,6 @@ public class SubReadResponseDTO {
                         subTimeline.getStartDate(),
                         subTimeline.getEndDate()
                 )).collect(Collectors.toList());
-        return new SubReadResponseDTO(details);
+        return new SubReadResponseDTO(details, mainTimelineTitle);
     }
 }
