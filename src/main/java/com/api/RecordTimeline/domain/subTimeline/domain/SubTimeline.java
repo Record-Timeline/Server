@@ -16,21 +16,21 @@ import java.time.LocalDate;
 public class SubTimeline extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // 서브 타임라인 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_timeline_id", nullable = false)
-    private MainTimeline mainTimeline;
+    private MainTimeline mainTimeline; // 해당 서브 타임라인이 속한 메인 타임라인
 
     @Column(nullable = false)
-    private String title;
+    private String title; // 서브 타임라인의 제목
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
-    private String content;
+    private String content; // 서브 타임라인의 내용
 
     @Column(nullable = false)
-    private LocalDate startDate;
+    private LocalDate startDate; // 시작 날짜
 
     @Column
-    private LocalDate endDate;
+    private LocalDate endDate; // 종료 날짜
 }

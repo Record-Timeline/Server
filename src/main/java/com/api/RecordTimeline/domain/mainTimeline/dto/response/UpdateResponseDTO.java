@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UpdateResponseDTO {
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 
     public static UpdateResponseDTO success() {
         return new UpdateResponseDTO(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);

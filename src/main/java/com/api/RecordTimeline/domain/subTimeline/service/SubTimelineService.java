@@ -30,6 +30,7 @@ public class SubTimelineService {
 
     private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("<img[^>]+src=\"([^\"]+)\"");
 
+    // 서브 타임라인 생성 및 저장
     public SubTimeline createSubTimeline(SubTimelineCreateRequest request) {
         MainTimeline mainTimeline = mainTimelineRepository.findById(request.getMainTimelineId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다. : " + request.getMainTimelineId()));
@@ -47,6 +48,7 @@ public class SubTimelineService {
         return subTimelineRepository.save(subTimeline);
     }
 
+    // 서브 타임라인 업데이트
     public SubTimeline updateSubTimeline(Long subTimelineId, SubTimelineCreateRequest request) {
         SubTimeline existingSubTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 서브타임라인을 찾을 수 없습니다. : " + subTimelineId));
@@ -111,7 +113,7 @@ public class SubTimelineService {
         return result.toString();
     }
 
-
+    // 서브 타임라인 삭제
     public void deleteSubTimeline(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
