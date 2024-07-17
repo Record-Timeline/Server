@@ -26,6 +26,8 @@ public class MainTimelineController {
 
     private final MainTimelineService mainTimelineService;
 
+    // 메인 타임라인 CRUD
+    // 메인 타임라인 생성
     @PostMapping
     public ResponseEntity<CreateResponseDTO> createMainTimeline(@RequestBody MainTimelineRequestDTO mainTimelineRequestDTO) {
         try {
