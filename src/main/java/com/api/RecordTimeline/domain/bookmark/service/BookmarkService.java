@@ -1,6 +1,8 @@
 package com.api.RecordTimeline.domain.bookmark.service;
 
 import com.api.RecordTimeline.domain.bookmark.domain.Bookmark;
+import com.api.RecordTimeline.domain.bookmark.dto.request.BookmarkRequestDTO;
+import com.api.RecordTimeline.domain.bookmark.dto.response.BookmarkResponseDTO;
 import com.api.RecordTimeline.domain.bookmark.repository.BookmarkRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -24,7 +26,8 @@ public class BookmarkService {
     private final MemberRepository memberRepository;
     private final SubTimelineRepository subTimelineRepository;
 
-    public void toggleBookmark(Long subTimelineId) {
+    public void toggleBookmark(BookmarkRequestDTO bookmarkRequestDTO) {
+        Long subTimelineId = bookmarkRequestDTO.getSubTimelineId();
         Member member = getCurrentAuthenticatedMember();
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new NoSuchElementException("SubTimeline not found"));
