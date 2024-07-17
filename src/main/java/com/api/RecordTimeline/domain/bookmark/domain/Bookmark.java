@@ -2,6 +2,7 @@ package com.api.RecordTimeline.domain.bookmark.domain;
 
 import com.api.RecordTimeline.domain.base.BaseEntity;
 import com.api.RecordTimeline.domain.member.domain.Member;
+import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,4 +23,8 @@ public class Bookmark extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_timeline_id")
+    private SubTimeline subTimeline;
 }
