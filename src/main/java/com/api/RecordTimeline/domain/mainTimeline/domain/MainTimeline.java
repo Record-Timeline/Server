@@ -20,24 +20,24 @@ public class MainTimeline extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // 메인 타임라인 ID
 
     @Column(nullable = false)
-    private String title;
+    private String title; // 메인 타임라인 제목
 
     @Column(nullable = false)
-    private LocalDate startDate;
+    private LocalDate startDate; // 시작 날짜
 
     @Column
-    private LocalDate endDate;
+    private LocalDate endDate; // 종료 날짜
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private Member member; // 해당 메인 타임라인의 멤버
 
     @OneToMany(mappedBy = "mainTimeline", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubTimeline> subTimelines = new ArrayList<>();
+    private List<SubTimeline> subTimelines = new ArrayList<>(); // 메인 타임라인에 속한 서브 타임라인
 
     @Builder
     public MainTimeline(Long id, String title, LocalDate startDate, LocalDate endDate, Member member) {
@@ -46,7 +46,7 @@ public class MainTimeline extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
 //        this.member = member;
-        setMember(member);
+        setMember(member); // Member를 설정할 때 검증 로직 포함
     }
 
     public void setMember(Member member) {

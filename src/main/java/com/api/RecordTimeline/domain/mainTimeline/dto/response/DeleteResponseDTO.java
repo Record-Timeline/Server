@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class DeleteResponseDTO {
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 
     public static DeleteResponseDTO success() {
         return new DeleteResponseDTO(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);

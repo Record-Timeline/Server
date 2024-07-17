@@ -16,10 +16,10 @@ public class ReadResponseDTO {
     @Getter
     @AllArgsConstructor
     public static class TimelineDetails {
-        private Long id;
-        private String title;
-        private LocalDate startDate;
-        private LocalDate endDate;
+        private final Long id;
+        private final String title;
+        private final LocalDate startDate;
+        private final LocalDate endDate;
     }
 
     public static ReadResponseDTO from(List<MainTimeline> timelines) {

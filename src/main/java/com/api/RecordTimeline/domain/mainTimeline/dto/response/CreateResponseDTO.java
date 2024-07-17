@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CreateResponseDTO {
-    private String code;
-    private String message;
-    private Long timelineId;  // 타임라인 ID를 포함하는 필드 추가
+    private final String code;
+    private final String message;
+    private final Long timelineId;  // 타임라인 ID를 포함하는 필드 추가
 
     // 성공 시 호출되는 메서드
     public static CreateResponseDTO success(Long timelineId) {
