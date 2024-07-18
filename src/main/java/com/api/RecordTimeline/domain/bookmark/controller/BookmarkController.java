@@ -15,9 +15,9 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("/{subTimelineId}")
-    public ResponseEntity<Void> toggleBookmark(@RequestBody BookmarkRequestDTO bookmarkRequestDTO) {
-        bookmarkService.toggleBookmark(bookmarkRequestDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping("/toggle")
+    public ResponseEntity<BookmarkResponseDTO> toggleBookmark(@RequestBody BookmarkRequestDTO bookmarkRequestDTO) {
+        BookmarkResponseDTO response = bookmarkService.toggleBookmark(bookmarkRequestDTO);
+        return ResponseEntity.ok(response);
     }
 }
