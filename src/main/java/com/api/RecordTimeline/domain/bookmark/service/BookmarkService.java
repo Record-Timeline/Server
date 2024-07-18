@@ -34,14 +34,14 @@ public class BookmarkService {
 
         if (existingBookmark.isPresent()) {
             bookmarkRepository.delete(existingBookmark.get());
-            return BookmarkResponseDTO.success(existingBookmark.get().getId()); // 북마크 해제 성공 응답
+            return BookmarkResponseDTO.success("Bookmark removed successfully",existingBookmark.get().getId()); // 북마크 해제 성공 응답
         } else {
             Bookmark bookmark = Bookmark.builder()
                     .member(member)
                     .subTimeline(subTimeline)
                     .build();
             bookmarkRepository.save(bookmark);
-            return BookmarkResponseDTO.success(bookmark.getId()); // 북마크 추가 성공 응답
+            return BookmarkResponseDTO.success("Success",bookmark.getId()); // 북마크 추가 성공 응답
         }
     }
 

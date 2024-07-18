@@ -11,8 +11,9 @@ public class BookmarkResponseDTO {
     private Long bookmarkId;  // 북마크 ID를 포함하는 필드 추가
 
     // 성공 시 호출되는 메서드
-    public static BookmarkResponseDTO success(Long bookmarkId) {
-        return new BookmarkResponseDTO("SU", "Success", bookmarkId);
+    public static BookmarkResponseDTO success(String message, Long bookmarkId) {
+//        return new BookmarkResponseDTO("SU", "Success", bookmarkId);
+        return new BookmarkResponseDTO("SU", message, bookmarkId);
     }
 
     // 실패 시 호출되는 메서드
