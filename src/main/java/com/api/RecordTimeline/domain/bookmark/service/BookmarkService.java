@@ -34,14 +34,18 @@ public class BookmarkService {
 
         if (existingBookmark.isPresent()) {
             bookmarkRepository.delete(existingBookmark.get());
-            return BookmarkResponseDTO.success("Bookmark removed successfully",existingBookmark.get().getId()); // 북마크 해제 성공 응답
+            subTimeline.setBookmarkCount(subTimeline.getBookmarkCount() - 1); // 북마크 수 감소
+            subTimelineRepository.save(subTimeline); // 변경된 북마크 수 저장
+            return BookmarkResponseDTO.success("Bookmark removed successfully",subTimeline.getBookmarkCount()); // 북마크 해제 성공 응답
         } else {
             Bookmark bookmark = Bookmark.builder()
                     .member(member)
                     .subTimeline(subTimeline)
                     .build();
             bookmarkRepository.save(bookmark);
-            return BookmarkResponseDTO.success("Success",bookmark.getId()); // 북마크 추가 성공 응답
+            subTimeline.setBookmarkCount(subTimeline.getBookmarkCount() + 1); // 북마크 수 증가
+            subTimelineRepository.save(subTimeline); // 변경된 북마크 수 저장
+            return BookmarkResponseDTO.success("Success",subTimeline.getBookmarkCount()); // 북마크 추가 성공 응답
         }
     }
 

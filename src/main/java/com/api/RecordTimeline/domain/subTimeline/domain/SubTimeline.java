@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "sub_timeline")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
@@ -33,4 +34,7 @@ public class SubTimeline extends BaseEntity {
 
     @Column
     private LocalDate endDate;
+
+    @Column(nullable = false)
+    private int bookmarkCount = 0; // 북마크 수 필드 추가
 }

@@ -8,16 +8,16 @@ import lombok.Getter;
 public class BookmarkResponseDTO {
     private String code;
     private String message;
-    private Long bookmarkId;  // 북마크 ID를 포함하는 필드 추가
+    private int bookmarkCount;
 
     // 성공 시 호출되는 메서드
-    public static BookmarkResponseDTO success(String message, Long bookmarkId) {
+    public static BookmarkResponseDTO success(String message, int bookmarkCount) {
 //        return new BookmarkResponseDTO("SU", "Success", bookmarkId);
-        return new BookmarkResponseDTO("SU", message, bookmarkId);
+        return new BookmarkResponseDTO("SU", message, bookmarkCount);
     }
 
     // 실패 시 호출되는 메서드
     public static BookmarkResponseDTO failure() {
-        return new BookmarkResponseDTO("UF", "Bookmark operation failed", null);
+        return new BookmarkResponseDTO("UF", "Bookmark operation failed", 0);
     }
 }
