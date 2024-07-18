@@ -8,8 +8,6 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
-import com.api.RecordTimeline.global.exception.ApiException;
-import com.api.RecordTimeline.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +24,7 @@ public class BookmarkService {
     private final MemberRepository memberRepository;
     private final SubTimelineRepository subTimelineRepository;
 
-    public void toggleBookmark(BookmarkRequestDTO bookmarkRequestDTO) {
+    public BookmarkResponseDTO toggleBookmark(BookmarkRequestDTO bookmarkRequestDTO) {
         Long subTimelineId = bookmarkRequestDTO.getSubTimelineId();
         Member member = getCurrentAuthenticatedMember();
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
@@ -36,12 +34,14 @@ public class BookmarkService {
 
         if (existingBookmark.isPresent()) {
             bookmarkRepository.delete(existingBookmark.get());
+            return BookmarkResponseDTO.success(existingBookmark.get().getId()); // 북마크 해제 성공 응답
         } else {
             Bookmark bookmark = Bookmark.builder()
                     .member(member)
                     .subTimeline(subTimeline)
                     .build();
             bookmarkRepository.save(bookmark);
+            return BookmarkResponseDTO.success(bookmark.getId()); // 북마크 추가 성공 응답
         }
     }
 
