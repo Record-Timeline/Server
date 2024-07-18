@@ -34,7 +34,7 @@ public class BookmarkService {
 
         if (existingBookmark.isPresent()) {
             bookmarkRepository.delete(existingBookmark.get());
-            subTimeline.setBookmarkCount(subTimeline.getBookmarkCount() - 1); // 북마크 수 감소
+            subTimeline.adjustBookmarkCount(-1); // 북마크 수 감소 및 검증
             subTimelineRepository.save(subTimeline); // 변경된 북마크 수 저장
             return BookmarkResponseDTO.success("Bookmark removed successfully",subTimeline.getBookmarkCount()); // 북마크 해제 성공 응답
         } else {
@@ -43,7 +43,7 @@ public class BookmarkService {
                     .subTimeline(subTimeline)
                     .build();
             bookmarkRepository.save(bookmark);
-            subTimeline.setBookmarkCount(subTimeline.getBookmarkCount() + 1); // 북마크 수 증가
+            subTimeline.adjustBookmarkCount(1); // 북마크 수 증가 및 검증
             subTimelineRepository.save(subTimeline); // 변경된 북마크 수 저장
             return BookmarkResponseDTO.success("Success",subTimeline.getBookmarkCount()); // 북마크 추가 성공 응답
         }

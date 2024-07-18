@@ -37,4 +37,12 @@ public class SubTimeline extends BaseEntity {
 
     @Column(nullable = false)
     private int bookmarkCount = 0; // 북마크 수 필드 추가
+
+    // 북마크 수가 음수가 되지 않도록 검증 메서드 추가
+    public void adjustBookmarkCount(int adjustment) {
+        this.bookmarkCount += adjustment;
+        if (this.bookmarkCount < 0) {
+            this.bookmarkCount = 0;
+        }
+    }
 }
