@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class BookmarkResponseDTO {
-서    private String code;
+    private String code;
     private String message;
     private Long bookmarkId;  // 북마크 ID를 포함하는 필드 추가
 
