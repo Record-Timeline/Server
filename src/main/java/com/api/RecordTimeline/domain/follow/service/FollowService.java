@@ -28,6 +28,12 @@ public class FollowService {
             throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
         }
 
+        // 이미 팔로우 관계가 존재하는지 확인
+        Follow existingFollow = followRepository.findByFollowerIdAndFollowingId(followerId, followingId);
+        if (existingFollow != null) {
+            throw new ApiException(ErrorType._ALREADY_FOLLOWING);
+        }
+
         Follow follow = new Follow(follower, following);
         followRepository.save(follow);
     }

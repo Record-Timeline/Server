@@ -46,7 +46,8 @@ public enum ErrorType {
     _DATABASE_ERROR(OK, "DATABASE5050", "데이터베이스 오류입니다."),
 
     // ------------------------------------------ FOLLOW ------------------------------------------
-    _FOLLOW_NOT_FOUND(OK, "FOLLOW40000", "팔로우를 찾을 수 없습니다.");
+    _FOLLOW_NOT_FOUND(OK, "FOLLOW4000", "팔로우를 찾을 수 없습니다."),
+    _ALREADY_FOLLOWING(OK, "FOLLOW40001", "이미 팔로우되어 있습니다.");
 
 
 
