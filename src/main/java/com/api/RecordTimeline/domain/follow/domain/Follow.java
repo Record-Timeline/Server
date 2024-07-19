@@ -18,11 +18,16 @@ public class Follow extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id")
     private Member follower;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private Member following;
+
+    public Follow(Member follower, Member following) {
+        this.follower = follower;
+        this.following = following;
+    }
 }
