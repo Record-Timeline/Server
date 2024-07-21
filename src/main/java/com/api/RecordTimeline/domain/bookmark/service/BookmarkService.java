@@ -3,6 +3,7 @@ package com.api.RecordTimeline.domain.bookmark.service;
 import com.api.RecordTimeline.domain.bookmark.domain.Bookmark;
 import com.api.RecordTimeline.domain.bookmark.dto.request.BookmarkRequestDTO;
 import com.api.RecordTimeline.domain.bookmark.dto.response.BookmarkResponseDTO;
+import com.api.RecordTimeline.domain.bookmark.dto.response.BookmarkedPostResponseDTO;
 import com.api.RecordTimeline.domain.bookmark.repository.BookmarkRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +52,27 @@ public class BookmarkService {
         }
     }
 
-    private Member getCurrentAuthenticatedMember() {
+    public List<BookmarkedPostResponseDTO> getBookmarkedPosts(Member member) {
+        List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
+
+        return bookmarks.stream()
+                .map(bookmark -> {
+                    SubTimeline subTimeline = bookmark.getSubTimeline();
+                    return new BookmarkedPostResponseDTO(
+                            subTimeline.getId(),
+                            subTimeline.getTitle(),
+                            subTimeline.getContent(),
+                            subTimeline.getStartDate(),
+                            subTimeline.getEndDate(),
+                            subTimeline.getBookmarkCount(),
+                            subTimeline.getMember().getNickname(),
+                            subTimeline.getMember().getInterest().name()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public Member getCurrentAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
         return Optional.ofNullable(memberRepository.findByEmailAndIsDeletedFalse(userEmail))
