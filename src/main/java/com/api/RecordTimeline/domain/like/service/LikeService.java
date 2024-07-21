@@ -36,7 +36,7 @@ public class LikeService {
             likeRepository.delete(existingLike.get());
             subTimeline.adjustLikeCount(-1); // 좋아요 수 감소 및 검증
             subTimelineRepository.save(subTimeline); // 변경된 좋아요 수 저장
-            return LikeResponseDTO.success("좋아요가 제거되었습니다.", subTimeline.getLikeCount());
+            return LikeResponseDTO.success("removed successfully", subTimeline.getLikeCount());
         } else {
             UserLike like = UserLike.builder()
                     .member(member)
@@ -45,7 +45,7 @@ public class LikeService {
             likeRepository.save(like);
             subTimeline.adjustLikeCount(1); // 좋아요 수 증가 및 검증
             subTimelineRepository.save(subTimeline); // 변경된 좋아요 수 저장
-            return LikeResponseDTO.success("좋아요가 추가되었습니다.", subTimeline.getLikeCount());
+            return LikeResponseDTO.success("added successfully", subTimeline.getLikeCount());
         }
     }
 
