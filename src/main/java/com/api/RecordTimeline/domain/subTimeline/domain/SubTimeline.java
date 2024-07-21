@@ -2,6 +2,7 @@ package com.api.RecordTimeline.domain.subTimeline.domain;
 
 import com.api.RecordTimeline.domain.base.BaseEntity;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
+import com.api.RecordTimeline.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,5 +45,10 @@ public class SubTimeline extends BaseEntity {
         if (this.bookmarkCount < 0) {
             this.bookmarkCount = 0;
         }
+    }
+
+    // MainTimeline의 Member를 통해 접근
+    public Member getMember() {
+        return this.mainTimeline.getMember();
     }
 }
