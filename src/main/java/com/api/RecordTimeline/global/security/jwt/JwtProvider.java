@@ -14,22 +14,22 @@ import java.util.Date;
 import static com.api.RecordTimeline.global.exception.ErrorType._JWT_EXPIRED;
 import static com.api.RecordTimeline.global.exception.ErrorType._JWT_PARSING_ERROR;
 
-
 @Component
 public class JwtProvider {
 
     public static final long ACCESS_TOKEN_VALID_TIME = 7200000L;
+
     @Value("${jwt.secret.key}")
     private String secretKey;
 
-
-    public String generateJwtToken(final String email) {
+    public String generateJwtToken(final Long memberId, final String email) {
         Date now = new Date();
         long expiredDate = now.getTime() + ACCESS_TOKEN_VALID_TIME;
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         return Jwts.builder()
                 .setSubject(email)
+                .claim("memberId", memberId)
                 .setIssuedAt(now)
                 .setExpiration(new Date(expiredDate))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -62,5 +62,15 @@ public class JwtProvider {
         return claims.getSubject();
     }
 
+    public Long getUserIdFromToken(final String jwtToken) {
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(jwtToken)
+                .getBody();
+
+        return claims.get("memberId", Long.class);
+    }
 }
