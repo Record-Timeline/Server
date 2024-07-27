@@ -12,6 +12,7 @@ import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepositor
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +31,7 @@ public class BookmarkService {
     private final MemberRepository memberRepository;
     private final SubTimelineRepository subTimelineRepository;
 
+    @Transactional
     public BookmarkResponseDTO toggleBookmark(BookmarkRequestDTO bookmarkRequestDTO) {
         Long subTimelineId = bookmarkRequestDTO.getSubTimelineId();
         Member member = getCurrentAuthenticatedMember();

@@ -11,6 +11,7 @@ import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepositor
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,7 @@ public class LikeService {
     private final MemberRepository memberRepository;
     private final SubTimelineRepository subTimelineRepository;
 
+    @Transactional
     public LikeResponseDTO toggleLike(LikeRequestDTO likeRequestDTO) {
         Long subTimelineId = likeRequestDTO.getSubTimelineId();
         Member member = getCurrentAuthenticatedMember();
@@ -54,7 +56,7 @@ public class LikeService {
         }
     }
 
-    private Member getCurrentAuthenticatedMember() {
+    public Member getCurrentAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
         Long memberId = jwtToken.getUserId();
