@@ -8,6 +8,9 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
+import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,8 +54,12 @@ public class LikeService {
 
     private Member getCurrentAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        return Optional.ofNullable(memberRepository.findByEmailAndIsDeletedFalse(userEmail))
-                .orElseThrow(() -> new NoSuchElementException("활성 상태의 해당 이메일로 등록된 사용자를 찾을 수 없습니다: " + userEmail));
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+        Long memberId = jwtToken.getUserId();
+        Member member = memberRepository.findByIdAndIsDeletedFalse(memberId);
+        if (member == null) {
+            throw new NoSuchElementException("활성 상태의 해당 ID로 등록된 사용자를 찾을 수 없습니다: " + memberId);
+        }
+        return member;
     }
 }
