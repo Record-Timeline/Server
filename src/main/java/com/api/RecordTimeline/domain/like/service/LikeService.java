@@ -30,8 +30,10 @@ public class LikeService {
     public LikeResponseDTO toggleLike(LikeRequestDTO likeRequestDTO) {
         Long subTimelineId = likeRequestDTO.getSubTimelineId();
         Member member = getCurrentAuthenticatedMember();
+
+        // 서브타임라인 존재 여부 확인 및 예외 처리
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
-                .orElseThrow(() -> new NoSuchElementException("SubTimeline not found"));
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
 
         Optional<UserLike> existingLike = likeRepository.findByMemberAndSubTimeline(member, subTimeline);
 
@@ -58,7 +60,7 @@ public class LikeService {
         Long memberId = jwtToken.getUserId();
         Member member = memberRepository.findByIdAndIsDeletedFalse(memberId);
         if (member == null) {
-            throw new NoSuchElementException("활성 상태의 해당 ID로 등록된 사용자를 찾을 수 없습니다: " + memberId);
+            throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
         }
         return member;
     }
