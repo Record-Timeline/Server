@@ -9,6 +9,9 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
+import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,8 +33,9 @@ public class BookmarkService {
     public BookmarkResponseDTO toggleBookmark(BookmarkRequestDTO bookmarkRequestDTO) {
         Long subTimelineId = bookmarkRequestDTO.getSubTimelineId();
         Member member = getCurrentAuthenticatedMember();
+        // 서브타임라인 존재 여부 확인 및 예외 처리
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
-                .orElseThrow(() -> new NoSuchElementException("SubTimeline not found"));
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
 
         Optional<Bookmark> existingBookmark = bookmarkRepository.findByMemberAndSubTimeline(member, subTimeline);
 
@@ -74,8 +78,12 @@ public class BookmarkService {
 
     public Member getCurrentAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        return Optional.ofNullable(memberRepository.findByEmailAndIsDeletedFalse(userEmail))
-                .orElseThrow(() -> new NoSuchElementException("활성 상태의 해당 이메일로 등록된 사용자를 찾을 수 없습니다: " + userEmail));
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+        Long memberId = jwtToken.getUserId();
+        Member member = memberRepository.findByIdAndIsDeletedFalse(memberId);
+        if (member == null) {
+            throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
+        }
+        return member;
     }
 }
