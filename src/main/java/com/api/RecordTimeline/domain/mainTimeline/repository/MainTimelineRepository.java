@@ -11,7 +11,7 @@ public interface MainTimelineRepository extends JpaRepository<MainTimeline, Long
     List<MainTimeline> findByMemberId(Long memberId);
 
     // 특정 사용자의 메인 타임라인을 시작 날짜 기준으로 정렬하여 조회
-    @Query("select m from MainTimeline m where m.member.id = ?1 order by m.startDate")
+    @Query("select m from MainTimeline m WHERE m.member.id = :memberId ORDER BY m.startDate")
     List<MainTimeline> findByMemberIdOrderByStartDate(Long memberId);
 
 }

@@ -45,7 +45,8 @@ public class MainTimeline extends BaseEntity {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.member = member;
+//        this.member = member;
+        setMember(member);
     }
 
     public void setMember(Member member) {

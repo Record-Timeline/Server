@@ -17,10 +17,23 @@ public class MainTimelineRequestDTO {
 
     // DTO로부터 엔티티 객체를 생성하는 메서드
     public MainTimeline toEntity() {
+        validate(); // 입력값 검증 추가
         return MainTimeline.builder()
                 .title(this.title)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
                 .build();
+    }
+
+    private void validate() {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty");
+        }
+        if (startDate == null) {
+            throw new IllegalArgumentException("Start date cannot be null");
+        }
+        if (endDate != null && endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("End date cannot be before start date");
+        }
     }
 }
