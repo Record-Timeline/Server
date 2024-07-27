@@ -40,17 +40,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String jwtToken = authorizationHeader.substring(7);
                 jwtProvider.validateToken(jwtToken); // 토큰 검증
 
+                Long userId = jwtProvider.getUserIdFromToken(jwtToken);
                 String email = jwtProvider.getUserEmailFromToken(jwtToken);
                 Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
                 if (member != null) {
-                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-
                     AbstractAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(email, null);
+                            new JwtAuthenticationToken(userId, email, null);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    securityContext.setAuthentication(authenticationToken);
-                    SecurityContextHolder.setContext(securityContext);
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (ApiException e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
@@ -67,6 +64,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPublicUri(final String requestURI) {
         return
                 requestURI.startsWith("/swagger-ui") ||
-                        requestURI.startsWith("/api/v1/auth"); //개발 기간 동안만 임시로 적어놓음.
+                        requestURI.startsWith("/api/v1/auth"); // 개발 기간 동안만 임시로 적어놓음.
     }
 }

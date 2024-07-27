@@ -60,21 +60,33 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<MemberInfoResponseDto> searchMembersByKeyword(String keyword) {
+
+        // 키워드를 기반으로 닉네임 또는 프로필 소개글에 해당 키워드를 포함하는 회원을 검색
         List<Member> searchMember = memberRepository.findByNicknameContainingOrProfileIntroductionContaining(keyword);
+
+        // 검색 결과가 없으면 빈 리스트를 반환
         if (searchMember.isEmpty()) {
             return List.of();
         }
 
-        return searchMember.stream().map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile())).toList();
+        // 검색된 회원 정보를 DTO로 변환하여 반환
+        return searchMember.stream()
+                .map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile()))
+                .toList();
     }
 
     @Override
     public List<SearchSubTimelineDto> searchSubTimelinesByKeyword(String keyword) {
+
+        // 키워드를 기반으로 제목 또는 내용에 해당 키워드를 포함하는 서브 타임라인을 검색
         List<SubTimeline> subTimelines = subTimelineRepository.findByTitleOrContentContaining(keyword);
+
+        // 검색 결과가 없으면 빈 리스트를 반환
         if (subTimelines.isEmpty()) {
             return List.of();
         }
 
+        // 검색된 서브 타임라인 정보를 DTO로 변환하여 반환
         return subTimelines.stream().map(subTimeline -> {
             Member author = subTimeline.getMainTimeline().getMember();
             return new SearchSubTimelineDto(
@@ -93,14 +105,18 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public SearchResultDto searchAllByKeyword(String keyword) {
+        // 키워드를 기반으로 회원 검색
         List<MemberInfoResponseDto> members = searchMembersByKeyword(keyword);
 
+        // 키워드를 기반으로 서브 타임라인 검색
         List<SearchSubTimelineDto> subTimelines = searchSubTimelinesByKeyword(keyword);
 
+        // 검색 결과가 모두 없으면 예외 발생
         if (members.isEmpty() && subTimelines.isEmpty()) {
             throw new ApiException(ErrorType._NO_SEARCH_RESULTS);
         }
 
+        // 검색 결과를 DTO로 변환하여 반환
         return new SearchResultDto(members, subTimelines);
     }
 }
