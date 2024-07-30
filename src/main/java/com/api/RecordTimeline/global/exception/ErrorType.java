@@ -35,6 +35,8 @@ public enum ErrorType {
 
     // ------------------------------------------ Timeline ------------------------------------------
     _DO_NOT_HAVE_PERMISSION (OK, "Timeline4000", "해당 작업에 권한이 없습니다."),
+    ALREADY_EXISTS(BAD_REQUEST, "BOOKMARK_4000", "이미 북마크된 게시글입니다."),
+    _SUBTIMELINE_NOT_FOUND(OK, "SUBTIMELINE_4040", "존재하지 않는 서브타임라인입니다."),
 
     // ------------------------------------------ Recommend ------------------------------------------
     _NO_RECOMMENDER_FOUND(OK, "RECOMMEND4040", "해당 관심사를 가진 사용자가 없습니다."),
@@ -81,4 +83,5 @@ public enum ErrorType {
     public String getMessage() {
         return message;
     }
+
 }
