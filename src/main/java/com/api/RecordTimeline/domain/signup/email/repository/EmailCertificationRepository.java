@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EmailCertificationRepository extends JpaRepository<EmailCertification,Long> {
     EmailCertification findByEmail(String email);
     boolean existsByEmailAndCertificationNumber(String email, String certificationNumber);
-
+    EmailCertification findByEmailAndContext(String email, String context);
 }

@@ -27,18 +27,20 @@ public class EmailServiceImpl implements EmailService {
     public ResponseEntity<? super EmailCertificationResponseDto> emailCertification(EmailCertificationRequestDto dto) {
         try {
             String email = dto.getEmail();
+            String context = dto.getContext();
 
-            boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
-            if (isExistEmail)
-                return EmailCertificationResponseDto.duplicateEmail();
+            // 회원가입 과정에서는 중복된 이메일이 있으면 안 되므로 체크
+            if ("SIGNUP".equals(context)) {
+                boolean isExistEmail = memberRepository.existsByEmailAndIsDeletedFalse(email);
+                if (isExistEmail) return EmailCertificationResponseDto.duplicateEmail();
+            }
 
             String certificationNumber = CertificationNumber.getCertificationNumber();
             boolean isSuccessed = emailProvider.sendCertificationMail(email, certificationNumber);
             if(!isSuccessed) return EmailCertificationResponseDto.mailSendFail();
 
-            EmailCertification emailCertification = new EmailCertification(email,certificationNumber);
+            EmailCertification emailCertification = new EmailCertification(email, certificationNumber, context);
             emailCertificationRepository.save(emailCertification);
-
 
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -51,11 +53,11 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     public ResponseEntity<? super CheckCertificationResponseDto> checkCertification(CheckCertificationRequestDto dto) {
         try{
-
             String email = dto.getEmail();
             String certificationNumber = dto.getCertificationNumber();
+            String context = dto.getContext();
 
-            EmailCertification emailCertification = emailCertificationRepository.findByEmail(email);
+            EmailCertification emailCertification = emailCertificationRepository.findByEmailAndContext(email, context);
             if(emailCertification == null)
                 return CheckCertificationResponseDto.memberNotFound();
 
@@ -63,6 +65,8 @@ public class EmailServiceImpl implements EmailService {
             if(!isMatched)
                 return CheckCertificationResponseDto.certificationFail();
 
+            emailCertification.markAsVerified();
+            emailCertificationRepository.save(emailCertification);
 
         } catch (Exception exception){
             exception.printStackTrace();
