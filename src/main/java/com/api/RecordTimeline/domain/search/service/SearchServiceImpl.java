@@ -1,5 +1,6 @@
 package com.api.RecordTimeline.domain.search.service;
 
+import com.api.RecordTimeline.domain.follow.service.FollowService;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -32,6 +33,7 @@ public class SearchServiceImpl implements SearchService {
     private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
     private final SubTimelineRepository subTimelineRepository;
+    private final FollowService followService;
 
     @Transactional
     @Override
@@ -60,7 +62,6 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<MemberInfoResponseDto> searchMembersByKeyword(String keyword) {
-
         // 키워드를 기반으로 닉네임 또는 프로필 소개글에 해당 키워드를 포함하는 회원을 검색
         List<Member> searchMember = memberRepository.findByNicknameContainingOrProfileIntroductionContaining(keyword);
 
@@ -71,9 +72,14 @@ public class SearchServiceImpl implements SearchService {
 
         // 검색된 회원 정보를 DTO로 변환하여 반환
         return searchMember.stream()
-                .map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile()))
-                .toList();
+                .map(member -> {
+                    Long followerCount = followService.getFollowerCountForMember(member.getId());
+                    Long followingCount = followService.getFollowingCountForMember(member.getId());
+                    return MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile(), followerCount, followingCount);
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<SearchSubTimelineDto> searchSubTimelinesByKeyword(String keyword) {
