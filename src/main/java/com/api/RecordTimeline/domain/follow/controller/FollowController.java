@@ -31,20 +31,28 @@ public class FollowController {
         return new SuccessResponse<>(followingId);
     }
 
-    @GetMapping("/following")
+    @GetMapping("/my-following")
     public SuccessResponse<List<MemberInfoResponseDto>> getFollowingList() {
         Long memberId = SecurityUtil.getCurrentMemberId();
         List<MemberInfoResponseDto> followingList = followService.getFollowingList(memberId).stream()
-                .map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile()))
+                .map(member -> {
+                    Long followerCount = followService.getFollowerCountForMember(member.getId());
+                    Long followingCount = followService.getFollowingCountForMember(member.getId());
+                    return MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile(), followerCount, followingCount);
+                })
                 .collect(Collectors.toList());
         return new SuccessResponse<>(followingList);
     }
 
-    @GetMapping("/followers")
+    @GetMapping("/my-followers")
     public SuccessResponse<List<MemberInfoResponseDto>> getFollowerList() {
         Long memberId = SecurityUtil.getCurrentMemberId();
         List<MemberInfoResponseDto> followerList = followService.getFollowerList(memberId).stream()
-                .map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile()))
+                .map(member -> {
+                    Long followerCount = followService.getFollowerCountForMember(member.getId());
+                    Long followingCount = followService.getFollowingCountForMember(member.getId());
+                    return MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile(), followerCount, followingCount);
+                })
                 .collect(Collectors.toList());
         return new SuccessResponse<>(followerList);
     }
@@ -54,5 +62,31 @@ public class FollowController {
         Long memberId = SecurityUtil.getCurrentMemberId();
         followService.removeFollower(memberId, followerId);
         return new SuccessResponse<>(followerId);
+    }
+
+    @GetMapping("/my-count/following")
+    public SuccessResponse<Long> getFollowingCount() {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Long followingCount = followService.getFollowingCount(memberId);
+        return new SuccessResponse<>(followingCount);
+    }
+
+    @GetMapping("/my-count/followers")
+    public SuccessResponse<Long> getFollowerCount() {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        Long followerCount = followService.getFollowerCount(memberId);
+        return new SuccessResponse<>(followerCount);
+    }
+
+    @GetMapping("/count/following/{memberId}")
+    public SuccessResponse<Long> getFollowingCountForMember(@PathVariable Long memberId) {
+        Long followingCount = followService.getFollowingCountForMember(memberId);
+        return new SuccessResponse<>(followingCount);
+    }
+
+    @GetMapping("/count/followers/{memberId}")
+    public SuccessResponse<Long> getFollowerCountForMember(@PathVariable Long memberId) {
+        Long followerCount = followService.getFollowerCountForMember(memberId);
+        return new SuccessResponse<>(followerCount);
     }
 }
