@@ -4,6 +4,7 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
 import com.api.RecordTimeline.domain.profile.repository.ProfileRepository;
+import com.api.RecordTimeline.domain.signup.email.domain.EmailCertification;
 import com.api.RecordTimeline.domain.signup.email.dto.response.CheckCertificationResponseDto;
 import com.api.RecordTimeline.domain.signup.email.repository.EmailCertificationRepository;
 import com.api.RecordTimeline.domain.signup.signup.dto.request.BasicSignupRequestDto;
@@ -59,8 +60,8 @@ public class SignupServiceImpl implements SignupService {
             basicDto.setPassword(encodedPassword);
 
             String certificationNumber = basicDto.getCertificationNumber();
-            boolean isCertificationNumberValid = emailCertificationRepository.existsByEmailAndCertificationNumber(email, certificationNumber);
-            if (!isCertificationNumberValid) {
+            EmailCertification emailCertification = emailCertificationRepository.findByEmailAndContext(email, "SIGNUP");
+            if (emailCertification == null || !emailCertification.getCertificationNumber().equals(certificationNumber)) {
                 return CheckCertificationResponseDto.certificationFail();
             }
 

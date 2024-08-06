@@ -16,4 +16,8 @@ public class EmailCertificationRequestDto {
     @Email
     @NotBlank
     private String email;
+
+    @Schema(description = "이메일 인증 목적 구분", example = "SIGNUP, PASSWORD_RESET")
+    @NotBlank
+    private String context;
 }
