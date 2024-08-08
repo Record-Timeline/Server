@@ -28,7 +28,6 @@ public class FollowService {
             throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
         }
 
-        // 이미 팔로우 관계가 존재하는지 확인
         Follow existingFollow = followRepository.findByFollowerIdAndFollowingId(followerId, followingId);
         if (existingFollow != null) {
             throw new ApiException(ErrorType._ALREADY_FOLLOWING);
@@ -67,4 +66,21 @@ public class FollowService {
     public List<Member> getFollowerList(Long memberId) {
         return followRepository.findFollowerByFollowingId(memberId);
     }
+
+    public Long getFollowingCount(Long memberId) {
+        return followRepository.countFollowingByFollowerId(memberId);
+    }
+
+    public Long getFollowerCount(Long memberId) {
+        return followRepository.countFollowersByFollowingId(memberId);
+    }
+
+    public Long getFollowingCountForMember(Long memberId) {
+        return followRepository.countFollowingByFollowerId(memberId);
+    }
+
+    public Long getFollowerCountForMember(Long memberId) {
+        return followRepository.countFollowersByFollowingId(memberId);
+    }
 }
+
