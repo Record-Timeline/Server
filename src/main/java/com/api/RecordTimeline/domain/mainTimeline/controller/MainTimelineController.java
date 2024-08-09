@@ -29,13 +29,18 @@ public class MainTimelineController {
     @PostMapping
     public ResponseEntity<CreateResponseDTO> createMainTimeline(@RequestBody MainTimelineRequestDTO mainTimelineRequestDTO) {
         try {
-            MainTimeline mainTimeline = mainTimelineRequestDTO.toEntity();
-            MainTimeline created = mainTimelineService.createMainTimeline(mainTimeline);
+            MainTimeline created = mainTimelineService.createMainTimeline(mainTimelineRequestDTO);
             return ResponseEntity.ok(CreateResponseDTO.success(created.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CreateResponseDTO.failure(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CreateResponseDTO.failure());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(CreateResponseDTO.failure("Unexpected error occurred: " + e.getMessage()));
         }
     }
+
+
 
     @GetMapping("/my")
     public ResponseEntity<List<ReadResponseDTO.TimelineDetails>> getMyTimelines() {

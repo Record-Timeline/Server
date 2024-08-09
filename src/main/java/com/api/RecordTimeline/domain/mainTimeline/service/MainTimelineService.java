@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.mainTimeline.service;
 
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
+import com.api.RecordTimeline.domain.mainTimeline.dto.request.MainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.request.UpdateMainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
@@ -10,10 +11,8 @@ import com.api.RecordTimeline.global.exception.ErrorType;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,17 +29,17 @@ public class MainTimelineService {
     }
 
     // 메인 타임라인 생성
-    public MainTimeline createMainTimeline(MainTimeline mainTimeline) {
+    public MainTimeline createMainTimeline(MainTimelineRequestDTO mainTimelineRequestDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
-        Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail); // 이메일을 통해 활성 상태의 Member 조회
+        Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail);
 
-        if (member != null) {
-            mainTimeline.setMember(member);
-            return mainTimelineRepository.save(mainTimeline);
-        } else {
+        if (member == null) {
             throw new NoSuchElementException("활성 상태의 해당 이메일로 등록된 사용자를 찾을 수 없습니다: " + userEmail);
         }
+
+        MainTimeline mainTimeline = mainTimelineRequestDTO.toEntity(member);
+        return mainTimelineRepository.save(mainTimeline);
     }
 
     // ID를 이용해 메인 타임라인 조회
