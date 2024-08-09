@@ -16,8 +16,10 @@ public class MemberInfoResponseDto {
     private final String interest;
     private final String profileImageUrl;
     private final String introduction;
+    private final Long followerCount;
+    private final Long followingCount;
 
-    public static MemberInfoResponseDto fromMemberAndProfile(Member member, Profile profile) {
+    public static MemberInfoResponseDto fromMemberAndProfile(Member member, Profile profile, Long followerCount, Long followingCount) {
         return MemberInfoResponseDto.builder()
                 .memberId(member.getId())
                 .email(member.getEmail())
@@ -25,6 +27,9 @@ public class MemberInfoResponseDto {
                 .interest(member.getInterest() != null ? member.getInterest().toString() : "")
                 .profileImageUrl(profile != null ? profile.getProfileImgUrl() : "")
                 .introduction(profile != null ? profile.getIntroduction() : "")
+                .followerCount(followerCount)
+                .followingCount(followingCount)
                 .build();
     }
 }
+

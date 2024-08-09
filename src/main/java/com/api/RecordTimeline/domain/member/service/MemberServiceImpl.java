@@ -9,6 +9,7 @@ import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
 import com.api.RecordTimeline.domain.member.dto.response.UpdateResponseDto;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.profile.domain.Profile;
+import com.api.RecordTimeline.domain.follow.service.FollowService;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ApiExceptionResponse;
 import com.api.RecordTimeline.global.exception.ErrorType;
@@ -27,11 +28,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
+    private final FollowService followService;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Override
     public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(String email, UpdateMemberRequestDto dto) {
         try {
-
             Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
 
             String nickname = dto.getNewNickname();
@@ -48,13 +50,11 @@ public class MemberServiceImpl implements MemberService{
         }
 
         return UpdateResponseDto.success();
-
     }
 
     @Override
     public ResponseEntity<? super UpdateResponseDto> updatePassword(String email, UpdatePasswordRequestDto dto) {
         try {
-
             Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
 
             if (!passwordEncoder.matches(dto.getOldPassword(), member.getPassword())) {
@@ -85,11 +85,14 @@ public class MemberServiceImpl implements MemberService{
                 throw new ApiException(ErrorType._NO_PROFILE_FOUND);
             }
 
-            MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile);
+            Long followerCount = followService.getFollowerCountForMember(member.getId());
+            Long followingCount = followService.getFollowingCountForMember(member.getId());
+
+            MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile, followerCount, followingCount);
             return ResponseEntity.ok(responseDto);
 
         } catch (ApiException  e) {
-            throw  e;
+            throw e;
 
         } catch (Exception exception) {
             throw new ApiException(ErrorType._DATABASE_ERROR);
@@ -107,11 +110,13 @@ public class MemberServiceImpl implements MemberService{
             throw new ApiException(ErrorType._NO_PROFILE_FOUND);
         }
 
-        MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile);
+        Long followerCount = followService.getFollowerCountForMember(member.getId());
+        Long followingCount = followService.getFollowingCountForMember(member.getId());
+
+        MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile, followerCount, followingCount);
         return ResponseEntity.ok(responseDto);
     }
 
-    // 이메일로 memberId 조회
     @Override
     public ResponseEntity<MemberIdResponseDto> getMemberIdByEmail(String email) {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
@@ -126,7 +131,11 @@ public class MemberServiceImpl implements MemberService{
     public List<MemberInfoResponseDto> getAllMembers() {
         List<Member> members = memberRepository.findAllByIsDeletedFalse();
         return members.stream()
-                .map(member -> MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile()))
-                .toList();
+                .map(member -> {
+                    Long followerCount = followService.getFollowerCountForMember(member.getId());
+                    Long followingCount = followService.getFollowingCountForMember(member.getId());
+                    return MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile(), followerCount, followingCount);
+                })
+                .collect(Collectors.toList());
     }
 }

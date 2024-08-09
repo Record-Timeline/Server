@@ -20,4 +20,9 @@ public class CheckCertificationRequestDto {
     @Schema(description = "이메일 인증 번호", example = "이메일 인증 번호 예시")
     @NotBlank
     private String certificationNumber;
+
+    @Schema(description = "이메일 인증 목적 구분", example = "SIGNUP, PASSWORD_RESET")
+    @NotBlank
+    private String context;
+
 }

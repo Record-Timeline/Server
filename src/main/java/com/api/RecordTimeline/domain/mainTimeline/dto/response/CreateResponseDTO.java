@@ -16,7 +16,8 @@ public class CreateResponseDTO {
     }
 
     // 실패 시 호출되는 메서드
-    public static CreateResponseDTO failure() {
-        return new CreateResponseDTO("UF", "Update Failed", null);
+    public static CreateResponseDTO failure(String errorMessage) {
+        return new CreateResponseDTO("UF", errorMessage, null);
     }
+
 }
