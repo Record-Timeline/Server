@@ -13,6 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByIdAndIsDeletedFalse(Long id);
     List<Member> findAllByIsDeletedFalse();
     boolean existsByEmailAndIsDeletedFalse(String email);
+    boolean existsByIdAndIsDeletedFalse(Long id);
     boolean existsByNicknameAndIsDeletedFalse(String nickname);
 
 
