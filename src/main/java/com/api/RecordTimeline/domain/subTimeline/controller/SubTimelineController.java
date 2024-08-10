@@ -2,10 +2,7 @@ package com.api.RecordTimeline.domain.subTimeline.controller;
 
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubCreateResponseDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubDeleteResponseDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubReadResponseDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubUpdateResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.*;
 import com.api.RecordTimeline.domain.subTimeline.service.SubTimelineService;
 import com.api.RecordTimeline.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +65,12 @@ public class SubTimelineController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SubDeleteResponseDTO.failure());
         }
+    }
+
+    @GetMapping("/{subTimelineId}/like-bookmark")
+    public ResponseEntity<SubTimelineWithLikeBookmarkDTO> getSubTimelineWithLikeAndBookmark(@PathVariable Long subTimelineId) {
+        SubTimelineWithLikeBookmarkDTO dto = subTimelineService.getSubTimelineWithLikeAndBookmark(subTimelineId);
+        return ResponseEntity.ok(dto);
     }
 }
 

@@ -71,6 +71,9 @@ public class BookmarkService {
                             subTimeline.getStartDate(),
                             subTimeline.getEndDate(),
                             subTimeline.getBookmarkCount(),
+                            subTimeline.getLikeCount(),
+                            subTimeline.getMainTimeline().getId(),
+                            subTimeline.getMember().getId(),
                             subTimeline.getMember().getNickname(),
                             subTimeline.getMember().getInterest().name()
                     );

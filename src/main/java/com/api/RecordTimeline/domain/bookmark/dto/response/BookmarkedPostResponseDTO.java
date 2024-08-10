@@ -14,13 +14,9 @@ public class BookmarkedPostResponseDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private int bookmarkCount;
+    private int likeCount;
+    private Long mainTimelineId; // 메인 타임라인 ID
+    private Long authorId; // 사용자(작성자) ID
     private String authorName; // 게시글 작성자 이름
     private String authorInterest; // 게시글 작성자 관심직종
-
-//    public static BookmarkedPostResponseDTO from(
-//            Long id, String title, String content, LocalDate startDate, LocalDate endDate,
-//            int bookmarkCount, String authorName, String authorInterest) {
-//        return new BookmarkedPostResponseDTO(
-//                id, title, content, startDate, endDate, bookmarkCount, authorName, authorInterest);
-//    }
 }
