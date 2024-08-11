@@ -3,10 +3,7 @@ package com.api.RecordTimeline.domain.mainTimeline.controller;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.dto.request.MainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.request.UpdateMainTimelineRequestDTO;
-import com.api.RecordTimeline.domain.mainTimeline.dto.response.CreateResponseDTO;
-import com.api.RecordTimeline.domain.mainTimeline.dto.response.DeleteResponseDTO;
-import com.api.RecordTimeline.domain.mainTimeline.dto.response.ReadResponseDTO;
-import com.api.RecordTimeline.domain.mainTimeline.dto.response.UpdateResponseDTO;
+import com.api.RecordTimeline.domain.mainTimeline.dto.response.*;
 import com.api.RecordTimeline.domain.mainTimeline.service.MainTimelineService;
 import com.api.RecordTimeline.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -107,5 +104,14 @@ public class MainTimelineController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DeleteResponseDTO("UE", "삭제에 실패했습니다."));
         }
+    }
+
+    @PutMapping("/{mainTimelineId}/privacy")
+    public ResponseEntity<PrivacyUpdateResponseDTO> setMainTimelinePrivacy(@PathVariable Long mainTimelineId,
+                                                                           @RequestParam boolean isPrivate) {
+        mainTimelineService.setMainTimelinePrivacy(mainTimelineId, isPrivate);
+
+        String message = isPrivate ? "메인타임라인이 비공개 처리 되었습니다." : "메인타임라인이 공개 처리 되었습니다.";
+        return ResponseEntity.ok(PrivacyUpdateResponseDTO.success(message));
     }
 }
