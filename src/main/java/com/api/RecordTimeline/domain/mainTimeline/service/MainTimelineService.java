@@ -102,4 +102,19 @@ public class MainTimelineService {
             throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
         }
     }
+
+    public void setMainTimelinePrivacy(Long mainTimelineId, boolean isPrivate) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        MainTimeline mainTimeline = mainTimelineRepository.findById(mainTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._MAINTIMELINE_NOT_FOUND));
+
+        if (!mainTimeline.getMember().getEmail().equals(userEmail)) {
+            throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
+        }
+
+        mainTimeline.setPrivate(isPrivate);
+        mainTimelineRepository.save(mainTimeline);
+    }
 }
