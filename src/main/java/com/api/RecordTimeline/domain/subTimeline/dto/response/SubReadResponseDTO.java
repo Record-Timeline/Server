@@ -22,6 +22,8 @@ public class SubReadResponseDTO {
         private String content;
         private LocalDate startDate;
         private LocalDate endDate;
+        private int likeCount;
+        private int bookmarkCount;
     }
 
     public static SubReadResponseDTO from(List<SubTimeline> subTimelines, String mainTimelineTitle) {
@@ -31,7 +33,9 @@ public class SubReadResponseDTO {
                         subTimeline.getTitle(),
                         subTimeline.getContent(),
                         subTimeline.getStartDate(),
-                        subTimeline.getEndDate()
+                        subTimeline.getEndDate(),
+                        subTimeline.getLikeCount(),
+                        subTimeline.getBookmarkCount()
                 )).collect(Collectors.toList());
         return new SubReadResponseDTO(details, mainTimelineTitle);
     }

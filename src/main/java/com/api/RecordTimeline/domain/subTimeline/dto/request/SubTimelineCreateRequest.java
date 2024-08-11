@@ -2,6 +2,7 @@ package com.api.RecordTimeline.domain.subTimeline.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 
 @Data
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class SubTimelineCreateRequest {
     private Long mainTimelineId;

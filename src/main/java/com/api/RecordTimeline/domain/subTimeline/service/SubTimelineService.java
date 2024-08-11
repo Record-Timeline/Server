@@ -1,14 +1,21 @@
 package com.api.RecordTimeline.domain.subTimeline.service;
 
+import com.api.RecordTimeline.domain.bookmark.repository.BookmarkRepository;
+import com.api.RecordTimeline.domain.like.repository.LikeRepository;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
+import com.api.RecordTimeline.domain.member.domain.Member;
+import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.s3.S3FileUploader;
+import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,6 +32,9 @@ public class SubTimelineService {
 
     private final SubTimelineRepository subTimelineRepository;
     private final MainTimelineRepository mainTimelineRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final LikeRepository likeRepository;
+    private final MemberRepository memberRepository;
     private final S3FileUploader s3FileUploader;
     private final ImageUploadService imageUploadService;
 
@@ -78,6 +88,43 @@ public class SubTimelineService {
 
         return subTimelineRepository.save(updatedSubTimeline);
     }
+
+    public SubTimelineWithLikeBookmarkDTO getSubTimelineWithLikeAndBookmark(Long subTimelineId) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        Member member = getCurrentAuthenticatedMember();
+
+        boolean liked = likeRepository.findByMemberAndSubTimeline(member, subTimeline).isPresent();
+        boolean bookmarked = bookmarkRepository.findByMemberAndSubTimeline(member, subTimeline).isPresent();
+
+        return new SubTimelineWithLikeBookmarkDTO(
+                subTimeline.getId(),
+                subTimeline.getTitle(),
+                subTimeline.getContent(),
+                subTimeline.getStartDate(),
+                subTimeline.getEndDate(),
+                subTimeline.getLikeCount(),
+                subTimeline.getBookmarkCount(),
+                liked,
+                bookmarked
+        );
+    }
+
+    public Member getCurrentAuthenticatedMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+        Long memberId = jwtToken.getUserId();
+
+        // Optional을 사용하지 않고 명시적으로 null 체크를 수행
+        Member member = memberRepository.findByIdAndIsDeletedFalse(memberId);
+        if (member == null) {
+            throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
+        }
+
+        return member;
+    }
+
 
     private List<String> extractImageUrls(String content) {
         Matcher matcher = IMAGE_URL_PATTERN.matcher(content);
