@@ -4,9 +4,11 @@ import com.api.RecordTimeline.domain.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Education extends BaseEntity {
@@ -15,10 +17,23 @@ public class Education extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String institution;
+
+    @Column(nullable = false)
     private String degree;
-    private String startDate;
-    private String endDate;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column
+    private LocalDate endDate;
+
+    private String userEmail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "career_detail_id")
+    private CareerDetail careerDetail;
 
     public Education update(Education newEducation) {
         return Education.builder()
@@ -27,6 +42,7 @@ public class Education extends BaseEntity {
                 .degree(newEducation.getDegree())
                 .startDate(newEducation.getStartDate())
                 .endDate(newEducation.getEndDate())
+                .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정
                 .build();
     }
 }
