@@ -64,6 +64,11 @@ public class SubTimelineService {
         SubTimeline existingSubTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 서브타임라인을 찾을 수 없습니다. : " + subTimelineId));
 
+        MainTimeline mainTimeline = existingSubTimeline.getMainTimeline();
+        if (mainTimeline.isPrivate()) {
+            throw new ApiException(ErrorType._ACCESS_DENIED);
+        }
+
         // 기존 이미지 URL 추출
         List<String> existingImageUrls = extractImageUrls(existingSubTimeline.getContent());
 
@@ -95,6 +100,11 @@ public class SubTimelineService {
     public SubTimelineWithLikeBookmarkDTO getSubTimelineWithLikeAndBookmark(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        MainTimeline mainTimeline = subTimeline.getMainTimeline();
+        if (mainTimeline.isPrivate()) {
+            throw new ApiException(ErrorType._ACCESS_DENIED);
+        }
 
         Member member = getCurrentAuthenticatedMember();
 
@@ -188,6 +198,14 @@ public class SubTimelineService {
 
     // 서브 타임라인 시작 날짜 기준으로 정렬
     public List<SubTimeline> getSubTimelinesByMainTimelineIdOrderByStartDate(Long mainTimelineId) {
+
+        MainTimeline mainTimeline = mainTimelineRepository.findById(mainTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._MAINTIMELINE_NOT_FOUND));
+
+        if (mainTimeline.isPrivate()) {
+            throw new ApiException(ErrorType._ACCESS_DENIED);
+        }
+
         return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
     }
 
