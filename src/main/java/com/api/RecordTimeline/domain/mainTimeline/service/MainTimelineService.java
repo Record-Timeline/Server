@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class MainTimelineService {
@@ -92,7 +93,9 @@ public class MainTimelineService {
 
     // 메인 타임라인 조회 - 정렬 로직 포함
     public List<MainTimeline> getTimelinesByMemberId(Long memberId) {
-        return mainTimelineRepository.findByMemberIdOrderByStartDate(memberId);
+        return mainTimelineRepository.findByMemberIdOrderByStartDate(memberId).stream()
+                .filter(mainTimeline -> !mainTimeline.isPrivate())  // 비공개 타임라인 제외
+                .collect(Collectors.toList());
     }
 
     private void checkOwnership(String ownerEmail) {
