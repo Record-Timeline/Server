@@ -1,6 +1,8 @@
 package com.api.RecordTimeline.domain.career.service;
 
+import com.api.RecordTimeline.domain.career.domain.CareerDetail;
 import com.api.RecordTimeline.domain.career.domain.Certificate;
+import com.api.RecordTimeline.domain.career.repository.CareerDetailRepository;
 import com.api.RecordTimeline.domain.career.repository.CertificateRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -20,6 +22,7 @@ public class CertificateService {
 
     private final CertificateRepository certificateRepository;
     private final MemberRepository memberRepository;
+    private final CareerDetailRepository careerDetailRepository;
 
     @Transactional
     public Certificate addCertificate(Certificate certificate) {
@@ -28,7 +31,21 @@ public class CertificateService {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail);
 
         if (member != null) {
-            certificate = certificate.toBuilder().userEmail(userEmail).date(certificate.getDate().withDayOfMonth(1)).build();
+            // CareerDetail이 없는 경우 새로 생성
+            CareerDetail careerDetail = careerDetailRepository.findByMember(member)
+                    .orElseGet(() -> {
+                        CareerDetail newCareerDetail = CareerDetail.builder()
+                                .member(member)
+                                .build();
+                        return careerDetailRepository.save(newCareerDetail);
+                    });
+
+            certificate = certificate.toBuilder()
+                    .userEmail(userEmail)
+                    .date(certificate.getDate().withDayOfMonth(1))
+                    .careerDetail(careerDetail)
+                    .build();
+
             return certificateRepository.save(certificate);
         } else {
             throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
