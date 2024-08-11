@@ -34,7 +34,7 @@ public enum ErrorType {
     _UPDATE_FAILED(OK, "PROFILE5050", "업데이트에 실패했습니다."),
 
     // ------------------------------------------ Timeline ------------------------------------------
-    _DO_NOT_HAVE_PERMISSION (OK, "Timeline4000", "해당 작업에 권한이 없습니다."),
+    _DO_NOT_HAVE_PERMISSION (OK, "PERMISSION4000", "해당 작업에 권한이 없습니다."),
     ALREADY_EXISTS(BAD_REQUEST, "BOOKMARK_4000", "이미 북마크된 게시글입니다."),
     _SUBTIMELINE_NOT_FOUND(OK, "SUBTIMELINE_4040", "존재하지 않는 서브타임라인입니다."),
     _TIMELINE_NOT_FOUND(NOT_FOUND, "Timeline4040", "해당 타임라인을 찾을 수 없습니다."),
@@ -59,7 +59,10 @@ public enum ErrorType {
     // ------------------------------------------  ------------------------------------------
 
     _CERTIFICATION_FAILED(OK, "CERTIFICATION4000", "인증에 실패했습니다."),
-    _CERTIFICATION_NOT_VERIFIED(OK, "CERTIFICATION4001", "인증이 확인되지 않았습니다.");
+    _CERTIFICATION_NOT_VERIFIED(OK, "CERTIFICATION4001", "인증이 확인되지 않았습니다."), 
+    
+    
+    _CAREER_DETAIL_NOT_FOUND(OK, "CAREER4000", "경력사항을 찾을 수 없습니다.");
 
 
 

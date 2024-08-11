@@ -20,7 +20,11 @@ public class ForeignLanguage extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Proficiency proficiency;
 
-    private String userEmail;  // 사용자 이메일 필드 추가
+    private String userEmail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "career_detail_id")
+    private CareerDetail careerDetail;
 
     public ForeignLanguage update(ForeignLanguage newLanguage) {
         return ForeignLanguage.builder()
