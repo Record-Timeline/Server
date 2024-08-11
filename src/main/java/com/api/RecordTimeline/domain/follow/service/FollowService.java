@@ -82,5 +82,10 @@ public class FollowService {
     public Long getFollowerCountForMember(Long memberId) {
         return followRepository.countFollowersByFollowingId(memberId);
     }
+
+    public boolean isFollowing(Long followerId, Long followingId) {
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(followerId, followingId);
+        return follow != null;
+    }
 }
 
