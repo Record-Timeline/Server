@@ -38,6 +38,8 @@ public enum ErrorType {
     ALREADY_EXISTS(BAD_REQUEST, "BOOKMARK_4000", "이미 북마크된 게시글입니다."),
     _SUBTIMELINE_NOT_FOUND(OK, "SUBTIMELINE_4040", "존재하지 않는 서브타임라인입니다."),
     _TIMELINE_NOT_FOUND(NOT_FOUND, "Timeline4040", "해당 타임라인을 찾을 수 없습니다."),
+    _MAINTIMELINE_NOT_FOUND(NOT_FOUND, "MAINTIMELINE_4040", "해당 메인타임라인을 찾을 수 없습니다."),
+    _ACCESS_DENIED(FORBIDDEN, "Timeline4030", "접근이 거부되었습니다."),
 
     // ------------------------------------------ Recommend ------------------------------------------
     _NO_RECOMMENDER_FOUND(OK, "RECOMMEND4040", "해당 관심사를 가진 사용자가 없습니다."),
