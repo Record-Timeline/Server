@@ -31,6 +31,9 @@ public class MainTimeline extends BaseEntity {
     @Column
     private LocalDate endDate;
 
+    @Column(nullable = false)
+    private boolean isPrivate; // 공개 여부를 저장하는 필드 추가
+
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
