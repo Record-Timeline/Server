@@ -26,15 +26,18 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final FollowService followService;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public ResponseEntity<? super UpdateResponseDto> updateMemberInfo(String email, UpdateMemberRequestDto dto) {
         try {
             Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
+            if (member == null) {
+                throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
+            }
 
             String nickname = dto.getNewNickname();
             boolean isExistNickname = memberRepository.existsByNicknameAndIsDeletedFalse(nickname);
@@ -56,6 +59,9 @@ public class MemberServiceImpl implements MemberService{
     public ResponseEntity<? super UpdateResponseDto> updatePassword(String email, UpdatePasswordRequestDto dto) {
         try {
             Member member = memberRepository.findByEmailAndIsDeletedFalse(email);
+            if (member == null) {
+                throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
+            }
 
             if (!passwordEncoder.matches(dto.getOldPassword(), member.getPassword())) {
                 return UpdateResponseDto.passwordMismatch();
@@ -91,7 +97,7 @@ public class MemberServiceImpl implements MemberService{
             MemberInfoResponseDto responseDto = MemberInfoResponseDto.fromMemberAndProfile(member, profile, followerCount, followingCount);
             return ResponseEntity.ok(responseDto);
 
-        } catch (ApiException  e) {
+        } catch (ApiException e) {
             throw e;
 
         } catch (Exception exception) {

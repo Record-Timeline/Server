@@ -25,30 +25,9 @@ public class CareerDetailController {
         return new SuccessResponse<>(id);
     }
 
-    @PostMapping("/{id}/careers")
-    public SuccessResponse<Career> addCareer(@PathVariable Long id, @RequestBody Career career) {
-        Career savedCareer = careerDetailService.addCareer(id, career);
-        return new SuccessResponse<>(savedCareer);
-    }
-
-
-    @PostMapping("/{id}/educations")
-    public SuccessResponse<Education> addEducation(@PathVariable Long id, @RequestBody Education education) {
-        Education savedEducation = careerDetailService.addEducation(id, education);
-        return new SuccessResponse<>(savedEducation);
-    }
-
-
-    @PutMapping("/careers/{id}")
-    public SuccessResponse<Career> updateCareer(@PathVariable Long id, @RequestBody Career career) {
-        Career updatedCareer = careerDetailService.updateCareer(id, career);
-        return new SuccessResponse<>(updatedCareer);
-    }
-
-
-    @PutMapping("/educations/{id}")
-    public SuccessResponse<Education> updateEducation(@PathVariable Long id, @RequestBody Education education) {
-        Education updatedEducation = careerDetailService.updateEducation(id, education);
-        return new SuccessResponse<>(updatedEducation);
+    @GetMapping("/{memberId}")
+    public SuccessResponse<CareerDetail> getCareerDetailByMemberId(@PathVariable Long memberId) {
+        CareerDetail careerDetail = careerDetailService.getCareerDetailByMemberId(memberId);
+        return new SuccessResponse<>(careerDetail);
     }
 }

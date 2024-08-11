@@ -1,6 +1,8 @@
 package com.api.RecordTimeline.domain.career.service;
 
+import com.api.RecordTimeline.domain.career.domain.CareerDetail;
 import com.api.RecordTimeline.domain.career.domain.ForeignLanguage;
+import com.api.RecordTimeline.domain.career.repository.CareerDetailRepository;
 import com.api.RecordTimeline.domain.career.repository.ForeignLanguageRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -20,6 +22,7 @@ public class ForeignLanguageService {
 
     private final ForeignLanguageRepository foreignLanguageRepository;
     private final MemberRepository memberRepository;
+    private final CareerDetailRepository careerDetailRepository;
 
     @Transactional
     public ForeignLanguage addLanguage(ForeignLanguage language) {
@@ -28,7 +31,20 @@ public class ForeignLanguageService {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail);
 
         if (member != null) {
-            language = language.toBuilder().userEmail(userEmail).build();
+            // CareerDetail이 없는 경우 새로 생성
+            CareerDetail careerDetail = careerDetailRepository.findByMember(member)
+                    .orElseGet(() -> {
+                        CareerDetail newCareerDetail = CareerDetail.builder()
+                                .member(member)
+                                .build();
+                        return careerDetailRepository.save(newCareerDetail);
+                    });
+
+            language = language.toBuilder()
+                    .userEmail(userEmail)
+                    .careerDetail(careerDetail) // CareerDetail 연관 설정
+                    .build();
+
             return foreignLanguageRepository.save(language);
         } else {
             throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
