@@ -8,7 +8,7 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
+//import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
