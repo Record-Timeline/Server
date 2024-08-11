@@ -9,6 +9,11 @@ public class ApiException extends RuntimeException {
         this.errorType = errorType;
     }
 
+    public ApiException(ErrorType errorType, String customMessage) {
+        super(customMessage);
+        this.errorType = errorType;
+    }
+
     public ErrorType getErrorType() {
         return errorType;
     }
