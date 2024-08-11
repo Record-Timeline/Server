@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.career.controller;
 
 import com.api.RecordTimeline.domain.career.domain.Certificate;
+import com.api.RecordTimeline.domain.career.dto.CertificateDto;
 import com.api.RecordTimeline.domain.career.service.CertificateService;
 import com.api.RecordTimeline.global.success.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +18,20 @@ public class CertificateController {
     private final CertificateService certificateService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<Certificate>> addCertificate(@RequestBody Certificate certificate) {
+    public ResponseEntity<SuccessResponse<CertificateDto>> addCertificate(@RequestBody Certificate certificate) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         certificate = certificate.toBuilder().userEmail(email).date(certificate.getDate().withDayOfMonth(1)).build();
         Certificate savedCertificate = certificateService.addCertificate(certificate);
-        return ResponseEntity.ok(new SuccessResponse<>(savedCertificate));
+        CertificateDto certificateDto = new CertificateDto(savedCertificate.getId(), savedCertificate.getName(), savedCertificate.getDate(), savedCertificate.getUserEmail());
+        return ResponseEntity.ok(new SuccessResponse<>(certificateDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SuccessResponse<Certificate>> updateCertificate(@PathVariable Long id, @RequestBody Certificate certificate) {
-        Certificate existingCertificate = certificateService.getCertificateById(id);
+    public ResponseEntity<SuccessResponse<CertificateDto>> updateCertificate(@PathVariable Long id, @RequestBody Certificate certificate) {
         Certificate updatedCertificate = certificateService.updateCertificate(id, certificate);
-        return ResponseEntity.ok(new SuccessResponse<>(updatedCertificate));
+        CertificateDto certificateDto = new CertificateDto(updatedCertificate.getId(), updatedCertificate.getName(), updatedCertificate.getDate(), updatedCertificate.getUserEmail());
+        return ResponseEntity.ok(new SuccessResponse<>(certificateDto));
     }
 
     @DeleteMapping("/{id}")
