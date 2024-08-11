@@ -8,6 +8,7 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -16,6 +17,8 @@ import com.api.RecordTimeline.global.s3.S3FileUploader;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -161,12 +164,25 @@ public class SubTimelineService {
     public void deleteSubTimeline(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
+
+        MainTimeline mainTimeline = subTimeline.getMainTimeline();
+        if (mainTimeline.isPrivate()) {
+            throw new ApiException(ErrorType._ACCESS_DENIED);
+        }
+
         checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
 
         subTimelineRepository.delete(subTimeline);
     }
 
     public List<SubTimeline> getSubTimelinesByMainTimelineId(Long mainTimelineId) {
+        MainTimeline mainTimeline = mainTimelineRepository.findById(mainTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._MAINTIMELINE_NOT_FOUND));
+
+        if (mainTimeline.isPrivate()) {
+            throw new ApiException(ErrorType._ACCESS_DENIED);
+        }
+
         return subTimelineRepository.findByMainTimelineId(mainTimelineId);
     }
 
