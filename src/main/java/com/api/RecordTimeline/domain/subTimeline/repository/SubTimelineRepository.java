@@ -45,6 +45,9 @@ public interface SubTimelineRepository extends JpaRepository<SubTimeline, Long> 
             """, nativeQuery = true)
     List<SubTimeline> findSubTimelinesByInterest(String interest);
 
+    List<SubTimeline> findByMainTimeline_Member_IdOrderByStartDateAsc(Long memberId);
+
+    List<SubTimeline> findByMainTimelineIdOrderByStartDateAsc(Long mainTimelineId);
 }
 
 

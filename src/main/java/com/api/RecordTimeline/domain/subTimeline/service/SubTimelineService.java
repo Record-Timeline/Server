@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,7 +207,8 @@ public class SubTimelineService {
             throw new ApiException(ErrorType._ACCESS_DENIED);
         }
 
-        return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
+        //return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
+        return subTimelineRepository.findByMainTimelineIdOrderByStartDateAsc(mainTimelineId);
     }
 
     // 메인타임라인 제목을 가져오는 메서드 추가
@@ -214,6 +216,31 @@ public class SubTimelineService {
         return mainTimelineRepository.findById(mainTimelineId)
                 .map(MainTimeline::getTitle)
                 .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다. : " + mainTimelineId));
+    }
+
+    // 서브타임라인 공개/비공개 설정
+    public void setSubTimelinePrivacy(Long subTimelineId, boolean isPrivate) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        subTimeline.setPrivate(isPrivate);
+        subTimelineRepository.save(subTimeline);
+    }
+
+    // 사용자 본인의 서브타임라인 조회 (토큰 필요)
+    public List<SubTimeline> getMySubTimelines() {
+        Member member = getCurrentAuthenticatedMember();
+        return subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(member.getId());
+    }
+
+    // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
+    public List<SubTimeline> getAllSubTimelinesByMainTimelineId(Long mainTimelineId) {
+        return subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
+                .filter(subTimeline -> !subTimeline.isPrivate())
+                .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
+                .collect(Collectors.toList());
     }
 
     private void checkOwnership(String ownerEmail) {
