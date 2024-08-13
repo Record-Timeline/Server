@@ -24,6 +24,7 @@ public class SubReadResponseDTO {
         private LocalDate endDate;
         private int likeCount;
         private int bookmarkCount;
+        private boolean isPrivate;
     }
 
     public static SubReadResponseDTO from(List<SubTimeline> subTimelines, String mainTimelineTitle) {
@@ -35,8 +36,27 @@ public class SubReadResponseDTO {
                         subTimeline.getStartDate(),
                         subTimeline.getEndDate(),
                         subTimeline.getLikeCount(),
-                        subTimeline.getBookmarkCount()
+                        subTimeline.getBookmarkCount(),
+                        subTimeline.isPrivate()
                 )).collect(Collectors.toList());
         return new SubReadResponseDTO(details, mainTimelineTitle);
+    }
+
+    public static List<SubReadResponseDTO> from(List<SubTimeline> subTimelines) {
+        return subTimelines.stream()
+                .map(subTimeline -> new SubReadResponseDTO(
+                        List.of(new SubTimelineDetails(
+                                subTimeline.getId(),
+                                subTimeline.getTitle(),
+                                subTimeline.getContent(),
+                                subTimeline.getStartDate(),
+                                subTimeline.getEndDate(),
+                                subTimeline.getLikeCount(),
+                                subTimeline.getBookmarkCount(),
+                                subTimeline.isPrivate()
+                        )),
+                        null  // 메인 타임라인 제목이 없는 경우 null로 설정
+                ))
+                .collect(Collectors.toList());
     }
 }

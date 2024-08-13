@@ -72,5 +72,26 @@ public class SubTimelineController {
         SubTimelineWithLikeBookmarkDTO dto = subTimelineService.getSubTimelineWithLikeAndBookmark(subTimelineId);
         return ResponseEntity.ok(dto);
     }
+
+    // 서브타임라인 공개/비공개 설정 API
+    @PutMapping("/{subTimelineId}/privacy")
+    public ResponseEntity<Void> setSubTimelinePrivacy(@PathVariable Long subTimelineId, @RequestParam boolean isPrivate) {
+        subTimelineService.setSubTimelinePrivacy(subTimelineId, isPrivate);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 사용자 본인의 서브타임라인 조회 API
+    @GetMapping("/my")
+    public ResponseEntity<List<SubTimeline>> getMySubTimelines() {
+        List<SubTimeline> mySubTimelines = subTimelineService.getMySubTimelines();
+        return ResponseEntity.ok(mySubTimelines);
+    }
+
+    // 전체 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
+    @GetMapping("/main/{mainTimelineId}")
+    public ResponseEntity<List<SubReadResponseDTO>> getAllSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
+        List<SubTimeline> subTimelines = subTimelineService.getAllSubTimelinesByMainTimelineId(mainTimelineId);
+        return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines));
+    }
 }
 

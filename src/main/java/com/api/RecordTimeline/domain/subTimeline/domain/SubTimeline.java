@@ -42,6 +42,9 @@ public class SubTimeline extends BaseEntity {
     @Column(nullable = false)
     private int likeCount = 0; // 좋아요 수 필드 추가 및 초기값 설정
 
+    @Column(name = "is_private", nullable = false)
+    private boolean isPrivate; // 공개/비공개 여부
+
     // 북마크 수가 음수가 되지 않도록 검증 메서드 추가
     public void adjustBookmarkCount(int adjustment) {
         this.bookmarkCount += adjustment;
