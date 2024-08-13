@@ -89,9 +89,10 @@ public class SubTimelineController {
 
     // 전체 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
     @GetMapping("/main/{mainTimelineId}")
-    public ResponseEntity<List<SubReadResponseDTO>> getAllSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
+    public ResponseEntity<SubReadResponseDTO> getAllSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
         List<SubTimeline> subTimelines = subTimelineService.getAllSubTimelinesByMainTimelineId(mainTimelineId);
-        return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines));
+        String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId);
+        return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
     }
 }
 
