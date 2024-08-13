@@ -2,6 +2,9 @@ package com.api.RecordTimeline.domain.follow.controller;
 
 import com.api.RecordTimeline.domain.follow.service.FollowService;
 import com.api.RecordTimeline.domain.member.dto.response.MemberInfoResponseDto;
+import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.success.SuccessResponse;
 import com.api.RecordTimeline.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 public class FollowController {
 
     private final FollowService followService;
+    private final MemberRepository memberRepository;
 
     @PostMapping("/{followingId}")
     public SuccessResponse<Long> follow(@PathVariable Long followingId) {
@@ -32,7 +36,7 @@ public class FollowController {
     }
 
     @GetMapping("/my-following")
-    public SuccessResponse<List<MemberInfoResponseDto>> getFollowingList() {
+    public SuccessResponse<List<MemberInfoResponseDto>> getMyFollowingList() {
         Long memberId = SecurityUtil.getCurrentMemberId();
         List<MemberInfoResponseDto> followingList = followService.getFollowingList(memberId).stream()
                 .map(member -> {
@@ -45,7 +49,7 @@ public class FollowController {
     }
 
     @GetMapping("/my-followers")
-    public SuccessResponse<List<MemberInfoResponseDto>> getFollowerList() {
+    public SuccessResponse<List<MemberInfoResponseDto>> getMyFollowerList() {
         Long memberId = SecurityUtil.getCurrentMemberId();
         List<MemberInfoResponseDto> followerList = followService.getFollowerList(memberId).stream()
                 .map(member -> {
@@ -56,6 +60,33 @@ public class FollowController {
                 .collect(Collectors.toList());
         return new SuccessResponse<>(followerList);
     }
+
+    @GetMapping("/{memberId}/following")
+    public SuccessResponse<List<MemberInfoResponseDto>> getFollowingList(@PathVariable Long memberId) {
+        validateMemberExists(memberId);
+        List<MemberInfoResponseDto> followingList = followService.getFollowingList(memberId).stream()
+                .map(member -> {
+                    Long followerCount = followService.getFollowerCountForMember(member.getId());
+                    Long followingCount = followService.getFollowingCountForMember(member.getId());
+                    return MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile(), followerCount, followingCount);
+                })
+                .collect(Collectors.toList());
+        return new SuccessResponse<>(followingList);
+    }
+
+    @GetMapping("/{memberId}/followers")
+    public SuccessResponse<List<MemberInfoResponseDto>> getFollowerList(@PathVariable Long memberId) {
+        validateMemberExists(memberId);
+        List<MemberInfoResponseDto> followerList = followService.getFollowerList(memberId).stream()
+                .map(member -> {
+                    Long followerCount = followService.getFollowerCountForMember(member.getId());
+                    Long followingCount = followService.getFollowingCountForMember(member.getId());
+                    return MemberInfoResponseDto.fromMemberAndProfile(member, member.getProfile(), followerCount, followingCount);
+                })
+                .collect(Collectors.toList());
+        return new SuccessResponse<>(followerList);
+    }
+
 
     @DeleteMapping("/remove-follower/{followerId}")
     public SuccessResponse<Long> removeFollower(@PathVariable Long followerId) {
@@ -101,5 +132,11 @@ public class FollowController {
 
         boolean isFollowing = followService.isFollowing(followerId, memberId);
         return new SuccessResponse<>(isFollowing);
+    }
+
+    private void validateMemberExists(Long memberId) {
+        if (!memberRepository.existsByIdAndIsDeletedFalse(memberId)) {
+            throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
+        }
     }
 }
