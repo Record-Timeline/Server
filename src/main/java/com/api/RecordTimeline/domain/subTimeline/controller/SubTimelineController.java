@@ -75,9 +75,9 @@ public class SubTimelineController {
 
     // 서브타임라인 공개/비공개 설정 API
     @PutMapping("/{subTimelineId}/privacy")
-    public ResponseEntity<Void> setSubTimelinePrivacy(@PathVariable Long subTimelineId, @RequestParam boolean isPrivate) {
-        subTimelineService.setSubTimelinePrivacy(subTimelineId, isPrivate);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<SubPrivacyUpdateResponseDTO> setSubTimelinePrivacy(@PathVariable Long subTimelineId, @RequestParam boolean isPrivate) {
+        SubPrivacyUpdateResponseDTO response = subTimelineService.setSubTimelinePrivacy(subTimelineId, isPrivate);
+        return ResponseEntity.ok(response);
     }
 
     // 사용자 본인의 서브타임라인 조회 API

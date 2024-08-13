@@ -9,6 +9,7 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
 //import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubPrivacyUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -219,7 +220,7 @@ public class SubTimelineService {
     }
 
     // 서브타임라인 공개/비공개 설정
-    public void setSubTimelinePrivacy(Long subTimelineId, boolean isPrivate) {
+    public SubPrivacyUpdateResponseDTO setSubTimelinePrivacy(Long subTimelineId, boolean isPrivate) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
 
@@ -227,6 +228,9 @@ public class SubTimelineService {
 
         subTimeline.setPrivate(isPrivate);
         subTimelineRepository.save(subTimeline);
+
+        String message = isPrivate ? "서브타임라인이 비공개 처리 되었습니다." : "서브타임라인이 공개 처리 되었습니다.";
+        return SubPrivacyUpdateResponseDTO.success(message);
     }
 
     // 사용자 본인의 서브타임라인 조회 (토큰 필요)
