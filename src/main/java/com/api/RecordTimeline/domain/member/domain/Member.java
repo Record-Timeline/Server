@@ -2,6 +2,7 @@ package com.api.RecordTimeline.domain.member.domain;
 
 import com.api.RecordTimeline.domain.base.BaseEntity;
 import com.api.RecordTimeline.domain.bookmark.domain.Bookmark;
+import com.api.RecordTimeline.domain.career.domain.CareerDetail;
 import com.api.RecordTimeline.domain.follow.domain.Follow;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.member.editor.MemberEditor;
@@ -56,6 +57,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "following")
     private List<Follow> followers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CareerDetail> careerDetails;
 
     public MemberEditor.MemberEditorBuilder toEditor() {
         return MemberEditor.builder()
