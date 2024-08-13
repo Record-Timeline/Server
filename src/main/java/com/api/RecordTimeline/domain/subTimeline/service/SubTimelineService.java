@@ -9,6 +9,7 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
 //import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubMyTimelineResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubPrivacyUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
@@ -234,9 +235,14 @@ public class SubTimelineService {
     }
 
     // 사용자 본인의 서브타임라인 조회 (토큰 필요)
-    public List<SubTimeline> getMySubTimelines() {
+    public List<SubMyTimelineResponseDTO> getMySubTimelines() {
         Member member = getCurrentAuthenticatedMember();
-        return subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(member.getId());
+        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(member.getId());
+
+        // 서브타임라인 엔티티를 SubMyTimelineResponseDTO로 변환하여 리스트로 반환
+        return subTimelines.stream()
+                .map(SubMyTimelineResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)

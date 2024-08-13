@@ -82,8 +82,8 @@ public class SubTimelineController {
 
     // 사용자 본인의 서브타임라인 조회 API
     @GetMapping("/my")
-    public ResponseEntity<List<SubTimeline>> getMySubTimelines() {
-        List<SubTimeline> mySubTimelines = subTimelineService.getMySubTimelines();
+    public ResponseEntity<List<SubMyTimelineResponseDTO>> getMySubTimelines() {
+        List<SubMyTimelineResponseDTO> mySubTimelines = subTimelineService.getMySubTimelines();
         return ResponseEntity.ok(mySubTimelines);
     }
 
