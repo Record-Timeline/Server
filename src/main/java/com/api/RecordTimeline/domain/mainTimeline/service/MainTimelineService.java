@@ -49,6 +49,18 @@ public class MainTimelineService {
                 new NoSuchElementException("해당 ID로 메인 타임라인을 찾을 수 없습니다: " + id));
     }
 
+    // 메인 타임라인 진행 상태 토글
+    public void updateMainTimelineStatus(Long id, boolean isDone) {
+        MainTimeline mainTimeline = mainTimelineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID로 메인 타임라인을 찾을 수 없습니다: " + id));
+
+        checkOwnership(mainTimeline.getMember().getEmail());
+
+        mainTimeline.setDone(isDone);
+        mainTimelineRepository.save(mainTimeline);
+    }
+
+
     // 모든 메인 타임라인 조회
     public List<MainTimeline> getAllMainTimelines() {
         return mainTimelineRepository.findAll();

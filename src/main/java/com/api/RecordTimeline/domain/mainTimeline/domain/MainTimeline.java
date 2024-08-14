@@ -34,6 +34,9 @@ public class MainTimeline extends BaseEntity {
     @Column(nullable = false)
     private boolean isPrivate; // 공개 여부를 저장하는 필드 추가
 
+    @Column(nullable = false)
+    private boolean isDone; // 진행 상태를 저장하는 필드 추가
+
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
@@ -43,12 +46,13 @@ public class MainTimeline extends BaseEntity {
     private List<SubTimeline> subTimelines = new ArrayList<>();
 
     @Builder
-    public MainTimeline(Long id, String title, LocalDate startDate, LocalDate endDate, Member member) {
+    public MainTimeline(Long id, String title, LocalDate startDate, LocalDate endDate, Member member, boolean isPrivate, boolean isDone) {
         this.id = id;
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
-//        this.member = member;
+        this.isPrivate = isPrivate;
+        this.isDone = isDone;
         setMember(member);
     }
 
