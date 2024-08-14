@@ -94,5 +94,12 @@ public class SubTimelineController {
         String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId);
         return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
     }
+
+    // 서브타임라인 진행중 여부 업데이트(완료 또는 진행중)
+    @PutMapping("/{subTimelineId}/done-status")
+    public ResponseEntity<SubUpdateStatusResponseDTO> updateSubTimelineStatus(@PathVariable Long subTimelineId, @RequestParam boolean isDone) {
+        SubUpdateStatusResponseDTO response = subTimelineService.updateSubTimelineStatus(subTimelineId, isDone);
+        return ResponseEntity.ok(response);
+    }
 }
 

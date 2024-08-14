@@ -12,6 +12,7 @@ import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRe
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubMyTimelineResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubPrivacyUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubUpdateStatusResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
@@ -251,6 +252,31 @@ public class SubTimelineService {
                 .filter(subTimeline -> !subTimeline.isPrivate())
                 .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
                 .collect(Collectors.toList());
+    }
+
+    public SubPrivacyUpdateResponseDTO setSubTimelineDoneStatus(Long subTimelineId, boolean isDone) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        subTimeline.setDone(isDone);
+        subTimelineRepository.save(subTimeline);
+
+        String message = isDone ? "서브타임라인이 완료 상태로 업데이트 되었습니다." : "서브타임라인이 진행중 상태로 업데이트 되었습니다.";
+        return SubPrivacyUpdateResponseDTO.success(message);
+    }
+
+    public SubUpdateStatusResponseDTO updateSubTimelineStatus(Long subTimelineId, boolean isDone) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        subTimeline.setDone(isDone);
+        subTimelineRepository.save(subTimeline);
+
+        return SubUpdateStatusResponseDTO.success(isDone);
     }
 
     private void checkOwnership(String ownerEmail) {

@@ -25,6 +25,7 @@ public class SubReadResponseDTO {
         private int likeCount;
         private int bookmarkCount;
         private boolean isPrivate;
+        private boolean isDone;
     }
 
     public static SubReadResponseDTO from(List<SubTimeline> subTimelines, String mainTimelineTitle) {
@@ -37,7 +38,8 @@ public class SubReadResponseDTO {
                         subTimeline.getEndDate(),
                         subTimeline.getLikeCount(),
                         subTimeline.getBookmarkCount(),
-                        subTimeline.isPrivate()
+                        subTimeline.isPrivate(),
+                        subTimeline.isDone()
                 )).collect(Collectors.toList());
         return new SubReadResponseDTO(details, mainTimelineTitle);
     }
@@ -60,7 +62,8 @@ public class SubReadResponseDTO {
                         subTimeline.getEndDate(),
                         subTimeline.getLikeCount(),
                         subTimeline.getBookmarkCount(),
-                        subTimeline.isPrivate()
+                        subTimeline.isPrivate(),
+                        subTimeline.isDone()
                 )).collect(Collectors.toList());
         return new SubReadResponseDTO(details, mainTimelineTitle);
     }
