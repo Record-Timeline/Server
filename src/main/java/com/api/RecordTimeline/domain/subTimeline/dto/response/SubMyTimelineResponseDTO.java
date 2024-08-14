@@ -18,6 +18,7 @@ public class SubMyTimelineResponseDTO {
     private int likeCount;
     private int bookmarkCount;
     private boolean isPrivate;
+    private boolean isDone;
 
     // 서브타임라인에서 DTO 생성하는 메서드
     public static SubMyTimelineResponseDTO from(SubTimeline subTimeline) {
@@ -29,7 +30,8 @@ public class SubMyTimelineResponseDTO {
                 subTimeline.getEndDate(),
                 subTimeline.getLikeCount(),
                 subTimeline.getBookmarkCount(),
-                subTimeline.isPrivate()
+                subTimeline.isPrivate(),
+                subTimeline.isDone()
         );
     }
 }

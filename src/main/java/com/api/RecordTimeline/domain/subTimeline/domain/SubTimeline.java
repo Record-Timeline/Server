@@ -45,6 +45,9 @@ public class SubTimeline extends BaseEntity {
     @Column(name = "is_private", nullable = false)
     private boolean isPrivate; // 공개/비공개 여부
 
+    @Column(name = "is_done", nullable = false)
+    private boolean isDone = false; // 진행중 상태 필드
+
     // 북마크 수가 음수가 되지 않도록 검증 메서드 추가
     public void adjustBookmarkCount(int adjustment) {
         this.bookmarkCount += adjustment;
