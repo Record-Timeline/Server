@@ -46,7 +46,7 @@ public class MainTimelineController {
             return ResponseEntity.noContent().build();
         }
         List<ReadResponseDTO.TimelineDetails> details = timelines.stream()
-                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate()))
+                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(details);
     }
@@ -59,7 +59,7 @@ public class MainTimelineController {
             return ResponseEntity.noContent().build();  // 내용이 없을 경우 No Content 상태 반환
         }
         List<ReadResponseDTO.TimelineDetails> details = timelines.stream()
-                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate()))
+                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(details);
     }
@@ -70,7 +70,7 @@ public class MainTimelineController {
         try {
             MainTimeline timeline = mainTimelineService.getMainTimelineById(id);
             ReadResponseDTO response = new ReadResponseDTO(List.of(new ReadResponseDTO.TimelineDetails(
-                    timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate()
+                    timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone()
             )));
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {
@@ -114,4 +114,18 @@ public class MainTimelineController {
         String message = isPrivate ? "메인타임라인이 비공개 처리 되었습니다." : "메인타임라인이 공개 처리 되었습니다.";
         return ResponseEntity.ok(PrivacyUpdateResponseDTO.success(message));
     }
+
+    @PutMapping("/{mainTimelineId}/status")
+    public ResponseEntity<UpdateStatusResponseDTO> updateMainTimelineStatus(@PathVariable Long mainTimelineId, @RequestParam boolean isDone) {
+        try {
+            mainTimelineService.updateMainTimelineStatus(mainTimelineId, isDone);
+            String message = isDone ? "메인타임라인이 완료 상태로 업데이트 되었습니다." : "메인타임라인이 진행중 상태로 업데이트 되었습니다.";
+            return ResponseEntity.ok(UpdateStatusResponseDTO.success(message));
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "메인 타임라인을 찾을 수 없습니다.", e);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UpdateStatusResponseDTO.failure("상태 업데이트에 실패했습니다."));
+        }
+    }
+
 }
