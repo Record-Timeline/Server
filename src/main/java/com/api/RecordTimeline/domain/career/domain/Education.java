@@ -24,6 +24,9 @@ public class Education extends BaseEntity {
     private String institution;
 
     @Column(nullable = false)
+    private String major;
+
+    @Column(nullable = false)
     private LocalDate startDate;
 
     @Column
@@ -40,6 +43,7 @@ public class Education extends BaseEntity {
                 .id(this.id)
                 .degree(newEducation.getDegree())
                 .institution(newEducation.getInstitution())
+                .major(newEducation.getMajor())
                 .startDate(newEducation.getStartDate())
                 .endDate(newEducation.getEndDate())
                 .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정

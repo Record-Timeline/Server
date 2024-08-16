@@ -13,6 +13,7 @@ public class EducationDto {
     private Long id;
     private String degree;
     private String institution;
+    private String major;
     private LocalDate startDate;
     private LocalDate endDate;
     private String userEmail;

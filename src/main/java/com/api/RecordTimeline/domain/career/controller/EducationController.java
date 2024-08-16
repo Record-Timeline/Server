@@ -23,14 +23,14 @@ public class EducationController {
         String email = authentication.getName();
         education = education.toBuilder().userEmail(email).build();
         Education savedEducation = educationService.addEducation(education);
-        EducationDto educationDto = new EducationDto(savedEducation.getId(), savedEducation.getDegree(), savedEducation.getInstitution(), savedEducation.getStartDate(), savedEducation.getEndDate(), savedEducation.getUserEmail());
+        EducationDto educationDto = new EducationDto(savedEducation.getId(), savedEducation.getDegree(), savedEducation.getInstitution(), savedEducation.getMajor(), savedEducation.getStartDate(), savedEducation.getEndDate(), savedEducation.getUserEmail());
         return ResponseEntity.ok(new SuccessResponse<>(educationDto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SuccessResponse<EducationDto>> updateEducation(@PathVariable Long id, @RequestBody Education education) {
         Education updatedEducation = educationService.updateEducation(id, education);
-        EducationDto educationDto = new EducationDto(updatedEducation.getId(), updatedEducation.getDegree(), updatedEducation.getInstitution(), updatedEducation.getStartDate(), updatedEducation.getEndDate(), updatedEducation.getUserEmail());
+        EducationDto educationDto = new EducationDto(updatedEducation.getId(), updatedEducation.getDegree(), updatedEducation.getInstitution(), updatedEducation.getMajor(), updatedEducation.getStartDate(), updatedEducation.getEndDate(), updatedEducation.getUserEmail());
         return ResponseEntity.ok(new SuccessResponse<>(educationDto));
     }
 
