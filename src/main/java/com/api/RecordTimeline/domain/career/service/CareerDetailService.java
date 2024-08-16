@@ -37,6 +37,8 @@ public class CareerDetailService {
         return careerDetailRepository.save(careerDetail);
     }
 
+
+
     @Transactional
     public void deleteCareerDetail(Long careerDetailId) {
         CareerDetail careerDetail = getCareerDetailById(careerDetailId);

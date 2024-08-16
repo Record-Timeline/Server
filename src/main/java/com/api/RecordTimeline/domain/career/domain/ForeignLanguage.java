@@ -31,7 +31,8 @@ public class ForeignLanguage extends BaseEntity {
                 .id(this.id)
                 .languageName(newLanguage.getLanguageName())
                 .proficiency(newLanguage.getProficiency())
-                .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정
+                .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정4
+                .careerDetail(this.careerDetail)
                 .build();
     }
 }

@@ -31,6 +31,7 @@ public class Certificate extends BaseEntity {
                 .name(newCertificate.getName())
                 .date(newCertificate.getDate().withDayOfMonth(1))
                 .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정
+                .careerDetail(this.careerDetail)
                 .build();
     }
 

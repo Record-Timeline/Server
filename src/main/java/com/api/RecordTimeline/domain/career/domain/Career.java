@@ -45,6 +45,7 @@ public class Career extends BaseEntity {
                 .startDate(newCareer.getStartDate())
                 .endDate(newCareer.getEndDate())
                 .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정
+                .careerDetail(this.careerDetail)
                 .build();
     }
 }

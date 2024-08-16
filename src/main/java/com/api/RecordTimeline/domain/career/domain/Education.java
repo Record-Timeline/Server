@@ -43,6 +43,7 @@ public class Education extends BaseEntity {
                 .startDate(newEducation.getStartDate())
                 .endDate(newEducation.getEndDate())
                 .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정
+                .careerDetail(this.careerDetail)
                 .build();
     }
 }
