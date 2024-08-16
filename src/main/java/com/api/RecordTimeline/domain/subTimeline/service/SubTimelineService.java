@@ -9,7 +9,10 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
 //import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubMyTimelineResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubPrivacyUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.SubUpdateStatusResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
@@ -24,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,7 +210,8 @@ public class SubTimelineService {
             throw new ApiException(ErrorType._ACCESS_DENIED);
         }
 
-        return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
+        //return subTimelineRepository.findByMainTimelineIdOrderByStartDate(mainTimelineId);
+        return subTimelineRepository.findByMainTimelineIdOrderByStartDateAsc(mainTimelineId);
     }
 
     // 메인타임라인 제목을 가져오는 메서드 추가
@@ -214,6 +219,64 @@ public class SubTimelineService {
         return mainTimelineRepository.findById(mainTimelineId)
                 .map(MainTimeline::getTitle)
                 .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다. : " + mainTimelineId));
+    }
+
+    // 서브타임라인 공개/비공개 설정
+    public SubPrivacyUpdateResponseDTO setSubTimelinePrivacy(Long subTimelineId, boolean isPrivate) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        subTimeline.setPrivate(isPrivate);
+        subTimelineRepository.save(subTimeline);
+
+        String message = isPrivate ? "서브타임라인이 비공개 처리 되었습니다." : "서브타임라인이 공개 처리 되었습니다.";
+        return SubPrivacyUpdateResponseDTO.success(message);
+    }
+
+    // 사용자 본인의 서브타임라인 조회 (토큰 필요)
+    public List<SubMyTimelineResponseDTO> getMySubTimelines() {
+        Member member = getCurrentAuthenticatedMember();
+        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(member.getId());
+
+        // 서브타임라인 엔티티를 SubMyTimelineResponseDTO로 변환하여 리스트로 반환
+        return subTimelines.stream()
+                .map(SubMyTimelineResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
+    public List<SubTimeline> getAllSubTimelinesByMainTimelineId(Long mainTimelineId) {
+        return subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
+                .filter(subTimeline -> !subTimeline.isPrivate())
+                .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
+                .collect(Collectors.toList());
+    }
+
+    public SubPrivacyUpdateResponseDTO setSubTimelineDoneStatus(Long subTimelineId, boolean isDone) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        subTimeline.setDone(isDone);
+        subTimelineRepository.save(subTimeline);
+
+        String message = isDone ? "서브타임라인이 완료 상태로 업데이트 되었습니다." : "서브타임라인이 진행중 상태로 업데이트 되었습니다.";
+        return SubPrivacyUpdateResponseDTO.success(message);
+    }
+
+    public SubUpdateStatusResponseDTO updateSubTimelineStatus(Long subTimelineId, boolean isDone) {
+        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
+
+        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        subTimeline.setDone(isDone);
+        subTimelineRepository.save(subTimeline);
+
+        return SubUpdateStatusResponseDTO.success(isDone);
     }
 
     private void checkOwnership(String ownerEmail) {
