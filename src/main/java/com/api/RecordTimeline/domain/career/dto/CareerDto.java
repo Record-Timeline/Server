@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class CareerDto {
     private Long id;
     private String companyName;
+    private String duty;
     private String position;
     private LocalDate startDate;
     private LocalDate endDate;

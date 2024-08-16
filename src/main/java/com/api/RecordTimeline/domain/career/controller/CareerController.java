@@ -23,14 +23,14 @@ public class CareerController {
         String email = authentication.getName();
         career = career.toBuilder().userEmail(email).build();
         Career savedCareer = careerService.addCareer(career);
-        CareerDto careerDto = new CareerDto(savedCareer.getId(), savedCareer.getCompanyName(), savedCareer.getPosition(), savedCareer.getStartDate(), savedCareer.getEndDate(), savedCareer.getUserEmail());
+        CareerDto careerDto = new CareerDto(savedCareer.getId(), savedCareer.getCompanyName(), savedCareer.getDuty(), savedCareer.getPosition(), savedCareer.getStartDate(), savedCareer.getEndDate(), savedCareer.getUserEmail());
         return ResponseEntity.ok(new SuccessResponse<>(careerDto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SuccessResponse<CareerDto>> updateCareer(@PathVariable Long id, @RequestBody Career career) {
         Career updatedCareer = careerService.updateCareer(id, career);
-        CareerDto careerDto = new CareerDto(updatedCareer.getId(), updatedCareer.getCompanyName(), updatedCareer.getPosition(), updatedCareer.getStartDate(), updatedCareer.getEndDate(), updatedCareer.getUserEmail());
+        CareerDto careerDto = new CareerDto(updatedCareer.getId(), updatedCareer.getCompanyName(), updatedCareer.getDuty(), updatedCareer.getPosition(), updatedCareer.getStartDate(), updatedCareer.getEndDate(), updatedCareer.getUserEmail());
         return ResponseEntity.ok(new SuccessResponse<>(careerDto));
     }
 

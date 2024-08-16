@@ -11,8 +11,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class EducationDto {
     private Long id;
-    private String institution;
     private String degree;
+    private String institution;
     private LocalDate startDate;
     private LocalDate endDate;
     private String userEmail;

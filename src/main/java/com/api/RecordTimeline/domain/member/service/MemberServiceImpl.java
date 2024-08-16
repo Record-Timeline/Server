@@ -51,7 +51,6 @@ public class MemberServiceImpl implements MemberService {
             exception.printStackTrace();
             return ResponseDto.databaseError();
         }
-
         return UpdateResponseDto.success();
     }
 

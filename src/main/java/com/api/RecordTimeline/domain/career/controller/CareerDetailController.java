@@ -21,13 +21,13 @@ public class CareerDetailController {
         CareerDetailDto careerDetailDto = new CareerDetailDto(
                 savedCareerDetail.getId(),
                 savedCareerDetail.getCareers().stream()
-                        .map(career -> new CareerDto(career.getId(), career.getCompanyName(), career.getPosition(), career.getStartDate(), career.getEndDate(), career.getUserEmail()))
+                        .map(career -> new CareerDto(career.getId(), career.getCompanyName(), career.getDuty(), career.getPosition(), career.getStartDate(), career.getEndDate(), career.getUserEmail()))
                         .toList(),
                 savedCareerDetail.getCertificates().stream()
                         .map(certificate -> new CertificateDto(certificate.getId(), certificate.getName(), certificate.getDate(), certificate.getUserEmail()))
                         .toList(),
                 savedCareerDetail.getEducations().stream()
-                        .map(education -> new EducationDto(education.getId(), education.getInstitution(), education.getDegree(), education.getStartDate(), education.getEndDate(), education.getUserEmail()))
+                        .map(education -> new EducationDto(education.getId(), education.getDegree(),education.getInstitution(), education.getStartDate(), education.getEndDate(), education.getUserEmail()))
                         .toList(),
                 savedCareerDetail.getLanguages().stream()
                         .map(language -> new ForeignLanguageDto(language.getId(), language.getLanguageName(), language.getProficiency().name(), language.getUserEmail()))
@@ -50,13 +50,13 @@ public class CareerDetailController {
         CareerDetailDto careerDetailDto = new CareerDetailDto(
                 careerDetail.getId(),
                 careerDetail.getCareers().stream()
-                        .map(career -> new CareerDto(career.getId(), career.getCompanyName(), career.getPosition(), career.getStartDate(), career.getEndDate(), career.getUserEmail()))
+                        .map(career -> new CareerDto(career.getId(), career.getCompanyName(), career.getDuty(), career.getPosition(), career.getStartDate(), career.getEndDate(), career.getUserEmail()))
                         .toList(),
                 careerDetail.getCertificates().stream()
                         .map(certificate -> new CertificateDto(certificate.getId(), certificate.getName(), certificate.getDate(), certificate.getUserEmail()))
                         .toList(),
                 careerDetail.getEducations().stream()
-                        .map(education -> new EducationDto(education.getId(), education.getInstitution(), education.getDegree(), education.getStartDate(), education.getEndDate(), education.getUserEmail()))
+                        .map(education -> new EducationDto(education.getId(), education.getDegree(),education.getInstitution(), education.getStartDate(), education.getEndDate(), education.getUserEmail()))
                         .toList(),
                 careerDetail.getLanguages().stream()
                         .map(language -> new ForeignLanguageDto(language.getId(), language.getLanguageName(), language.getProficiency().name(), language.getUserEmail()))

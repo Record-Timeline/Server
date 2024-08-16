@@ -18,10 +18,10 @@ public class Education extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String institution;
+    private String degree;
 
     @Column(nullable = false)
-    private String degree;
+    private String institution;
 
     @Column(nullable = false)
     private LocalDate startDate;
@@ -38,8 +38,8 @@ public class Education extends BaseEntity {
     public Education update(Education newEducation) {
         return Education.builder()
                 .id(this.id)
-                .institution(newEducation.getInstitution())
                 .degree(newEducation.getDegree())
+                .institution(newEducation.getInstitution())
                 .startDate(newEducation.getStartDate())
                 .endDate(newEducation.getEndDate())
                 .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정

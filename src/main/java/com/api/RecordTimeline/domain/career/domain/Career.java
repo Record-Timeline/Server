@@ -20,6 +20,8 @@ public class Career extends BaseEntity {
     @Column(nullable = false)
     private String companyName;
 
+    private String duty;
+
     private String position;
 
     @Column(nullable = false)
@@ -39,6 +41,7 @@ public class Career extends BaseEntity {
                 .id(this.id)
                 .companyName(newCareer.getCompanyName())
                 .position(newCareer.getPosition())
+                .duty(newCareer.getDuty())
                 .startDate(newCareer.getStartDate())
                 .endDate(newCareer.getEndDate())
                 .userEmail(this.userEmail)  // 이메일 필드는 변경되지 않도록 설정
