@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class ForeignLanguageDto {
     private Long id;
     private String languageName;
-    private String proficiency;
+    private int proficiency;
     private String userEmail;
 }
