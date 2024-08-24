@@ -31,25 +31,21 @@ public class ForeignLanguageService {
         Member member = memberRepository.findByEmailAndIsDeletedFalse(userEmail);
 
         if (member != null) {
-            // CareerDetail이 없는 경우 새로 생성
             CareerDetail careerDetail = careerDetailRepository.findByMember(member)
-                    .orElseGet(() -> {
-                        CareerDetail newCareerDetail = CareerDetail.builder()
-                                .member(member)
-                                .build();
-                        return careerDetailRepository.save(newCareerDetail);
-                    });
+                    .orElseGet(() -> CareerDetail.builder().member(member).build());
 
             language = language.toBuilder()
                     .userEmail(userEmail)
-                    .careerDetail(careerDetail) // CareerDetail 연관 설정
+                    .careerDetail(careerDetail)
                     .build();
 
+            language.setProficiency(language.getProficiency().getLevel());
             return foreignLanguageRepository.save(language);
         } else {
             throw new ApiException(ErrorType._USER_NOT_FOUND_DB);
         }
     }
+
 
     @Transactional
     public ForeignLanguage updateLanguage(Long languageId, ForeignLanguage language) {

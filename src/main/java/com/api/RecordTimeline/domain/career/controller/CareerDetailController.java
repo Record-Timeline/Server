@@ -30,7 +30,7 @@ public class CareerDetailController {
                         .map(education -> new EducationDto(education.getId(), education.getDegree(),education.getInstitution(), education.getMajor(), education.getStartDate(), education.getEndDate(), education.getUserEmail()))
                         .toList(),
                 savedCareerDetail.getLanguages().stream()
-                        .map(language -> new ForeignLanguageDto(language.getId(), language.getLanguageName(), language.getProficiency().name(), language.getUserEmail()))
+                        .map(language -> new ForeignLanguageDto(language.getId(), language.getLanguageName(), language.getProficiency().getLevel(), language.getUserEmail()))
                         .toList()
         );
 
@@ -59,7 +59,7 @@ public class CareerDetailController {
                         .map(education -> new EducationDto(education.getId(), education.getDegree(),education.getInstitution(), education.getMajor(), education.getStartDate(), education.getEndDate(), education.getUserEmail()))
                         .toList(),
                 careerDetail.getLanguages().stream()
-                        .map(language -> new ForeignLanguageDto(language.getId(), language.getLanguageName(), language.getProficiency().name(), language.getUserEmail()))
+                        .map(language -> new ForeignLanguageDto(language.getId(), language.getLanguageName(), language.getProficiency().getLevel(), language.getUserEmail()))
                         .toList()
         );
 

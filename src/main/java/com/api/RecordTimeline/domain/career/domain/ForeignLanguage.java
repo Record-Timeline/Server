@@ -35,4 +35,9 @@ public class ForeignLanguage extends BaseEntity {
                 .careerDetail(this.careerDetail)
                 .build();
     }
+
+    public void setProficiency(int level) {
+        this.proficiency = Proficiency.fromLevel(level);
+    }
+
 }
