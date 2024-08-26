@@ -18,6 +18,7 @@ import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.s3.S3FileUploader;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -175,6 +176,7 @@ public class SubTimelineService {
         return result.toString();
     }
 
+    @Transactional
     public void deleteSubTimeline(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("SubTimeline not found"));
@@ -185,6 +187,10 @@ public class SubTimelineService {
         }
 
         checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
+
+        // 관련된 북마크와 좋아요 데이터를 삭제
+        bookmarkRepository.deleteBySubTimeline(subTimeline);
+        likeRepository.deleteBySubTimeline(subTimeline);
 
         subTimelineRepository.delete(subTimeline);
     }
