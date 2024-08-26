@@ -267,17 +267,19 @@ public class SubTimelineService {
         return SubPrivacyUpdateResponseDTO.success(message);
     }
 
-    public SubUpdateStatusResponseDTO updateSubTimelineStatus(Long subTimelineId, boolean isDone) {
+    public SubUpdateStatusResponseDTO toggleSubTimelineDoneStatus(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
 
-        checkOwnership(subTimeline.getMainTimeline().getMember().getEmail());
-
-        subTimeline.setDone(isDone);
+        // 현재 상태를 반전시킴
+        boolean newDoneStatus = !subTimeline.isDone();
+        subTimeline.setDone(newDoneStatus);
         subTimelineRepository.save(subTimeline);
 
-        return SubUpdateStatusResponseDTO.success(isDone);
+        String message = newDoneStatus ? "서브타임라인이 완료 상태로 업데이트 되었습니다." : "서브타임라인이 진행중 상태로 업데이트 되었습니다.";
+        return SubUpdateStatusResponseDTO.success(newDoneStatus);
     }
+
 
     private void checkOwnership(String ownerEmail) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

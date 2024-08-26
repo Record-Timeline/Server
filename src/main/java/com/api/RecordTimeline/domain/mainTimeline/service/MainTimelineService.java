@@ -3,6 +3,7 @@ package com.api.RecordTimeline.domain.mainTimeline.service;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.dto.request.MainTimelineRequestDTO;
 import com.api.RecordTimeline.domain.mainTimeline.dto.request.UpdateMainTimelineRequestDTO;
+import com.api.RecordTimeline.domain.mainTimeline.dto.response.MainUpdateStatusResponseDTO;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
@@ -50,14 +51,19 @@ public class MainTimelineService {
     }
 
     // 메인 타임라인 진행 상태 토글
-    public void updateMainTimelineStatus(Long id, boolean isDone) {
-        MainTimeline mainTimeline = mainTimelineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 ID로 메인 타임라인을 찾을 수 없습니다: " + id));
+    public MainUpdateStatusResponseDTO toggleMainTimelineDoneStatus(Long mainTimelineId) {
+        MainTimeline mainTimeline = mainTimelineRepository.findById(mainTimelineId)
+                .orElseThrow(() -> new ApiException(ErrorType._MAINTIMELINE_NOT_FOUND));
 
         checkOwnership(mainTimeline.getMember().getEmail());
 
-        mainTimeline.setDone(isDone);
+        // 현재 상태를 반전시킴
+        boolean newDoneStatus = !mainTimeline.isDone();
+        mainTimeline.setDone(newDoneStatus);
         mainTimelineRepository.save(mainTimeline);
+
+        String message = newDoneStatus ? "메인타임라인이 완료 상태로 업데이트 되었습니다." : "메인타임라인이 진행중 상태로 업데이트 되었습니다.";
+        return MainUpdateStatusResponseDTO.success(newDoneStatus);
     }
 
 
