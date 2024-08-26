@@ -115,17 +115,9 @@ public class MainTimelineController {
         return ResponseEntity.ok(PrivacyUpdateResponseDTO.success(message));
     }
 
-    @PutMapping("/{mainTimelineId}/status")
-    public ResponseEntity<UpdateStatusResponseDTO> updateMainTimelineStatus(@PathVariable Long mainTimelineId, @RequestParam boolean isDone) {
-        try {
-            mainTimelineService.updateMainTimelineStatus(mainTimelineId, isDone);
-            String message = isDone ? "메인타임라인이 완료 상태로 업데이트 되었습니다." : "메인타임라인이 진행중 상태로 업데이트 되었습니다.";
-            return ResponseEntity.ok(UpdateStatusResponseDTO.success(message));
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "메인 타임라인을 찾을 수 없습니다.", e);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UpdateStatusResponseDTO.failure("상태 업데이트에 실패했습니다."));
-        }
+    @PutMapping("/{mainTimelineId}/toggle-done")
+    public ResponseEntity<MainUpdateStatusResponseDTO> toggleMainTimelineDoneStatus(@PathVariable Long mainTimelineId) {
+        MainUpdateStatusResponseDTO response = mainTimelineService.toggleMainTimelineDoneStatus(mainTimelineId);
+        return ResponseEntity.ok(response);
     }
-
 }
