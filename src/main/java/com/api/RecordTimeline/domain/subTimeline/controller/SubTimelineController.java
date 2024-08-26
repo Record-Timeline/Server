@@ -96,9 +96,9 @@ public class SubTimelineController {
     }
 
     // 서브타임라인 진행중 여부 업데이트(완료 또는 진행중)
-    @PutMapping("/{subTimelineId}/done-status")
-    public ResponseEntity<SubUpdateStatusResponseDTO> updateSubTimelineStatus(@PathVariable Long subTimelineId, @RequestParam boolean isDone) {
-        SubUpdateStatusResponseDTO response = subTimelineService.updateSubTimelineStatus(subTimelineId, isDone);
+    @PutMapping("/{subTimelineId}/toggle-done")
+    public ResponseEntity<SubUpdateStatusResponseDTO> toggleSubTimelineDoneStatus(@PathVariable Long subTimelineId) {
+        SubUpdateStatusResponseDTO response = subTimelineService.toggleSubTimelineDoneStatus(subTimelineId);
         return ResponseEntity.ok(response);
     }
 }
