@@ -62,7 +62,9 @@ public class MainPageServiceImpl implements MainPageService {
                     timeline.getId(),
                     timeline.getTitle(),
                     timeline.getStartDate(),
-                    timeline.getEndDate()
+                    timeline.getEndDate(),
+                    timeline.isPrivate(),
+                    timeline.isDone()
             )).collect(Collectors.toList());
 
             MainPageMemberDto dto = new MainPageMemberDto(
