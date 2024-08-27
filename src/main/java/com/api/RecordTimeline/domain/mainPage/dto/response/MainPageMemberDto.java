@@ -20,4 +20,5 @@ public class MainPageMemberDto {
     private String profileImageUrl;
     private String introduction;
     private List<MainTimelineDto> mainTimeline;
+    private Long followerCount;
 }

@@ -1,5 +1,6 @@
 package com.api.RecordTimeline.domain.mainPage.service;
 
+import com.api.RecordTimeline.domain.follow.service.FollowService;
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainPageMemberDto;
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainPageSubTimelineDto;
 import com.api.RecordTimeline.domain.mainPage.dto.response.MainTimelineDto;
@@ -34,6 +35,7 @@ public class MainPageServiceImpl implements MainPageService {
     private final ProfileRepository profileRepository;
     private final MainTimelineService mainTimelineService;
     private final SubTimelineRepository subTimelineRepository;
+    private final FollowService followService;
 
 
     // 관심사를 기반으로 회원 추천 기능
@@ -67,12 +69,15 @@ public class MainPageServiceImpl implements MainPageService {
                     timeline.isDone()
             )).collect(Collectors.toList());
 
+            Long followCount = followService.getFollowerCountForMember(member.getId());
+
             MainPageMemberDto dto = new MainPageMemberDto(
                     member.getId(),
                     member.getNickname(),
                     profile != null ? profile.getProfileImgUrl() : "",
                     profile != null ? profile.getIntroduction() : "",
-                    timelineDtos
+                    timelineDtos,
+                    followCount
             );
             return dto;
         }).collect(Collectors.toList());
