@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -70,6 +71,11 @@ public class CareerService {
         checkOwnership(existingCareer.getUserEmail());
 
         careerRepository.delete(existingCareer);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Career> getCareersByMemberId(Long memberId) {
+        return careerRepository.findAllByMemberIdOrderByStartDateAsc(memberId);
     }
 
     private void checkOwnership(String ownerEmail) {
