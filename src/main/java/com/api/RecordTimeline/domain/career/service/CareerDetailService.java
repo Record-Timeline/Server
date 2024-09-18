@@ -43,7 +43,7 @@ public class CareerDetailService {
                 .careers(careerRepository.findAllByMemberIdOrderByStartDateAsc(memberId))
                 .certificates(certificateRepository.findAllByMemberIdOrderByDateAsc(memberId))
                 .educations(educationRepository.findAllByMemberIdOrderByStartDateAsc(memberId))
-                .languages(foreignLanguageRepository.findAll())
+                .languages(foreignLanguageRepository.findAllByMemberIdOrderByStartDateAsc(memberId))
                 .build();
     }
 
