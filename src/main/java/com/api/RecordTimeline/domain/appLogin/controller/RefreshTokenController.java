@@ -33,20 +33,23 @@ public class RefreshTokenController {
             RefreshToken savedToken = refreshTokenRepository.findByUserId(userId)
                     .orElseThrow(() -> new ApiException(ErrorType._REFRESH_TOKEN_NOT_FOUND));
 
-
             if (!savedToken.getToken().equals(refreshToken)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-
-
 
             // 새로운 액세스 토큰 발급
             String newAccessToken = jwtProvider.generateJwtToken(userId, email);
             return ResponseEntity.ok(newAccessToken);
 
-        } catch (Exception e) {
+        } catch (ApiException e) {
+            if (e.getErrorType() == ErrorType._JWT_EXPIRED) {
+                // Refresh Token 만료 시 재로그인 처리
+                throw new ApiException(ErrorType._REFRESH_TOKEN_EXPIRED);
+            }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+
 }
 
