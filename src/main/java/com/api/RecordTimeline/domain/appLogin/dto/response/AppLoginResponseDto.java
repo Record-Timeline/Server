@@ -11,15 +11,17 @@ import org.springframework.http.ResponseEntity;
 @Getter
 public class AppLoginResponseDto extends ResponseDto {
 
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 
-    private AppLoginResponseDto(String token){
+    private AppLoginResponseDto(String accessToken, String refreshToken) {
         super();
-        this.token = token;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
-    public static ResponseEntity<AppLoginResponseDto> success (String token) {
-        AppLoginResponseDto responseBody = new AppLoginResponseDto(token);
+    public static ResponseEntity<AppLoginResponseDto> success(String accessToken, String refreshToken) {
+        AppLoginResponseDto responseBody = new AppLoginResponseDto(accessToken, refreshToken);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 

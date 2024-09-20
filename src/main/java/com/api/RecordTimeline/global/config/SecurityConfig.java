@@ -37,7 +37,8 @@ public class SecurityConfig {
                         authorize
                                 .requestMatchers(
                                         "/swagger-ui/**"
-                                        ,"/api/v1/auth/**",
+                                        ,"/api/v1/auth/**"
+                                        ,"/api/v1/auth/refresh-token",
                                         "/api/v1/follow/count/following/**",
                                         "/api/v1/follow/count/followers/**"
                                         , "/**"
