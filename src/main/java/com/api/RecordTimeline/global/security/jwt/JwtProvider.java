@@ -67,11 +67,13 @@ public class JwtProvider {
                     .build()
                     .parseClaimsJws(jwtToken);
         } catch (ExpiredJwtException e) {
-            throw new ApiException(_JWT_EXPIRED); //토큰 만료
+            // 토큰 만료 시 예외 발생
+            throw new ApiException(_JWT_EXPIRED);
         } catch (Exception e) {
             throw new ApiException(_JWT_PARSING_ERROR);
         }
     }
+
 
     // 토큰에서 이메일 추출
     public String getUserEmailFromToken(final String jwtToken) {
@@ -98,4 +100,6 @@ public class JwtProvider {
 
         return claims.get("memberId", Long.class);
     }
+
+
 }
