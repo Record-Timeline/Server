@@ -1,5 +1,6 @@
 package com.api.RecordTimeline.domain.subTimeline.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,12 @@ public class SubTimelineCreateRequest {
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;
+//    private boolean isDone;
+//    private boolean isPrivate;
+
+    @JsonProperty("done")
+    private boolean isDone;
+
+    @JsonProperty("private")
+    private boolean isPrivate;
 }

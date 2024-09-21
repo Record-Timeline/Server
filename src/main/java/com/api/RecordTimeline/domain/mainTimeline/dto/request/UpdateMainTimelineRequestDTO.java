@@ -14,6 +14,8 @@ public class UpdateMainTimelineRequestDTO {
     private String title;
     private LocalDate startDate;
     private LocalDate endDate;
+    private boolean isPrivate;
+    private boolean isDone;
 
     public MainTimeline toEntity() {
         validate();
@@ -21,6 +23,8 @@ public class UpdateMainTimelineRequestDTO {
                 .title(this.title)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
+                .isPrivate(this.isPrivate)
+                .isDone(this.isDone)
                 .build();
     }
 
