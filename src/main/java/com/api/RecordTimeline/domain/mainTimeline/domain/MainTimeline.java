@@ -31,10 +31,10 @@ public class MainTimeline extends BaseEntity {
     @Column
     private LocalDate endDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isPrivate; // 공개 여부를 저장하는 필드 추가
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isDone; // 진행 상태를 저장하는 필드 추가
 
     @Setter

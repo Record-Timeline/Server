@@ -15,6 +15,8 @@ public class MainTimelineRequestDTO {
     private String title;
     private LocalDate startDate;
     private LocalDate endDate;
+    private boolean isPrivate;
+    private boolean isDone;
 
     // DTO로부터 엔티티 객체를 생성하는 메서드
     public MainTimeline toEntity(Member member) {
@@ -23,6 +25,8 @@ public class MainTimelineRequestDTO {
                 .title(this.title)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
+                .isPrivate(this.isPrivate)
+                .isDone(this.isDone)
                 .member(member)
                 .build();
     }
