@@ -20,13 +20,16 @@ public enum ErrorType {
 
     // ---------------------------------------- JWT TOKEN ----------------------------------------
     _JWT_PARSING_ERROR(BAD_REQUEST, "JWT_4001", "JWT Token이 올바르지 않습니다."),
-    _JWT_EXPIRED(UNAUTHORIZED, "JWT_4010", "Jwt Token의 유효 기간이 만료되었습니다."),
-    _JWT_NOT_FOUND(UNAUTHORIZED, "JWT_4010", "Jwt Token을 포함하셔야합니다."),
+    _JWT_EXPIRED(UNAUTHORIZED, "JWT_4002", "Jwt Token의 유효 기간이 만료되었습니다."),
+    _JWT_NOT_FOUND(UNAUTHORIZED, "JWT_4003", "Jwt Token을 포함하셔야합니다."),
+    _REFRESH_TOKEN_NOT_FOUND(OK, "JWT_4004", "리프레시 토큰이 존재하지 않습니다."),
+    _REFRESH_TOKEN_EXPIRED(OK, "JWT_4005", "리프레시 토큰의 유효 기간이 만료되었습니다. 재로그인 해주세요"),
 
     // ------------------------------------------ USER -------------------------------------------
     _USER_NOT_FOUND_BY_TOKEN(OK, "USER_4040", "제공된 토큰으로 사용자를 찾을 수 없습니다."),
     _UNAUTHORIZED(OK, "USER_4010", "로그인되지 않은 상태입니다."),
     _USER_NOT_FOUND_DB(OK, "USER_4041", "존재하지 않는 회원입니다."),
+    _Login_Failed(OK, "USER_4042", "로그인에 실패했습니다."),
 
     // ------------------------------------------ PROFILE ------------------------------------------
     _NO_IMAGE_FOUND(OK, "PROFILE4040", "이미지를 찾을 수 없습니다."),
