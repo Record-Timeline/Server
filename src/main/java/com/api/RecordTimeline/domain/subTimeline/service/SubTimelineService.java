@@ -61,6 +61,8 @@ public class SubTimelineService {
                 .content(contentWithUrls)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
+                .isPrivate(request.isPrivate())
+                .isDone(request.isDone())
                 .build();
         return subTimelineRepository.save(subTimeline);
     }
@@ -97,6 +99,8 @@ public class SubTimelineService {
                 .content(contentWithUrls)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
+                .isPrivate(request.isPrivate())
+                .isDone(request.isDone())
                 .build();
 
         return subTimelineRepository.save(updatedSubTimeline);
