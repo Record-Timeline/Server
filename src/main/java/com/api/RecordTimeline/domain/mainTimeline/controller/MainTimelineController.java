@@ -25,9 +25,10 @@ public class MainTimelineController {
 
     @PostMapping
     public ResponseEntity<CreateResponseDTO> createMainTimeline(@RequestBody MainTimelineRequestDTO mainTimelineRequestDTO) {
+
         try {
             MainTimeline created = mainTimelineService.createMainTimeline(mainTimelineRequestDTO);
-            return ResponseEntity.ok(CreateResponseDTO.success(created.getId()));
+            return ResponseEntity.ok(CreateResponseDTO.success(created.getId(), created.isDone(), created.isPrivate()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(CreateResponseDTO.failure(e.getMessage()));
@@ -46,7 +47,7 @@ public class MainTimelineController {
             return ResponseEntity.noContent().build();
         }
         List<ReadResponseDTO.TimelineDetails> details = timelines.stream()
-                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone()))
+                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone(), timeline.isPrivate()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(details);
     }
@@ -59,7 +60,7 @@ public class MainTimelineController {
             return ResponseEntity.noContent().build();  // 내용이 없을 경우 No Content 상태 반환
         }
         List<ReadResponseDTO.TimelineDetails> details = timelines.stream()
-                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone()))
+                .map(timeline -> new ReadResponseDTO.TimelineDetails(timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone(), timeline.isPrivate()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(details);
     }
@@ -70,7 +71,7 @@ public class MainTimelineController {
         try {
             MainTimeline timeline = mainTimelineService.getMainTimelineById(id);
             ReadResponseDTO response = new ReadResponseDTO(List.of(new ReadResponseDTO.TimelineDetails(
-                    timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone()
+                    timeline.getId(), timeline.getTitle(), timeline.getStartDate(), timeline.getEndDate(), timeline.isDone(), timeline.isPrivate()
             )));
             return ResponseEntity.ok(response);
         } catch (NoSuchElementException e) {

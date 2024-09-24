@@ -82,6 +82,8 @@ public class MainTimelineService {
         mainTimeline.setTitle(requestDTO.getTitle());
         mainTimeline.setStartDate(requestDTO.getStartDate());
         mainTimeline.setEndDate(requestDTO.getEndDate());
+        mainTimeline.setPrivate(requestDTO.isPrivate());
+        mainTimeline.setDone(requestDTO.isDone());
 
         return mainTimelineRepository.save(mainTimeline);
     }
