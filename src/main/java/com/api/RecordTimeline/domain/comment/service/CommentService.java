@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,11 @@ public class CommentService {
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
+
+        // 방어 코드: replies 필드가 null일 경우 빈 리스트로 초기화
+        if (savedComment.getReplies() == null) {
+            savedComment.setReplies(new ArrayList<>());
+        }
 
         return new CommentResponseDTO(savedComment.getId(), savedComment.getContent(),
                 savedComment.getCreatedDate().toString(), savedComment.getMember().getNickname(),
