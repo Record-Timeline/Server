@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.reply.controller;
 
 import com.api.RecordTimeline.domain.reply.dto.request.ReplyCreateRequestDTO;
+import com.api.RecordTimeline.domain.reply.dto.response.ReplyDeleteResponseDTO;
 import com.api.RecordTimeline.domain.reply.dto.response.ReplyResponseDTO;
 import com.api.RecordTimeline.domain.reply.service.ReplyService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,9 @@ public class ReplyController {
     }
 
     @DeleteMapping("/{replyId}")
-    public ResponseEntity<Void> deleteReply(@PathVariable Long replyId) {
-        replyService.deleteReply(replyId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ReplyDeleteResponseDTO> deleteReply(@PathVariable Long replyId) {
+        ReplyDeleteResponseDTO response = replyService.deleteReply(replyId);
+        return ResponseEntity.ok(response);
     }
 }
 
