@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.comment.controller;
 
 import com.api.RecordTimeline.domain.comment.dto.request.CommentCreateRequestDTO;
+import com.api.RecordTimeline.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.api.RecordTimeline.domain.comment.dto.response.CommentResponseDTO;
 import com.api.RecordTimeline.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<CommentDeleteResponseDTO> deleteComment(@PathVariable Long commentId) {
+        CommentDeleteResponseDTO response = commentService.deleteComment(commentId);
+        return ResponseEntity.ok(response);
     }
 }
 
