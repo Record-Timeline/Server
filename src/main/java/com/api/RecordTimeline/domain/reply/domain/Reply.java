@@ -23,14 +23,14 @@ public class Reply extends BaseEntity {
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;  // Comment와 연관 관계 설정
 
-    public static class ReplyBuilder {
-        private Comment comment;
-
-        public ReplyBuilder comment(Comment comment) {
-            this.comment = comment;
-            return this;
-        }
-    }
+//    public static class ReplyBuilder {
+//        private Comment comment;
+//
+//        public ReplyBuilder comment(Comment comment) {
+//            this.comment = comment;
+//            return this;
+//        }
+//    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
