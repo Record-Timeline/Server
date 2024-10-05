@@ -11,8 +11,12 @@ import com.api.RecordTimeline.domain.reply.dto.response.ReplyDeleteResponseDTO;
 import com.api.RecordTimeline.domain.reply.dto.response.ReplyResponseDTO;
 import com.api.RecordTimeline.domain.reply.dto.response.ReplyUpdateResponseDTO;
 import com.api.RecordTimeline.domain.reply.repository.ReplyRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,16 +30,16 @@ public class ReplyService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
+    // 대댓글 생성 (로그인된 사용자만 가능)
     public ReplyResponseDTO createReply(ReplyCreateRequestDTO request) {
+        Member currentMember = getCurrentAuthenticatedMember();
+
         Comment comment = commentRepository.findById(request.getCommentId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
 
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
-
         Reply reply = Reply.builder()
                 .comment(comment) // 댓글과의 연관관계 설정
-                .member(member)
+                .member(currentMember)
                 .content(request.getContent())
                 .build();
 
@@ -45,6 +49,7 @@ public class ReplyService {
                 savedReply.getCreatedDate().toString(), savedReply.getMember().getNickname());
     }
 
+    // 댓글 ID로 대댓글 조회
     public List<ReplyResponseDTO> getRepliesByCommentId(Long commentId) {
         List<Reply> replies = replyRepository.findByCommentId(commentId);
 
@@ -57,9 +62,12 @@ public class ReplyService {
                 .collect(Collectors.toList());
     }
 
+    // 대댓글 수정 (작성자만 가능)
     public ReplyUpdateResponseDTO updateReply(Long replyId, ReplyUpdateRequestDTO requestDTO) {
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 대댓글을 찾을 수 없습니다."));
+
+        checkOwnership(reply.getMember().getEmail());
 
         reply.setContent(requestDTO.getContent());  // 대댓글 내용 업데이트
         replyRepository.save(reply);
@@ -71,8 +79,26 @@ public class ReplyService {
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 대댓글을 찾을 수 없습니다."));
 
+        checkOwnership(reply.getMember().getEmail());
+
         replyRepository.delete(reply);
         return ReplyDeleteResponseDTO.success();  // 삭제 성공 시 성공 응답 반환
+    }
+
+    // 현재 인증된 사용자 가져오기
+    private Member getCurrentAuthenticatedMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        return memberRepository.findByEmailAndIsDeletedFalse(userEmail);
+    }
+
+    // 권한 체크 (작성자인지 확인)
+    private void checkOwnership(String ownerEmail) {
+        String userEmail = getCurrentAuthenticatedMember().getEmail();
+        if (!userEmail.equals(ownerEmail)) {
+            throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
+        }
     }
 }
 
