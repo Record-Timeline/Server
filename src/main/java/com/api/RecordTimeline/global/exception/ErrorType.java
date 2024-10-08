@@ -23,7 +23,7 @@ public enum ErrorType {
     _JWT_EXPIRED(UNAUTHORIZED, "JWT_4002", "Jwt Token의 유효 기간이 만료되었습니다."),
     _JWT_NOT_FOUND(UNAUTHORIZED, "JWT_4003", "Jwt Token을 포함하셔야합니다."),
     _REFRESH_TOKEN_NOT_FOUND(OK, "JWT_4004", "리프레시 토큰이 존재하지 않습니다."),
-    _REFRESH_TOKEN_EXPIRED(OK, "JWT_4005", "리프레시 토큰의 유효 기간이 만료되었습니다. 재로그인 해주세요"),
+    _REFRESH_TOKEN_EXPIRED(UNAUTHORIZED, "JWT_4005", "리프레시 토큰의 유효 기간이 만료되었습니다. 재로그인 해주세요"),
     _REFRESH_TOKEN_INVALID(OK, "JWT_4006", "리프레시 토큰이 유효하지 않습니다."),
 
     // ------------------------------------------ USER -------------------------------------------
