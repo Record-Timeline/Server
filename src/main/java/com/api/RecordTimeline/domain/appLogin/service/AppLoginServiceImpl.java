@@ -10,6 +10,7 @@ import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.security.jwt.JwtProvider;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class AppLoginServiceImpl implements AppLoginService {
     private final RefreshTokenRepository refreshTokenRepository; // 리프레시 토큰 저장소
 
     @Override
+    @Transactional
     public ResponseEntity<? super AppLoginResponseDto> appLogin(AppLoginRequestDto dto) {
         try {
             String email = dto.getEmail();
@@ -43,23 +45,23 @@ public class AppLoginServiceImpl implements AppLoginService {
                 return AppLoginResponseDto.appLoginFail();
             }
 
+            // 기존 Refresh Token 삭제 (로그인 시)
+            refreshTokenRepository.deleteByUserId(member.getId());
 
-            // 엑세스 토큰과 리프레시 토큰 발급
+            // 새로운 엑세스 토큰과 리프레시 토큰 발급
             String accessToken = jwtProvider.generateJwtToken(member.getId(), email);
             String refreshToken = jwtProvider.generateRefreshToken(member.getId(), email);
 
-            // 리프레시 토큰 저장
+            // 새로운 리프레시 토큰 저장
             refreshTokenRepository.save(new RefreshToken(member.getId(), refreshToken));
+
             return AppLoginResponseDto.success(accessToken, refreshToken);
 
         } catch (Exception exception) {
+
             return ResponseDto.databaseError();
         }
     }
 
 
-
-    public void logout(Long userId) {
-        refreshTokenRepository.deleteByUserId(userId);
-    }
 }
