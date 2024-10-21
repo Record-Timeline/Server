@@ -40,8 +40,10 @@ public class SecurityConfig {
                                         ,"/api/v1/auth/**"
                                         ,"/api/v1/auth/refresh-token",
                                         "/api/v1/follow/count/following/**",
-                                        "/api/v1/follow/count/followers/**"
-                                        , "/**"
+                                        "/api/v1/follow/count/followers/**",
+                                        "/ws/**" , // WebSocket 경로 추가\
+                                        "/notification.html"
+                                        ,"/**"
                                 ).permitAll()
                                 .anyRequest().permitAll());
 
