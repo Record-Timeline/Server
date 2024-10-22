@@ -1,12 +1,12 @@
 package com.api.RecordTimeline.domain.subTimeline.controller;
 
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
-import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequestDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.request.UpdateSubTimelineRequestDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.*;
 import com.api.RecordTimeline.domain.subTimeline.service.SubTimelineService;
 import com.api.RecordTimeline.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class SubTimelineController {
     private final SubTimelineService subTimelineService;
 
     @PostMapping
-    public ResponseEntity<SubCreateResponseDTO> createSubTimeline(@RequestBody SubTimelineCreateRequest request) {
+    public ResponseEntity<SubCreateResponseDTO> createSubTimeline(@RequestBody SubTimelineCreateRequestDTO request) {
         try {
             SubTimeline created = subTimelineService.createSubTimeline(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(SubCreateResponseDTO.success(created.getId()));
@@ -44,7 +44,7 @@ public class SubTimelineController {
     }
 
     @PutMapping("/{subTimelineId}")
-    public ResponseEntity<SubUpdateResponseDTO> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody SubTimelineCreateRequest request) {
+    public ResponseEntity<SubUpdateResponseDTO> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody UpdateSubTimelineRequestDTO request) {
         try {
             SubTimeline updated = subTimelineService.updateSubTimeline(subTimelineId, request);
             return ResponseEntity.ok(SubUpdateResponseDTO.success());

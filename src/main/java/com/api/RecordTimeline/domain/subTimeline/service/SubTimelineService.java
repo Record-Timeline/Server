@@ -7,8 +7,9 @@ import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineReposit
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
-import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequest;
+import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequestDTO;
 //import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.request.UpdateSubTimelineRequestDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubMyTimelineResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubPrivacyUpdateResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
@@ -20,9 +21,6 @@ import com.api.RecordTimeline.global.s3.S3FileUploader;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -48,7 +46,7 @@ public class SubTimelineService {
 
     private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("<img[^>]+src=\"([^\"]+)\"");
 
-    public SubTimeline createSubTimeline(SubTimelineCreateRequest request) {
+    public SubTimeline createSubTimeline(SubTimelineCreateRequestDTO request) {
         MainTimeline mainTimeline = mainTimelineRepository.findById(request.getMainTimelineId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다. : " + request.getMainTimelineId()));
 
@@ -67,7 +65,7 @@ public class SubTimelineService {
         return subTimelineRepository.save(subTimeline);
     }
 
-    public SubTimeline updateSubTimeline(Long subTimelineId, SubTimelineCreateRequest request) {
+    public SubTimeline updateSubTimeline(Long subTimelineId, UpdateSubTimelineRequestDTO request) {
         SubTimeline existingSubTimeline = subTimelineRepository.findById(subTimelineId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 서브타임라인을 찾을 수 없습니다. : " + subTimelineId));
 
@@ -75,6 +73,9 @@ public class SubTimelineService {
         if (mainTimeline.isPrivate()) {
             throw new ApiException(ErrorType._ACCESS_DENIED);
         }
+
+        // 소유권 검증
+        checkOwnership(existingSubTimeline.getMainTimeline().getMember().getEmail());
 
         // 기존 이미지 URL 추출
         List<String> existingImageUrls = extractImageUrls(existingSubTimeline.getContent());
@@ -99,12 +100,13 @@ public class SubTimelineService {
                 .content(contentWithUrls)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
-                .isPrivate(request.isPrivate())
-                .isDone(request.isDone())
+                .isPrivate(request.getIsPrivate())
+                .isDone(request.getIsDone())
                 .build();
 
         return subTimelineRepository.save(updatedSubTimeline);
     }
+
 
     public SubTimelineWithLikeBookmarkDTO getSubTimelineWithLikeAndBookmark(Long subTimelineId) {
         SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
