@@ -82,8 +82,16 @@ public class MainTimelineService {
         mainTimeline.setTitle(requestDTO.getTitle());
         mainTimeline.setStartDate(requestDTO.getStartDate());
         mainTimeline.setEndDate(requestDTO.getEndDate());
-        mainTimeline.setPrivate(requestDTO.isPrivate());
-        mainTimeline.setDone(requestDTO.isDone());
+//        mainTimeline.setPrivate(requestDTO.isPrivate());
+//        mainTimeline.setDone(requestDTO.isDone());
+
+        // null이 아니면 값을 업데이트하고, null이면 기존 값을 유지
+        if (requestDTO.getIsPrivate() != null) {
+            mainTimeline.setPrivate(requestDTO.getIsPrivate());
+        }
+        if (requestDTO.getIsDone() != null) {
+            mainTimeline.setDone(requestDTO.getIsDone());
+        }
 
         return mainTimelineRepository.save(mainTimeline);
     }
