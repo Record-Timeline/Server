@@ -23,7 +23,7 @@ public class UserLike extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_timeline_id", nullable = false)
     private SubTimeline subTimeline;
 }

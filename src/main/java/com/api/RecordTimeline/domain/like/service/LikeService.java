@@ -42,7 +42,7 @@ public class LikeService {
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
             subTimeline.adjustLikeCount(-1); // 좋아요 수 감소 및 검증
-            subTimelineRepository.save(subTimeline); // 변경된 좋아요 수 저장
+//            subTimelineRepository.save(subTimeline); // 변경된 좋아요 수 저장
             return LikeResponseDTO.success("removed successfully", subTimeline.getLikeCount());
         } else {
             UserLike like = UserLike.builder()
