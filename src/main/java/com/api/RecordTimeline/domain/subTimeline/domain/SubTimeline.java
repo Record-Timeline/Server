@@ -1,12 +1,16 @@
 package com.api.RecordTimeline.domain.subTimeline.domain;
 
 import com.api.RecordTimeline.domain.base.BaseEntity;
+import com.api.RecordTimeline.domain.bookmark.domain.Bookmark;
+import com.api.RecordTimeline.domain.like.domain.UserLike;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "sub_timeline")
@@ -23,6 +27,12 @@ public class SubTimeline extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_timeline_id", nullable = false)
     private MainTimeline mainTimeline;
+
+    @OneToMany(mappedBy = "subTimeline", cascade = CascadeType.ALL, orphanRemoval = true) // 추가된 코드
+    private List<UserLike> likes = new ArrayList<>(); // 서브타임라인에 좋아요 연결
+
+    @OneToMany(mappedBy = "subTimeline", cascade = CascadeType.ALL, orphanRemoval = true) // 추가된 코드
+    private List<Bookmark> bookmarks = new ArrayList<>(); // 서브타임라인에 북마크 연결
 
     @Column(nullable = false)
     private String title;

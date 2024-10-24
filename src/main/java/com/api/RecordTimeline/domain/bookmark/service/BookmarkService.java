@@ -43,8 +43,9 @@ public class BookmarkService {
 
         if (existingBookmark.isPresent()) {
             bookmarkRepository.delete(existingBookmark.get());
+            bookmarkRepository.flush(); // **수정된 부분**: 삭제 후 즉시 flush()를 호출하여 삭제 처리
             subTimeline.adjustBookmarkCount(-1); // 북마크 수 감소 및 검증
-            subTimelineRepository.save(subTimeline); // 변경된 북마크 수 저장
+//            subTimelineRepository.save(subTimeline); // 변경된 북마크 수 저장
             return BookmarkResponseDTO.success("removed successfully",subTimeline.getBookmarkCount()); // 북마크 해제 성공 응답
         } else {
             Bookmark bookmark = Bookmark.builder()
