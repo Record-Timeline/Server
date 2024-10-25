@@ -27,8 +27,9 @@ public class NotificationService {
      */
     @Transactional
     public void sendNotification(Member sender, Member receiver, String message, NotificationType type) {
-        // 알림 만료일 설정 (테스트용으로 1분으로 설정해둠)
-        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(1);
+
+        //LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(1); // 테스트용 (알림 만료 1분)
+        LocalDateTime expiryDate = LocalDateTime.now().plusDays(14); //배포용 (알림 만료 14일)
 
         // 알림 DB에 저장
         Notification notification = Notification.builder()

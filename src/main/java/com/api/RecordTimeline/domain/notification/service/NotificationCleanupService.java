@@ -16,8 +16,8 @@ public class NotificationCleanupService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    //@Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행 (배포용)
-    @Scheduled(cron = "0 * * * * ?")  // 1분마다 실행 (테스트용)
+    @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행 (배포용)
+    //@Scheduled(cron = "0 * * * * ?")  // 1분마다 실행 (테스트용)
     public void deleteExpiredNotifications() {
 
         LocalDateTime now = LocalDateTime.now();
