@@ -5,6 +5,7 @@ import com.api.RecordTimeline.domain.notification.domain.Notification;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
 import com.api.RecordTimeline.domain.notification.dto.NotificationResponseDto;
 import com.api.RecordTimeline.domain.notification.repository.NotificationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,6 @@ public class NotificationService {
 
     /**
      * 알림을 DB에 저장하고 WebSocket을 통해 실시간으로 전송하는 메서드
-     *
-     * @param sender  알림을 보낸 사람 (팔로우, 좋아요를 한 사람)
-     * @param receiver 알림을 받을 사람
-     * @param message  알림 메시지 내용
-     * @param type     알림 타입 (팔로우, 좋아요 등)
      */
     @Transactional
     public void sendNotification(Member sender, Member receiver, String message, NotificationType type) {
@@ -53,9 +49,6 @@ public class NotificationService {
 
     /**
      * WebSocket을 통해 실시간 알림을 전송하는 메서드
-     *
-     * @param message    전송할 메시지
-     * @param receiverId 알림을 받을 사람의 ID
      */
     private void sendRealTimeNotification(String message, Long receiverId) {
         String destination = "/topic/notifications/" + receiverId;  // 전송할 경로 설정
@@ -76,4 +69,34 @@ public class NotificationService {
                         .build())
                 .toList();
     }
+
+    @Transactional
+    public void markNotificationAsRead(Long notificationId, Long userId) {
+        // 알림 조회
+        Notification notification = notificationRepository
+                .findByIdAndReceiverId(notificationId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 사용자의 알림을 찾을 수 없습니다."));
+
+        // 읽음 처리
+        Notification updatedNotification = Notification.builder()
+                .id(notification.getId())
+                .receiver(notification.getReceiver())
+                .sender(notification.getSender())
+                .message(notification.getMessage())
+                .isRead(true)
+                .createdAt(notification.getCreatedAt())
+                .expiryDate(notification.getExpiryDate())
+                .type(notification.getType())
+                .build();
+
+        // 업데이트된 알림 저장
+        notificationRepository.save(updatedNotification);
+    }
+
+    @Transactional(readOnly = true)
+    public long countUnreadNotifications(Long userId) {
+        // 안 읽은 알림 개수 조회
+        return notificationRepository.countByReceiverIdAndIsReadFalse(userId);
+    }
+
 }
