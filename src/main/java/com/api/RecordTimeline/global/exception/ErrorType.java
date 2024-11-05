@@ -45,6 +45,18 @@ public enum ErrorType {
     _MAINTIMELINE_NOT_FOUND(NOT_FOUND, "MAINTIMELINE_4040", "해당 메인타임라인을 찾을 수 없습니다."),
     _ACCESS_DENIED(FORBIDDEN, "Timeline4030", "접근이 거부되었습니다."),
 
+    // ------------------------------------------ COMMENT ------------------------------------------
+    _COMMENT_NOT_FOUND(NOT_FOUND, "COMMENT_4040", "해당 댓글을 찾을 수 없습니다."),
+    _COMMENT_LIKE_FAILED(BAD_REQUEST, "COMMENT_4001", "댓글 좋아요 처리에 실패했습니다."),
+    _COMMENT_UNLIKE_FAILED(BAD_REQUEST, "COMMENT_4002", "댓글 좋아요 해제에 실패했습니다."),
+    _COMMENT_PERMISSION_DENIED(FORBIDDEN, "COMMENT_4030", "댓글에 대한 접근 권한이 없습니다."),
+
+    // ------------------------------------------ REPLY ------------------------------------------
+    _REPLY_NOT_FOUND(NOT_FOUND, "REPLY_4040", "해당 대댓글을 찾을 수 없습니다."),
+    _REPLY_LIKE_FAILED(BAD_REQUEST, "REPLY_4001", "대댓글 좋아요 처리에 실패했습니다."),
+    _REPLY_UNLIKE_FAILED(BAD_REQUEST, "REPLY_4002", "대댓글 좋아요 해제에 실패했습니다."),
+    _REPLY_PERMISSION_DENIED(FORBIDDEN, "REPLY_4030", "대댓글에 대한 접근 권한이 없습니다."),
+
     // ------------------------------------------ Recommend ------------------------------------------
     _NO_RECOMMENDER_FOUND(OK, "RECOMMEND4040", "해당 관심사를 가진 사용자가 없습니다."),
 
