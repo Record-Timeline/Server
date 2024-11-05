@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notification Test</title>
+    <!-- SockJS 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <!-- STOMP 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Notification Test</h1>
+<div id="notification">No notifications yet.</div> <!-- 기본적으로 알림이 없다는 메시지 표시 -->
+
+<script>
+    // WebSocket 연결 설정
+    var socket = new SockJS('/ws');  // 서버의 WebSocket 엔드포인트
+    var stompClient = Stomp.over(socket);
+
+    // WebSocket 연결 시도
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        // 사용자 ID 1의 알림 구독
+        stompClient.subscribe('/topic/notifications/1', function (notification) {
+            console.log('Received Notification: ', notification.body);  // 콘솔에 알림 표시
+            document.getElementById("notification").innerHTML = notification.body;  // 화면에 알림 표시
+            alert('New Notification: ' + notification.body);  // 팝업 알림 표시
+        }, function (error) {
+            // 구독 실패 시
+            console.log('Subscription error: ', error);
+        });
+    }, function (error) {
+        // WebSocket 연결 실패 시
+        console.log('Connection error: ', error);
+    });
+
+    // WebSocket 연결 실패 처리
+    socket.onerror = function (error) {
+        console.log('WebSocket Error: ' + error);
+    };
+</script>
+</body>
+</html>

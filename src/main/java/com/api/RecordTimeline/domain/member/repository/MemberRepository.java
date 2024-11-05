@@ -17,12 +17,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByNicknameAndIsDeletedFalse(String nickname);
 
 
-    @Query(value = "SELECT * FROM member WHERE interest = ?1 AND email != ?2 AND is_deleted = false ORDER BY RAND() LIMIT 5", nativeQuery = true)
+    @Query(value = "SELECT * FROM member WHERE interest = ?1 AND email != ?2 AND is_deleted = false AND is_private = false ORDER BY RAND() LIMIT 5", nativeQuery = true)
     List<Member> findMembersWithSameInterest(String interest, String email);
 
-    @Query(value = "SELECT * FROM member WHERE interest = ?1 AND is_deleted = false ORDER BY RAND() LIMIT 5", nativeQuery = true)
+    @Query(value = "SELECT * FROM member WHERE interest = ?1 AND is_deleted = false AND is_private = false ORDER BY RAND() LIMIT 5", nativeQuery = true)
     List<Member> findRandomMembersByInterest(String interest);
 
-    @Query("SELECT m FROM Member m JOIN FETCH m.profile p WHERE (m.nickname LIKE %:keyword% OR p.introduction LIKE %:keyword%) AND m.isDeleted = false")
+    @Query("SELECT m FROM Member m JOIN FETCH m.profile p WHERE (m.nickname LIKE %:keyword% OR p.introduction LIKE %:keyword%) AND m.isDeleted = false ")
     List<Member> findByNicknameContainingOrProfileIntroductionContaining(@Param("keyword") String keyword);
 }

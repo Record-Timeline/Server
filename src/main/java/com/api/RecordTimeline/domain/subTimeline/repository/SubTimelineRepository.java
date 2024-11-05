@@ -21,7 +21,7 @@ public interface SubTimelineRepository extends JpaRepository<SubTimeline, Long> 
                 JOIN st.mainTimeline mt 
                 JOIN mt.member m 
             WHERE (st.title LIKE %:keyword% OR st.content LIKE %:keyword%) 
-            AND m.isDeleted = false
+            AND m.isDeleted = false AND st.isPrivate = false
             """)
     List<SubTimeline> findByTitleOrContentContaining(@Param("keyword") String keyword);
 

@@ -4,6 +4,8 @@ import com.api.RecordTimeline.domain.follow.domain.Follow;
 import com.api.RecordTimeline.domain.follow.repository.FollowRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public void follow(Long followerId, Long followingId) {
@@ -35,6 +38,8 @@ public class FollowService {
 
         Follow follow = new Follow(follower, following);
         followRepository.save(follow);
+
+        notificationService.sendNotification(follower, following, follower.getNickname() + "님이 당신을 팔로우했습니다.", NotificationType.FOLLOW);
     }
 
     @Transactional

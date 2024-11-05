@@ -6,6 +6,8 @@ import com.api.RecordTimeline.domain.like.dto.response.LikeResponseDTO;
 import com.api.RecordTimeline.domain.like.repository.LikeRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -27,6 +29,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final MemberRepository memberRepository;
     private final SubTimelineRepository subTimelineRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public LikeResponseDTO toggleLike(LikeRequestDTO likeRequestDTO) {
@@ -52,6 +55,9 @@ public class LikeService {
             likeRepository.save(like);
             subTimeline.adjustLikeCount(1); // 좋아요 수 증가 및 검증
             subTimelineRepository.save(subTimeline); // 변경된 좋아요 수 저장
+
+            notificationService.sendNotification(member, subTimeline.getMember(), member.getNickname() + "님이 당신의 게시물에 좋아요를 눌렀습니다.", NotificationType.LIKE);
+
             return LikeResponseDTO.success("added successfully", subTimeline.getLikeCount());
         }
     }
