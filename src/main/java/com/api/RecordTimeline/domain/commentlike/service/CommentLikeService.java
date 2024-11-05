@@ -55,4 +55,11 @@ public class CommentLikeService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
     }
+
+    public boolean isCommentLikedByMember(Long commentId, Member member) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ApiException(ErrorType._COMMENT_NOT_FOUND));
+        return commentLikeRepository.existsByMemberAndComment(member, comment);
+    }
+
 }
