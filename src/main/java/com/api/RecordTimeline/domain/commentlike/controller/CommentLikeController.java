@@ -9,6 +9,7 @@ import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +35,17 @@ public class CommentLikeController {
         return ResponseEntity.ok(isLiked);
     }
 
-    // 현재 인증된 사용자를 가져오는 메서드 추가
     private Member getCurrentAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long memberId = ((JwtAuthenticationToken) authentication).getUserId();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            throw new ApiException(ErrorType._UNAUTHORIZED); // 인증되지 않은 사용자 예외 처리
+        }
+
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+        Long memberId = jwtToken.getUserId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
     }
+
 
 }
