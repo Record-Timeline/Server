@@ -12,6 +12,7 @@ import com.api.RecordTimeline.global.exception.ErrorType;
 import com.api.RecordTimeline.global.security.jwt.JwtAuthenticationToken;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -49,8 +50,18 @@ public class ReplyLikeService {
         return new LikeResponseDTO("SU", "Success", reply.getLikeCount());
     }
 
+    public boolean isReplyLikedByMember(Long replyId) {
+        Member member = getCurrentAuthenticatedMember();
+        Reply reply = replyRepository.findById(replyId)
+                .orElseThrow(() -> new ApiException(ErrorType._REPLY_NOT_FOUND));
+        return replyLikeRepository.findByMemberAndReply(member, reply).isPresent();
+    }
+
     private Member getCurrentAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            throw new ApiException(ErrorType._UNAUTHORIZED); // 인증되지 않은 사용자 예외 처리
+        }
         Long memberId = ((JwtAuthenticationToken) authentication).getUserId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApiException(ErrorType._USER_NOT_FOUND_DB));
