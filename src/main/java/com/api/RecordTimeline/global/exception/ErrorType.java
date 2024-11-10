@@ -68,7 +68,9 @@ public enum ErrorType {
     _CERTIFICATION_NOT_VERIFIED(OK, "CERTIFICATION4001", "인증이 확인되지 않았습니다."), 
     
     
-    _CAREER_DETAIL_NOT_FOUND(OK, "CAREER4000", "경력사항을 찾을 수 없습니다.");
+    _CAREER_DETAIL_NOT_FOUND(OK, "CAREER4000", "경력사항을 찾을 수 없습니다."),
+
+    _NOTIFICATION_NOT_FOUND(OK, "NOTIFICATION4000", "알림이 없습니다.");
 
 
 

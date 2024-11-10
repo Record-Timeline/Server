@@ -5,6 +5,8 @@ import com.api.RecordTimeline.domain.notification.domain.Notification;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
 import com.api.RecordTimeline.domain.notification.dto.NotificationResponseDto;
 import com.api.RecordTimeline.domain.notification.repository.NotificationRepository;
+import com.api.RecordTimeline.global.exception.ApiException;
+import com.api.RecordTimeline.global.exception.ErrorType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -59,6 +61,12 @@ public class NotificationService {
 
 
     public List<NotificationResponseDto> getNotificationsForUser(Long userId) {
+
+        List<Notification> notifications = notificationRepository.findByReceiverId(userId);
+
+        if (notifications.isEmpty()) {
+            throw new ApiException(ErrorType._NOTIFICATION_NOT_FOUND);
+        }
 
         return notificationRepository.findByReceiverId(userId).stream()
                 .map(notification -> NotificationResponseDto.builder()
