@@ -16,4 +16,5 @@ public class NotificationResponseDto {
     private LocalDateTime createdAt;
     private boolean isRead;
     private String type;
+    private String profileImageUrl;
 }

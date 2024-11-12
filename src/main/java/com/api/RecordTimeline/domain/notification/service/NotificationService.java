@@ -68,14 +68,22 @@ public class NotificationService {
             throw new ApiException(ErrorType._NOTIFICATION_NOT_FOUND);
         }
 
-        return notificationRepository.findByReceiverId(userId).stream()
-                .map(notification -> NotificationResponseDto.builder()
-                        .id(notification.getId())
-                        .message(notification.getMessage())
-                        .createdAt(notification.getCreatedAt())
-                        .isRead(notification.isRead())
-                        .type(notification.getType().name())
-                        .build())
+        return notifications.stream()
+                .map(notification -> {
+                    String profileImageUrl = "";
+                    if (notification.getSender().getProfile() != null) {
+                        profileImageUrl = notification.getSender().getProfile().getProfileImgUrl();
+                    }
+
+                    return NotificationResponseDto.builder()
+                            .id(notification.getId())
+                            .message(notification.getMessage())
+                            .createdAt(notification.getCreatedAt())
+                            .isRead(notification.isRead())
+                            .type(notification.getType().name())
+                            .profileImageUrl(profileImageUrl)
+                            .build();
+                })
                 .toList();
     }
 

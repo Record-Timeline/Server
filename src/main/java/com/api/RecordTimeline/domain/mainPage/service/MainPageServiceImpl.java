@@ -59,6 +59,14 @@ public class MainPageServiceImpl implements MainPageService {
         // 회원 정보를 DTO로 변환
         List<MainPageMemberDto> responseDtos = membersWithInterest.stream().map(member -> {
             Profile profile = profileRepository.findByMember(member);
+            String profileImgUrl = "";
+            String introduction = "";
+
+            if (profile != null) {
+                profileImgUrl = profile.getProfileImgUrl();
+                introduction = profile.getIntroduction();
+            }
+
             List<MainTimeline> timelines = mainTimelineService.getTimelinesByMemberId(member.getId());
             List<MainTimelineDto> timelineDtos = timelines.stream().map(timeline -> new MainTimelineDto(
                     timeline.getId(),
@@ -71,15 +79,14 @@ public class MainPageServiceImpl implements MainPageService {
 
             Long followCount = followService.getFollowerCountForMember(member.getId());
 
-            MainPageMemberDto dto = new MainPageMemberDto(
+            return new MainPageMemberDto(
                     member.getId(),
                     member.getNickname(),
-                    profile != null ? profile.getProfileImgUrl() : "",
-                    profile != null ? profile.getIntroduction() : "",
+                    profileImgUrl,
+                    introduction,
                     timelineDtos,
                     followCount
             );
-            return dto;
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(responseDtos);
@@ -127,5 +134,6 @@ public class MainPageServiceImpl implements MainPageService {
 
         return ResponseEntity.ok(responseDto);
     }
+
 }
 
