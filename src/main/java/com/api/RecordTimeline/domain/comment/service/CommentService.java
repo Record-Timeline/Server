@@ -52,8 +52,11 @@ public class CommentService {
             savedComment.setReplies(new ArrayList<>());
         }
 
-        return new CommentResponseDTO(savedComment.getId(), savedComment.getContent(),
-                savedComment.getCreatedDate().toString(), savedComment.getMember().getNickname(),
+        return new CommentResponseDTO(
+                savedComment.getId(),
+                savedComment.getContent(),
+                savedComment.getCreatedDate().toString(),
+                savedComment.getMember().getNickname(),
                 savedComment.getReplies().size());
     }
 
