@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReplyCreateRequestDTO {
     private Long commentId; // 대댓글이 속한 댓글의 ID
-    private Long memberId; // 작성자 ID
     private String content; // 대댓글 내용
 }
