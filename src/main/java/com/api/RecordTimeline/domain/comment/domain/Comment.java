@@ -36,4 +36,20 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();  // 대댓글
+
+    // likeCount 필드를 추가
+    @Column(nullable = false)
+    private int likeCount = 0;
+
+    // 좋아요 수를 조정하는 메서드
+    public void adjustLikeCount(int adjustment) {
+        this.likeCount += adjustment;
+        if (this.likeCount < 0) {
+            this.likeCount = 0;
+        }
+    }
+
+    public int getLikeCount() {
+        return this.likeCount;
+    }
 }
