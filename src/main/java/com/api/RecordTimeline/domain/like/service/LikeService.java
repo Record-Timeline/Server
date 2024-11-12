@@ -56,7 +56,14 @@ public class LikeService {
             subTimeline.adjustLikeCount(1); // 좋아요 수 증가 및 검증
             subTimelineRepository.save(subTimeline); // 변경된 좋아요 수 저장
 
-            notificationService.sendNotification(member, subTimeline.getMember(), member.getNickname() + "님이 당신의 게시물에 좋아요를 눌렀습니다.", NotificationType.LIKE);
+            // 좋아요 알림 전송 시 subTimelineId 전달
+            notificationService.sendNotification(
+                    member,
+                    subTimeline.getMember(),
+                    member.getNickname() + "님이 당신의 게시물에 좋아요를 눌렀습니다.",
+                    NotificationType.LIKE,
+                    subTimelineId  // postId로 subTimelineId 전달
+            );
 
             return LikeResponseDTO.success("added successfully", subTimeline.getLikeCount());
         }

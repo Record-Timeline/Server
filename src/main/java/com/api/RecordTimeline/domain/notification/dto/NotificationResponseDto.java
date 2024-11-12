@@ -17,4 +17,6 @@ public class NotificationResponseDto {
     private boolean isRead;
     private String type;
     private String profileImageUrl;
+    private Long postId;
+    private Long followerId;
 }

@@ -39,7 +39,9 @@ public class FollowService {
         Follow follow = new Follow(follower, following);
         followRepository.save(follow);
 
-        notificationService.sendNotification(follower, following, follower.getNickname() + "님이 당신을 팔로우했습니다.", NotificationType.FOLLOW);
+        // relatedId로 followerId 전달
+        String message = follower.getNickname() + "님이 당신을 팔로우했습니다.";
+        notificationService.sendNotification(follower, following, message, NotificationType.FOLLOW, followerId);
     }
 
     @Transactional

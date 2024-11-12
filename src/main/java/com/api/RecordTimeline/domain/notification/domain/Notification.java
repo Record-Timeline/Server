@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -36,4 +35,8 @@ public class Notification {
     private NotificationType type;   // 알림 타입
 
     private LocalDateTime expiryDate; // 알림 만료일
+
+    private Long postId;
+    private Long followerId;
+
 }
