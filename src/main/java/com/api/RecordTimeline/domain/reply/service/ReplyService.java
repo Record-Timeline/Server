@@ -45,8 +45,12 @@ public class ReplyService {
 
         Reply savedReply = replyRepository.save(reply);
 
-        return new ReplyResponseDTO(savedReply.getId(), savedReply.getContent(),
-                savedReply.getCreatedDate().toString(), savedReply.getMember().getNickname());
+        return new ReplyResponseDTO(
+                savedReply.getId(),
+                savedReply.getContent(),
+                savedReply.getCreatedDate().toString(),
+                savedReply.getMember().getNickname(),
+                savedReply.getComment().getSubTimeline().getId());
     }
 
     // 댓글 ID로 대댓글 조회
@@ -58,7 +62,8 @@ public class ReplyService {
                         reply.getId(),
                         reply.getContent(),
                         reply.getCreatedDate().toString(),
-                        reply.getMember().getNickname()))
+                        reply.getMember().getNickname(),
+                        reply.getComment().getSubTimeline().getId()))
                 .collect(Collectors.toList());
     }
 

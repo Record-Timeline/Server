@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CommentCreateRequestDTO {
     private Long subTimelineId;
-    private Long memberId;
     private String content;
 }
 
