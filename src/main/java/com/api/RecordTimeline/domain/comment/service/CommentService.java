@@ -9,6 +9,8 @@ import com.api.RecordTimeline.domain.comment.dto.response.CommentUpdateResponseD
 import com.api.RecordTimeline.domain.comment.repository.CommentRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -30,23 +32,38 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final SubTimelineRepository subTimelineRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     // 댓글 생성 (로그인된 사용자만 가능)
     public CommentResponseDTO createComment(CommentCreateRequestDTO request) {
         Member currentMember = getCurrentAuthenticatedMember();
 
         SubTimeline subTimeline = subTimelineRepository.findById(request.getSubTimelineId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 서브타임라인을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND, "해당 서브타임라인을 찾을 수 없습니다."));
 
-
+        // 댓글 생성
         Comment comment = Comment.builder()
                 .subTimeline(subTimeline)
                 .member(currentMember)
                 .content(request.getContent())
                 .build();
 
+        // 댓글 저장
         Comment savedComment = commentRepository.save(comment);
 
+        // 댓글 알림: 게시글 작성자
+        notificationService.sendNotification(
+                currentMember,
+                subTimeline.getMainTimeline().getMember(),
+                currentMember.getNickname() + "님이 당신의 게시글에 댓글을 남겼습니다.",
+                NotificationType.COMMENT,
+                savedComment.getId()
+        );
+
+        return createCommentResponse(savedComment);
+    }
+
+    private CommentResponseDTO createCommentResponse(Comment savedComment) {
         // 방어 코드: replies 필드가 null일 경우 빈 리스트로 초기화
         if (savedComment.getReplies() == null) {
             savedComment.setReplies(new ArrayList<>());
@@ -63,7 +80,7 @@ public class CommentService {
     // 댓글 수정
     public CommentUpdateResponseDTO updateComment(Long commentId, CommentUpdateRequestDTO requestDTO) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorType._COMMENT_NOT_FOUND, "해당 댓글을 찾을 수 없습니다."));
 
         checkOwnership(comment.getMember().getEmail());
 
@@ -90,7 +107,7 @@ public class CommentService {
     @Transactional
     public CommentDeleteResponseDTO deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorType._COMMENT_NOT_FOUND, "해당 댓글을 찾을 수 없습니다."));
 
         checkOwnership(comment.getMember().getEmail());
 
@@ -109,7 +126,7 @@ public class CommentService {
     // 권한 체크 (작성자인지 확인)
     private void checkOwnership(String ownerEmail) {
         String userEmail = getCurrentAuthenticatedMember().getEmail();
-        if (!userEmail.equals(ownerEmail)) {
+        if (userEmail == null || ownerEmail == null || !userEmail.equals(ownerEmail)) {
             throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
         }
     }
