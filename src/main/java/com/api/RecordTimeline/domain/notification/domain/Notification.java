@@ -32,6 +32,7 @@ public class Notification {
     private LocalDateTime createdAt; // 알림 생성 시간
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private NotificationType type;   // 알림 타입
 
     private LocalDateTime expiryDate; // 알림 만료일
