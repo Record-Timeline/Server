@@ -41,20 +41,21 @@ public class ReplyService {
                 .orElseThrow(() -> new ApiException(ErrorType._COMMENT_NOT_FOUND, "해당 댓글을 찾을 수 없습니다."));
 
         Reply reply = Reply.builder()
-                .comment(comment)
+                .comment(comment) // 댓글과의 연관관계 설정
                 .member(currentMember)
                 .content(request.getContent())
                 .build();
 
         Reply savedReply = replyRepository.save(reply);
 
-        // 대댓글 알림 전송
+        // 알림 전송 로직
+        Long postId = comment.getSubTimeline().getMainTimeline().getId(); // 대댓글이 속한 게시글 ID
         notificationService.sendNotification(
                 currentMember,
                 comment.getMember(),
                 currentMember.getNickname() + "님이 당신의 댓글에 대댓글을 남겼습니다.",
                 NotificationType.REPLY,
-                savedReply.getId()
+                postId // postId 전달
         );
 
         return new ReplyResponseDTO(
@@ -62,7 +63,7 @@ public class ReplyService {
                 savedReply.getContent(),
                 savedReply.getCreatedDate().toString(),
                 savedReply.getMember().getNickname(),
-                savedReply.getComment().getSubTimeline().getId());
+                comment.getSubTimeline().getId());
     }
 
     // 댓글 ID로 대댓글 조회
