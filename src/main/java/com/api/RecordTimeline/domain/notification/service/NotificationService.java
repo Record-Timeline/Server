@@ -24,16 +24,13 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     /**
      * 알림을 DB에 저장하고 WebSocket을 통해 실시간으로 전송하는 메서드
      */
     @Transactional
     public void sendNotification(Member sender, Member receiver, String message, NotificationType type, Long relatedId) {
-
-        LocalDateTime expiryDate = LocalDateTime.now().plusDays(14);
-
         Notification notification = Notification.builder()
                 .sender(sender)
                 .receiver(receiver)
@@ -41,7 +38,8 @@ public class NotificationService {
                 .isRead(false)
                 .type(type)
                 .createdAt(LocalDateTime.now())
-                .expiryDate(expiryDate)
+                .expiryDate(LocalDateTime.now().plusDays(14))
+                .postId(type == NotificationType.COMMENT ? relatedId : null)
                 .build();
 
         notificationRepository.save(notification);
@@ -54,8 +52,6 @@ public class NotificationService {
                 .isRead(notification.isRead())
                 .type(notification.getType().name())
                 .profileImageUrl(sender.getProfile() != null ? sender.getProfile().getProfileImgUrl() : "")
-                .postId(type == NotificationType.LIKE ? relatedId : null)  // 좋아요 알림인 경우 postId 설정
-                .followerId(type == NotificationType.FOLLOW ? relatedId : null) // 팔로우 알림인 경우 followerId 설정
                 .build();
 
         // WebSocket을 통해 실시간 알림 전송
@@ -100,13 +96,12 @@ public class NotificationService {
                             .isRead(notification.isRead())
                             .type(notification.getType().name())
                             .profileImageUrl(profileImageUrl)
-                            .postId(notification.getType() == NotificationType.LIKE ? notification.getPostId() : null)  // 좋아요 알림일 때만 postId 설정
-                            .followerId(notification.getType() == NotificationType.FOLLOW ? notification.getSender().getId() : null) // 팔로우 알림일 때만 followerId 설정
+                            .postId(notification.getPostId())  // 게시글, 댓글, 대댓글 관련 알림에 사용
+                            .followerId(notification.getFollowerId()) // 팔로우 알림에 사용
                             .build();
                 })
                 .toList();
     }
-
     @Transactional
     public void markNotificationAsRead(Long notificationId, Long userId) {
         // 알림 조회
