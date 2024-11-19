@@ -1,5 +1,7 @@
 package com.api.RecordTimeline.domain.subTimeline.dto.response;
 
+import com.api.RecordTimeline.domain.comment.repository.CommentRepository;
+import com.api.RecordTimeline.domain.reply.repository.ReplyRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,45 +28,61 @@ public class SubReadResponseDTO {
         private int bookmarkCount;
         private boolean isPrivate;
         private boolean isDone;
+        private int totalCommentAndReplyCount;
     }
 
-    public static SubReadResponseDTO from(List<SubTimeline> subTimelines, String mainTimelineTitle) {
-        List<SubTimelineDetails> details = subTimelines.stream()
-                .map(subTimeline -> new SubTimelineDetails(
-                        subTimeline.getId(),
-                        subTimeline.getTitle(),
-                        subTimeline.getContent(),
-                        subTimeline.getStartDate(),
-                        subTimeline.getEndDate(),
-                        subTimeline.getLikeCount(),
-                        subTimeline.getBookmarkCount(),
-                        subTimeline.isPrivate(),
-                        subTimeline.isDone()
-                )).collect(Collectors.toList());
-        return new SubReadResponseDTO(details, mainTimelineTitle);
-    }
+//    public static SubReadResponseDTO fromWithCommentAndReplyCounts(List<SubTimeline> subTimelines, CommentRepository commentRepository, ReplyRepository replyRepository) {
+//        List<SubTimelineDetails> details = subTimelines.stream()
+//                .map(subTimeline -> new SubTimelineDetails(
+//                        subTimeline.getId(),
+//                        subTimeline.getTitle(),
+//                        subTimeline.getContent(),
+//                        subTimeline.getStartDate(),
+//                        subTimeline.getEndDate(),
+//                        subTimeline.getLikeCount(),
+//                        subTimeline.getBookmarkCount(),
+//                        subTimeline.isPrivate(),
+//                        subTimeline.isDone(),
+//                        totalCount
+//                )).collect(Collectors.toList());
+//
+//        String mainTimelineTitle = subTimelines.isEmpty() ? null : subTimelines.get(0).getMainTimeline().getTitle();
+//        return new SubReadResponseDTO(details, mainTimelineTitle);
+//    }
 
     // 모든 서브타임라인을 가져오는 경우 호출 (비공개 제외)
-    public static SubReadResponseDTO from(List<SubTimeline> subTimelines) {
+    // 비공개 제외 조회 메서드
+    public static SubReadResponseDTO fromWithCommentAndReplyCounts(
+            List<SubTimeline> subTimelines,
+            String mainTimelineTitle,
+            CommentRepository commentRepository,
+            ReplyRepository replyRepository
+    ) {
         if (subTimelines.isEmpty()) {
-            return new SubReadResponseDTO(List.of(), null);
+            return new SubReadResponseDTO(List.of(), mainTimelineTitle);
         }
 
-        // 모든 서브타임라인은 같은 메인 타임라인에 속해 있으므로 첫 번째 타임라인의 메인 타임라인 제목을 가져옴
-        String mainTimelineTitle = subTimelines.get(0).getMainTimeline().getTitle();
-
         List<SubTimelineDetails> details = subTimelines.stream()
-                .map(subTimeline -> new SubTimelineDetails(
-                        subTimeline.getId(),
-                        subTimeline.getTitle(),
-                        subTimeline.getContent(),
-                        subTimeline.getStartDate(),
-                        subTimeline.getEndDate(),
-                        subTimeline.getLikeCount(),
-                        subTimeline.getBookmarkCount(),
-                        subTimeline.isPrivate(),
-                        subTimeline.isDone()
-                )).collect(Collectors.toList());
+                .map(subTimeline -> {
+                    int commentCount = commentRepository.countBySubTimelineId(subTimeline.getId());
+                    int replyCount = replyRepository.countByComment_SubTimelineId(subTimeline.getId());
+                    int totalCount = commentCount + replyCount; // 댓글 + 대댓글 수 계산
+
+                    return new SubTimelineDetails(
+                            subTimeline.getId(),
+                            subTimeline.getTitle(),
+                            subTimeline.getContent(),
+                            subTimeline.getStartDate(),
+                            subTimeline.getEndDate(),
+                            subTimeline.getLikeCount(),
+                            subTimeline.getBookmarkCount(),
+                            subTimeline.isPrivate(),
+                            subTimeline.isDone(),
+                            totalCount // 댓글 + 대댓글 수 추가
+                    );
+                })
+                .collect(Collectors.toList());
+
         return new SubReadResponseDTO(details, mainTimelineTitle);
     }
 }
