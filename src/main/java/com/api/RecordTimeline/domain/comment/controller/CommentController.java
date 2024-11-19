@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.comment.controller;
 
 import com.api.RecordTimeline.domain.comment.dto.request.CommentCreateRequestDTO;
+import com.api.RecordTimeline.domain.comment.dto.response.CommentCountResponseDTO;
 import com.api.RecordTimeline.domain.comment.dto.response.CommentDeleteResponseDTO;
 import com.api.RecordTimeline.domain.comment.dto.response.CommentResponseDTO;
 import com.api.RecordTimeline.domain.comment.service.CommentService;
@@ -34,6 +35,13 @@ public class CommentController {
     public ResponseEntity<CommentDeleteResponseDTO> deleteComment(@PathVariable Long commentId) {
         CommentDeleteResponseDTO response = commentService.deleteComment(commentId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/sub-timeline/{subTimelineId}/count")
+    public ResponseEntity<CommentCountResponseDTO> getTotalCommentAndReplyCount(@PathVariable Long subTimelineId) {
+        int totalCount = commentService.getTotalCommentAndReplyCount(subTimelineId);
+        CommentCountResponseDTO responseDTO = new CommentCountResponseDTO("success", totalCount);
+        return ResponseEntity.ok(responseDTO);
     }
 }
 
