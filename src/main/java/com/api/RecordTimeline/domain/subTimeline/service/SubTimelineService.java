@@ -1,19 +1,18 @@
 package com.api.RecordTimeline.domain.subTimeline.service;
 
 import com.api.RecordTimeline.domain.bookmark.repository.BookmarkRepository;
+import com.api.RecordTimeline.domain.comment.repository.CommentRepository;
 import com.api.RecordTimeline.domain.like.repository.LikeRepository;
 import com.api.RecordTimeline.domain.mainTimeline.domain.MainTimeline;
 import com.api.RecordTimeline.domain.mainTimeline.repository.MainTimelineRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.domain.reply.repository.ReplyRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.SubTimelineCreateRequestDTO;
 //import com.api.RecordTimeline.domain.subTimeline.dto.response.AccessDeniedResponseDTO;
 import com.api.RecordTimeline.domain.subTimeline.dto.request.UpdateSubTimelineRequestDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubMyTimelineResponseDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubPrivacyUpdateResponseDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubTimelineWithLikeBookmarkDTO;
-import com.api.RecordTimeline.domain.subTimeline.dto.response.SubUpdateStatusResponseDTO;
+import com.api.RecordTimeline.domain.subTimeline.dto.response.*;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
@@ -43,6 +42,8 @@ public class SubTimelineService {
     private final MemberRepository memberRepository;
     private final S3FileUploader s3FileUploader;
     private final ImageUploadService imageUploadService;
+    private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
 
     private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("<img[^>]+src=\"([^\"]+)\"");
 
@@ -247,23 +248,57 @@ public class SubTimelineService {
         return SubPrivacyUpdateResponseDTO.success(message);
     }
 
-    // 사용자 본인의 서브타임라인 조회 (토큰 필요)
-    public List<SubMyTimelineResponseDTO> getMySubTimelines() {
-        Member member = getCurrentAuthenticatedMember();
-        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(member.getId());
+//    // 사용자 본인의 서브타임라인 조회 (토큰 필요)
+//    public List<SubMyTimelineResponseDTO> getMySubTimelines() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+//        Long memberId = jwtToken.getUserId();
+//
+//        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(memberId);
+//
+//        return subTimelines.stream()
+//                .map(subTimeline -> SubMyTimelineResponseDTO.from(subTimeline, commentRepository, replyRepository))
+//                .collect(Collectors.toList());
+//    }
+//
+//    // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
+//    public List<SubTimeline> getAllSubTimelinesByMainTimelineId(Long mainTimelineId) {
+//        return subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
+//                .filter(subTimeline -> !subTimeline.isPrivate())
+//                .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
+//                .collect(Collectors.toList());
+//    }
 
-        // 서브타임라인 엔티티를 SubMyTimelineResponseDTO로 변환하여 리스트로 반환
+    // 사용자 본인의 서브타임라인 조회 (댓글 + 대댓글 수 포함)
+    public List<SubMyTimelineResponseDTO> getMySubTimelinesWithCommentAndReplyCounts() {
+        Member member = getCurrentAuthenticatedMember();
+        Long memberId = member.getId();
+
+        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimeline_Member_IdOrderByStartDateAsc(memberId);
+
         return subTimelines.stream()
-                .map(SubMyTimelineResponseDTO::from)
+                .map(subTimeline -> {
+                    int commentCount = commentRepository.countBySubTimelineId(subTimeline.getId());
+                    int replyCount = replyRepository.countByComment_SubTimelineId(subTimeline.getId());
+                    int totalCount = commentCount + replyCount;
+
+                    return SubMyTimelineResponseDTO.from(subTimeline, totalCount); // 수정된 DTO 호출
+                })
                 .collect(Collectors.toList());
     }
 
-    // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
-    public List<SubTimeline> getAllSubTimelinesByMainTimelineId(Long mainTimelineId) {
-        return subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
-                .filter(subTimeline -> !subTimeline.isPrivate())
-                .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
+    // 서브타임라인 비공개 제외 전체 조회 (댓글 + 대댓글 수 포함)
+    public SubReadResponseDTO getAllSubTimelinesWithCommentAndReplyCounts(Long mainTimelineId) {
+        // 메인타임라인 존재 여부 확인
+        String mainTimelineTitle = mainTimelineRepository.findById(mainTimelineId)
+                .map(MainTimeline::getTitle)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다."));
+        // 서브타임라인 조회
+        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
+                .filter(subTimeline -> !subTimeline.isPrivate()) // 비공개 제외
                 .collect(Collectors.toList());
+
+        return SubReadResponseDTO.fromWithCommentAndReplyCounts(subTimelines, mainTimelineTitle, commentRepository, replyRepository); // 수정된 DTO 호출
     }
 
     public SubPrivacyUpdateResponseDTO setSubTimelineDoneStatus(Long subTimelineId, boolean isDone) {

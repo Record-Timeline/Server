@@ -1,5 +1,7 @@
 package com.api.RecordTimeline.domain.subTimeline.dto.response;
 
+import com.api.RecordTimeline.domain.comment.repository.CommentRepository;
+import com.api.RecordTimeline.domain.reply.repository.ReplyRepository;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,9 +21,10 @@ public class SubMyTimelineResponseDTO {
     private int bookmarkCount;
     private boolean isPrivate;
     private boolean isDone;
+    private int totalCommentAndReplyCount;
 
     // 서브타임라인에서 DTO 생성하는 메서드
-    public static SubMyTimelineResponseDTO from(SubTimeline subTimeline) {
+    public static SubMyTimelineResponseDTO from(SubTimeline subTimeline, int totalCommentAndReplyCount) {
         return new SubMyTimelineResponseDTO(
                 subTimeline.getId(),
                 subTimeline.getTitle(),
@@ -31,7 +34,8 @@ public class SubMyTimelineResponseDTO {
                 subTimeline.getLikeCount(),
                 subTimeline.getBookmarkCount(),
                 subTimeline.isPrivate(),
-                subTimeline.isDone()
+                subTimeline.isDone(),
+                totalCommentAndReplyCount
         );
     }
 }
