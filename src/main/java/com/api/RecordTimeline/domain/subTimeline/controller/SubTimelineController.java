@@ -32,16 +32,16 @@ public class SubTimelineController {
         }
     }
 
-    @GetMapping("/main/{mainTimelineId}/ordered")
-    public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
-        try {
-            List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineIdOrderByStartDate(mainTimelineId);
-            String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId); // 메인타임라인 제목 가져오기
-            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
+//    @GetMapping("/main/{mainTimelineId}/ordered")
+//    public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
+//        try {
+//            List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineIdOrderByStartDate(mainTimelineId);
+//            String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId); // 메인타임라인 제목 가져오기
+//            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
 
     @PutMapping("/{subTimelineId}")
     public ResponseEntity<SubUpdateResponseDTO> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody UpdateSubTimelineRequestDTO request) {
@@ -83,16 +83,15 @@ public class SubTimelineController {
     // 사용자 본인의 서브타임라인 조회 API
     @GetMapping("/my")
     public ResponseEntity<List<SubMyTimelineResponseDTO>> getMySubTimelines() {
-        List<SubMyTimelineResponseDTO> mySubTimelines = subTimelineService.getMySubTimelines();
+        List<SubMyTimelineResponseDTO> mySubTimelines = subTimelineService.getMySubTimelinesWithCommentAndReplyCounts();
         return ResponseEntity.ok(mySubTimelines);
     }
 
     // 전체 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
     @GetMapping("/main/{mainTimelineId}")
     public ResponseEntity<SubReadResponseDTO> getAllSubTimelinesByMainTimelineId(@PathVariable Long mainTimelineId) {
-        List<SubTimeline> subTimelines = subTimelineService.getAllSubTimelinesByMainTimelineId(mainTimelineId);
-        String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId);
-        return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
+        SubReadResponseDTO response = subTimelineService.getAllSubTimelinesWithCommentAndReplyCounts(mainTimelineId); // 서비스 호출 수정
+        return ResponseEntity.ok(response);
     }
 
     // 서브타임라인 진행중 여부 업데이트(완료 또는 진행중)
