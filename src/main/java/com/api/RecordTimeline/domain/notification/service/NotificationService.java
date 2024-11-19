@@ -40,6 +40,7 @@ public class NotificationService {
                 .createdAt(LocalDateTime.now())
                 .expiryDate(LocalDateTime.now().plusDays(14))
                 .postId(type == NotificationType.COMMENT || type == NotificationType.REPLY || type == NotificationType.COMMENT_LIKE || type == NotificationType.REPLY_LIKE ? relatedId : null) // REPLY도 postId 포함
+                .followerId(type == NotificationType.FOLLOW ? relatedId : null)
                 .build();
 
         notificationRepository.save(notification);
