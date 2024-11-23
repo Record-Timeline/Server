@@ -45,6 +45,8 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Interest interest;
 
+    private boolean isPrivate;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MainTimeline> mainTimelines = new ArrayList<>();
 
