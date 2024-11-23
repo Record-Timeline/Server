@@ -10,6 +10,7 @@ import com.api.RecordTimeline.domain.comment.repository.CommentRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.dto.RelateInfoDto;
 import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
@@ -57,7 +58,11 @@ public class CommentService {
                 subTimeline.getMainTimeline().getMember(),
                 currentMember.getNickname() + "님이 당신의 게시글에 댓글을 남겼습니다.",
                 NotificationType.COMMENT,
-                savedComment.getId()
+                new RelateInfoDto(
+                        comment.getSubTimeline().getId(),
+                        comment.getMember().getId(),
+                        comment.getSubTimeline().getMainTimeline().getId()
+                )
         );
 
         return createCommentResponse(savedComment);
