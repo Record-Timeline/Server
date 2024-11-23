@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SubTimelineRepository extends JpaRepository<SubTimeline, Long> {
@@ -48,6 +49,13 @@ public interface SubTimelineRepository extends JpaRepository<SubTimeline, Long> 
     List<SubTimeline> findByMainTimeline_Member_IdOrderByStartDateAsc(Long memberId);
 
     List<SubTimeline> findByMainTimelineIdOrderByStartDateAsc(Long mainTimelineId);
+
+    @Query("SELECT st FROM SubTimeline st " +
+            "JOIN FETCH st.mainTimeline mt " +
+            "JOIN FETCH mt.member " +
+            "WHERE st.id = :id")
+    Optional<SubTimeline> findByIdWithRelations(@Param("id") Long id);
+
 }
 
 
