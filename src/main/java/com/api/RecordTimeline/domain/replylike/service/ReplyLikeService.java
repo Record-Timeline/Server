@@ -3,6 +3,9 @@ package com.api.RecordTimeline.domain.replylike.service;
 import com.api.RecordTimeline.domain.like.dto.response.LikeResponseDTO;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
+import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.dto.RelateInfoDto;
+import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.domain.reply.domain.Reply;
 import com.api.RecordTimeline.domain.reply.repository.ReplyRepository;
 import com.api.RecordTimeline.domain.replylike.domain.ReplyLike;
@@ -26,6 +29,7 @@ public class ReplyLikeService {
     private final ReplyLikeRepository replyLikeRepository;
     private final ReplyRepository replyRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public LikeResponseDTO toggleReplyLike(Long replyId) {
@@ -44,8 +48,22 @@ public class ReplyLikeService {
             replyLike.setReply(reply);
             replyLikeRepository.save(replyLike);
             reply.adjustLikeCount(1);
-            replyRepository.save(reply); // 좋아요 추가 시에만 저장
+
+            if (!reply.getMember().equals(member)) {
+                notificationService.sendNotification(
+                        member,
+                        reply.getMember(),
+                        member.getNickname() + "님이 당신의 대댓글을 좋아합니다.",
+                        NotificationType.REPLY_LIKE,
+                        new RelateInfoDto(
+                                reply.getComment().getSubTimeline().getId(),
+                                reply.getMember().getId(),
+                                reply.getComment().getSubTimeline().getMainTimeline().getId()
+                        )
+                );
+            }
         }
+
         replyRepository.save(reply);
         return new LikeResponseDTO("SU", "Success", reply.getLikeCount());
     }

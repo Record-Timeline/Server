@@ -15,4 +15,7 @@ public class ReplyResponseDTO {
     private String createdDate;
     private String nickname;  // 작성자 닉네임
     private Long subTimelineId;
+    private Long mainTimelineId;
+    private Long memberId;
+
 }

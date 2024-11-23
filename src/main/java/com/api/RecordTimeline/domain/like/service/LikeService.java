@@ -7,6 +7,7 @@ import com.api.RecordTimeline.domain.like.repository.LikeRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.dto.RelateInfoDto;
 import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
@@ -37,7 +38,7 @@ public class LikeService {
         Member member = getCurrentAuthenticatedMember();
 
         // 서브타임라인 존재 여부 확인 및 예외 처리
-        SubTimeline subTimeline = subTimelineRepository.findById(subTimelineId)
+        SubTimeline subTimeline = subTimelineRepository.findByIdWithRelations(subTimelineId)
                 .orElseThrow(() -> new ApiException(ErrorType._SUBTIMELINE_NOT_FOUND));
 
         Optional<UserLike> existingLike = likeRepository.findByMemberAndSubTimeline(member, subTimeline);
@@ -62,7 +63,11 @@ public class LikeService {
                     subTimeline.getMember(),
                     member.getNickname() + "님이 당신의 게시물에 좋아요를 눌렀습니다.",
                     NotificationType.LIKE,
-                    subTimelineId  // postId로 subTimelineId 전달
+                    new RelateInfoDto(
+                            subTimelineId,
+                            subTimeline.getMember().getId(),
+                            subTimeline.getMainTimeline().getId()
+                    )
             );
 
             return LikeResponseDTO.success("added successfully", subTimeline.getLikeCount());

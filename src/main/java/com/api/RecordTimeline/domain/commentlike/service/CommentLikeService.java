@@ -8,6 +8,7 @@ import com.api.RecordTimeline.domain.like.dto.response.LikeResponseDTO;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.dto.RelateInfoDto;
 import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.domain.subTimeline.repository.SubTimelineRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
@@ -54,19 +55,27 @@ public class CommentLikeService {
                     comment.getMember(),
                     member.getNickname() + "님이 당신의 댓글을 좋아합니다.",
                     NotificationType.COMMENT_LIKE,
-                    comment.getId()
+                    new RelateInfoDto(
+                            comment.getSubTimeline().getId(),
+                            comment.getMember().getId(),
+                            comment.getSubTimeline().getMainTimeline().getId()
+                    )
             );
 
-            // 대댓글인 경우 게시글 작성자에게도 알림
-            if (comment.getSubTimeline() != null) {
-                notificationService.sendNotification(
-                        member,
-                        comment.getSubTimeline().getMainTimeline().getMember(),
-                        member.getNickname() + "님이 당신의 게시글의 대댓글을 좋아합니다.",
-                        NotificationType.REPLY_LIKE,
-                        comment.getId()
-                );
-            }
+            // 게시글 주인한테 게시글의 댓글에 좋아요가 달렸다는 알림을 보내야할까?
+//            if (comment.getSubTimeline() != null) {
+//                notificationService.sendNotification(
+//                        member,
+//                        comment.getSubTimeline().getMainTimeline().getMember(),
+//                        member.getNickname() + "님이 당신의 게시글의 댓글을 좋아합니다.",
+//                        NotificationType.COMMENT_LIKE,
+//                        new RelateInfoDto(
+//                                comment.getSubTimeline().getId(),
+//                                comment.getMember().getId(),
+//                                comment.getSubTimeline().getMainTimeline().getId()
+//                        )
+//                );
+//            }
         }
 
         commentRepository.save(comment);

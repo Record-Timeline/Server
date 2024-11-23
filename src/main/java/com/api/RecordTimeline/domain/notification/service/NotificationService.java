@@ -4,6 +4,7 @@ import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.notification.domain.Notification;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
 import com.api.RecordTimeline.domain.notification.dto.NotificationResponseDto;
+import com.api.RecordTimeline.domain.notification.dto.RelateInfoDto;
 import com.api.RecordTimeline.domain.notification.repository.NotificationRepository;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
@@ -30,7 +31,14 @@ public class NotificationService {
      * 알림을 DB에 저장하고 WebSocket을 통해 실시간으로 전송하는 메서드
      */
     @Transactional
-    public void sendNotification(Member sender, Member receiver, String message, NotificationType type, Long relatedId) {
+    public void sendNotification(Member sender, Member receiver, String message, NotificationType type, RelateInfoDto relatedInfo) {
+        boolean relatedPost = type == NotificationType.LIKE || type == NotificationType.COMMENT || type == NotificationType.REPLY || type == NotificationType.COMMENT_LIKE || type == NotificationType.REPLY_LIKE;
+
+        System.out.println("RelateInfoDto: " +
+                "postId=" + relatedInfo.getPostId() +
+                ", mainTimelineId=" + relatedInfo.getMainTimelineId() +
+                ", memberId=" + relatedInfo.getMemberId());
+
         Notification notification = Notification.builder()
                 .sender(sender)
                 .receiver(receiver)
@@ -39,13 +47,20 @@ public class NotificationService {
                 .type(type)
                 .createdAt(LocalDateTime.now())
                 .expiryDate(LocalDateTime.now().plusDays(14))
-                .postId(type == NotificationType.COMMENT || type == NotificationType.REPLY || type == NotificationType.COMMENT_LIKE || type == NotificationType.REPLY_LIKE ? relatedId : null) // REPLY도 postId 포함
-                .followerId(type == NotificationType.FOLLOW ? relatedId : null)
+                .postId(relatedPost ? relatedInfo.getPostId() : null)
+                .mainTimelineId(relatedPost ? relatedInfo.getMainTimelineId() : null)
+                .memberId(relatedPost ? relatedInfo.getMemberId() : null)
+                .followerId(type == NotificationType.FOLLOW ? relatedInfo.getMemberId() : null)
                 .build();
 
         notificationRepository.save(notification);
 
-        // NotificationResponseDto 생성
+        System.out.println("Saved Notification: " +
+                "id=" + notification.getId() +
+                ", postId=" + notification.getPostId() +
+                ", mainTimelineId=" + notification.getMainTimelineId() +
+                ", memberId=" + notification.getMemberId());
+
         NotificationResponseDto notificationDto = NotificationResponseDto.builder()
                 .id(notification.getId())
                 .message(notification.getMessage())
@@ -53,9 +68,11 @@ public class NotificationService {
                 .isRead(notification.isRead())
                 .type(notification.getType().name())
                 .profileImageUrl(sender.getProfile() != null ? sender.getProfile().getProfileImgUrl() : "")
+                .postId(notification.getPostId())
+                .mainTimelineId(notification.getMainTimelineId())
+                .memberId(notification.getMemberId())
                 .build();
 
-        // WebSocket을 통해 실시간 알림 전송
         sendRealTimeNotification(notificationDto, receiver.getId());
     }
 
@@ -98,6 +115,8 @@ public class NotificationService {
                             .type(notification.getType().name())
                             .profileImageUrl(profileImageUrl)
                             .postId(notification.getPostId())  // 게시글, 댓글, 대댓글 관련 알림에 사용
+                            .memberId(notification.getMemberId())
+                            .mainTimelineId(notification.getMainTimelineId())
                             .followerId(notification.getFollowerId()) // 팔로우 알림에 사용
                             .build();
                 })
