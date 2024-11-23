@@ -37,6 +37,8 @@ public class Notification {
 
     private LocalDateTime expiryDate; // 알림 만료일
 
+    private Long memberId;
+    private Long mainTimelineId;
     private Long postId;
     private Long followerId;
 

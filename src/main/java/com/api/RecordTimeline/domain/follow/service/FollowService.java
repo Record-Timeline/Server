@@ -5,6 +5,7 @@ import com.api.RecordTimeline.domain.follow.repository.FollowRepository;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.member.repository.MemberRepository;
 import com.api.RecordTimeline.domain.notification.domain.NotificationType;
+import com.api.RecordTimeline.domain.notification.dto.RelateInfoDto;
 import com.api.RecordTimeline.domain.notification.service.NotificationService;
 import com.api.RecordTimeline.global.exception.ApiException;
 import com.api.RecordTimeline.global.exception.ErrorType;
@@ -39,10 +40,19 @@ public class FollowService {
         Follow follow = new Follow(follower, following);
         followRepository.save(follow);
 
-        // relatedId로 followerId 전달
-        String message = follower.getNickname() + "님이 당신을 팔로우했습니다.";
-        notificationService.sendNotification(follower, following, message, NotificationType.FOLLOW, followerId);
+        // 알림 메시지 생성
+        String message = follower.getNickname() + " 님이 당신을 팔로우했습니다.";
+
+        // RelateInfoDto를 생성하여 팔로우 알림에 전달
+        notificationService.sendNotification(
+                follower,
+                following,
+                message,
+                NotificationType.FOLLOW,
+                new RelateInfoDto(null, follower.getId(), null) // postId와 mainTimelineId는 null로 설정
+        );
     }
+
 
     @Transactional
     public void unfollow(Long followerId, Long followingId) {
