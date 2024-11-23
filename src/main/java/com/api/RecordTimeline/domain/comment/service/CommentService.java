@@ -135,4 +135,15 @@ public class CommentService {
             throw new ApiException(ErrorType._DO_NOT_HAVE_PERMISSION);
         }
     }
+
+    // 댓글과 대댓글 수 합산 조회
+    public int getTotalCommentAndReplyCount(Long subTimelineId) {
+        List<Comment> comments = commentRepository.findBySubTimelineId(subTimelineId);
+
+        int replyCount = comments.stream()
+                .mapToInt(comment -> comment.getReplies().size())
+                .sum();
+
+        return comments.size() + replyCount;
+    }
 }
