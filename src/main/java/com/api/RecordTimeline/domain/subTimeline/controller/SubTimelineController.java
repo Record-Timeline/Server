@@ -32,16 +32,17 @@ public class SubTimelineController {
         }
     }
 
-//    @GetMapping("/main/{mainTimelineId}/ordered")
-//    public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
-//        try {
-//            List<SubTimeline> subTimelines = subTimelineService.getSubTimelinesByMainTimelineIdOrderByStartDate(mainTimelineId);
-//            String mainTimelineTitle = subTimelineService.getMainTimelineTitle(mainTimelineId); // 메인타임라인 제목 가져오기
-//            return ResponseEntity.ok(SubReadResponseDTO.from(subTimelines, mainTimelineTitle));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
+    // 전체 조회 API (날짜 기준 정렬, 비공개 포함)
+    @GetMapping("/main/{mainTimelineId}/ordered")
+    public ResponseEntity<SubReadResponseDTO> getSubTimelinesByMainTimelineIdOrderByStartDate(@PathVariable Long mainTimelineId) {
+        try {
+            SubReadResponseDTO response = subTimelineService.getAllSubTimelinesOrdered(mainTimelineId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 
     @PutMapping("/{subTimelineId}")
     public ResponseEntity<SubUpdateResponseDTO> updateSubTimeline(@PathVariable Long subTimelineId, @RequestBody UpdateSubTimelineRequestDTO request) {
