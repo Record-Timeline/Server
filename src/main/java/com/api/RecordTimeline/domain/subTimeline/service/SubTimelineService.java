@@ -150,6 +150,19 @@ public class SubTimelineService {
         return member;
     }
 
+    // 전체 서브타임라인 조회 (날짜 기준 정렬, 비공개 포함)
+    public SubReadResponseDTO getAllSubTimelinesOrdered(Long mainTimelineId) {
+        // 메인타임라인 확인 및 제목 가져오기
+        String mainTimelineTitle = mainTimelineRepository.findById(mainTimelineId)
+                .map(MainTimeline::getTitle)
+                .orElseThrow(() -> new IllegalArgumentException("해당 메인타임라인을 찾을 수 없습니다."));
+
+        // 모든 서브타임라인 조회 및 정렬
+        List<SubTimeline> subTimelines = subTimelineRepository.findByMainTimelineIdOrderByStartDateAsc(mainTimelineId);
+
+        // SubReadResponseDTO 생성 (댓글 및 대댓글 포함)
+        return SubReadResponseDTO.fromWithCommentAndReplyCounts(subTimelines, mainTimelineTitle, commentRepository, replyRepository);
+    }
 
     private List<String> extractImageUrls(String content) {
         Matcher matcher = IMAGE_URL_PATTERN.matcher(content);
@@ -248,7 +261,7 @@ public class SubTimelineService {
         return SubPrivacyUpdateResponseDTO.success(message);
     }
 
-//    // 사용자 본인의 서브타임라인 조회 (토큰 필요)
+    // 사용자 본인의 서브타임라인 조회 (토큰 필요)
 //    public List<SubMyTimelineResponseDTO> getMySubTimelines() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
@@ -260,14 +273,14 @@ public class SubTimelineService {
 //                .map(subTimeline -> SubMyTimelineResponseDTO.from(subTimeline, commentRepository, replyRepository))
 //                .collect(Collectors.toList());
 //    }
-//
-//    // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
-//    public List<SubTimeline> getAllSubTimelinesByMainTimelineId(Long mainTimelineId) {
-//        return subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
-//                .filter(subTimeline -> !subTimeline.isPrivate())
-//                .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
-//                .collect(Collectors.toList());
-//    }
+
+    // 모든 서브타임라인 조회 (비공개 제외, 시작 날짜 순서대로 정렬)
+    public List<SubTimeline> getAllSubTimelinesByMainTimelineId(Long mainTimelineId) {
+        return subTimelineRepository.findByMainTimelineId(mainTimelineId).stream()
+                .filter(subTimeline -> !subTimeline.isPrivate())
+                .sorted(Comparator.comparing(SubTimeline::getStartDate))  // 시작 날짜 순서대로 정렬
+                .collect(Collectors.toList());
+    }
 
     // 사용자 본인의 서브타임라인 조회 (댓글 + 대댓글 수 포함)
     public List<SubMyTimelineResponseDTO> getMySubTimelinesWithCommentAndReplyCounts() {
