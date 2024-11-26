@@ -20,7 +20,7 @@ public class Reply extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", nullable = false)
+    @JoinColumn(name = "comment_id", nullable = true)
     private Comment comment;  // Comment와 연관 관계 설정
 
 //    public static class ReplyBuilder {
@@ -38,6 +38,9 @@ public class Reply extends BaseEntity {
 
     @Column(nullable = false)
     private String content;  // 대댓글 내용
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     // likeCount 필드를 추가
     @Column(nullable = false)
