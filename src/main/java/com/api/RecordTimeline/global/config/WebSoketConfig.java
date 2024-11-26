@@ -1,5 +1,6 @@
 package com.api.RecordTimeline.global.config;
 
+import com.api.RecordTimeline.global.security.jwt.AuthHandshakeInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -21,9 +22,9 @@ public class WebSoketConfig  implements WebSocketMessageBrokerConfigurer  {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // WebSocket 엔드포인트 설정 + SockJS 옵션 설정
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
+                .addInterceptors(new AuthHandshakeInterceptor()) // 인증 인터셉터 추가
                 .withSockJS()
                 .setHeartbeatTime(60000);  // 60초마다 heart-beat 보내도록 설정
     }
