@@ -34,8 +34,11 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Reply> replies = new ArrayList<>();  // 대댓글
+
+    @Column(nullable = false)
+    private boolean isDeleted = false; // 삭제 플래그 추가
 
     // likeCount 필드를 추가
     @Column(nullable = false)

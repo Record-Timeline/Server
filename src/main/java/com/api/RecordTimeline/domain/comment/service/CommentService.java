@@ -95,18 +95,49 @@ public class CommentService {
     }
 
     // 서브타임라인 ID로 댓글 조회
+//    public List<CommentResponseDTO> getCommentsBySubTimelineId(Long subTimelineId) {
+//        List<Comment> comments = commentRepository.findBySubTimelineId(subTimelineId);
+//
+//        return comments.stream()
+//                .map(comment -> {
+//                    if (comment.isDeleted()) { // 삭제된 댓글인 경우
+//                        return new CommentResponseDTO(
+//                                comment.getId(),
+//                                "삭제된 댓글입니다.", // 삭제된 댓글 메시지
+//                                comment.getCreatedDate().toString(),
+//                                comment.getMember().getNickname(),
+//                                comment.getReplies().size()
+//                        );
+//                    } else { // 일반 댓글
+//                        return new CommentResponseDTO(
+//                                comment.getId(),
+//                                comment.getContent(),
+//                                comment.getCreatedDate().toString(),
+//                                comment.getMember().getNickname(),
+//                                comment.getReplies().size()
+//                        );
+//                    }
+//                })
+//                .collect(Collectors.toList());
+//    }
+
     public List<CommentResponseDTO> getCommentsBySubTimelineId(Long subTimelineId) {
         List<Comment> comments = commentRepository.findBySubTimelineId(subTimelineId);
 
         return comments.stream()
-                .map(comment -> new CommentResponseDTO(
-                        comment.getId(),
-                        comment.getContent(),
-                        comment.getCreatedDate().toString(),
-                        comment.getMember().getNickname(),
-                        comment.getReplies().size()))
+                .map(comment -> {
+                    String content = comment.isDeleted() ? "삭제된 댓글입니다." : comment.getContent();
+                    return new CommentResponseDTO(
+                            comment.getId(),
+                            content,
+                            comment.getCreatedDate().toString(),
+                            comment.getMember().getNickname(),
+                            comment.getReplies().size() // 대댓글 수는 그대로 유지
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
 
     // 댓글 삭제 (댓글 작성자 또는 서브타임라인 작성자만 가능)
     @Transactional
@@ -116,7 +147,9 @@ public class CommentService {
 
         checkOwnership(comment.getMember().getEmail());
 
-        commentRepository.delete(comment);
+        comment.setDeleted(true);
+        commentRepository.save(comment);
+
         return CommentDeleteResponseDTO.success();  // 삭제 성공 시 성공 응답 반환
     }
 
@@ -138,9 +171,12 @@ public class CommentService {
 
     // 댓글과 대댓글 수 합산 조회
     public int getTotalCommentAndReplyCount(Long subTimelineId) {
-        List<Comment> comments = commentRepository.findBySubTimelineId(subTimelineId);
+        List<Comment> comments = commentRepository.findBySubTimelineId(subTimelineId)
+                .stream()
+                .filter(comment -> !comment.isDeleted())
+                .collect(Collectors.toList());
 
-        int replyCount = comments.stream()
+        int replyCount = commentRepository.findBySubTimelineId(subTimelineId).stream()
                 .mapToInt(comment -> comment.getReplies().size())
                 .sum();
 
