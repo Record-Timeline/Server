@@ -1,6 +1,7 @@
 package com.api.RecordTimeline.domain.comment.domain;
 
 import com.api.RecordTimeline.domain.base.BaseEntity;
+import com.api.RecordTimeline.domain.commentlike.domain.CommentLike;
 import com.api.RecordTimeline.domain.member.domain.Member;
 import com.api.RecordTimeline.domain.reply.domain.Reply;
 import com.api.RecordTimeline.domain.subTimeline.domain.SubTimeline;
@@ -36,6 +37,14 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Reply> replies = new ArrayList<>();  // 대댓글
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> likes = new ArrayList<>(); // 좋아요 리스트 추가
+
+    // 좋아요 리스트 getter
+    public List<CommentLike> getLikes() {
+        return likes;
+    }
 
     @Column(nullable = false)
     private boolean isDeleted = false; // 삭제 플래그 추가

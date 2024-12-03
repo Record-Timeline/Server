@@ -79,7 +79,9 @@ public class CommentService {
                 savedComment.getContent(),
                 savedComment.getCreatedDate().toString(),
                 savedComment.getMember().getNickname(),
-                savedComment.getReplies().size());
+                savedComment.getReplies().size(),
+                savedComment.getLikes().size()
+        );
     }
 
     // 댓글 수정
@@ -127,12 +129,14 @@ public class CommentService {
         return comments.stream()
                 .map(comment -> {
                     String content = comment.isDeleted() ? "삭제된 댓글입니다." : comment.getContent();
+                    int likeCount = comment.getLikes().size();
                     return new CommentResponseDTO(
                             comment.getId(),
                             content,
                             comment.getCreatedDate().toString(),
                             comment.getMember().getNickname(),
-                            comment.getReplies().size() // 대댓글 수는 그대로 유지
+                            comment.getReplies().size(), // 대댓글 수는 그대로 유지
+                            likeCount // 댓글 좋아요 수
                     );
                 })
                 .collect(Collectors.toList());
