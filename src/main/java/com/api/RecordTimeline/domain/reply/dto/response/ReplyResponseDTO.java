@@ -17,5 +17,5 @@ public class ReplyResponseDTO {
     private Long subTimelineId;
     private Long mainTimelineId;
     private Long memberId;
-
+    private int likeCount; // 대댓글 좋아요 수
 }
