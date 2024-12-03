@@ -13,5 +13,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findByCommentId(Long commentId);
     @Query("SELECT COUNT(r) FROM Reply r WHERE r.comment.subTimeline.id = :subTimelineId")
     int countByComment_SubTimelineId(@Param("subTimelineId") Long subTimelineId); // 서브타임라인 ID로 대댓글 수 조회
+
+    List<Reply> findByComment_IdAndIsDeletedFalse(Long commentId);
 }
 

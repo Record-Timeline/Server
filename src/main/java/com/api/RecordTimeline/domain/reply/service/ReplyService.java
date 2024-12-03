@@ -89,7 +89,9 @@ public class ReplyService {
                 savedReply.getMember().getNickname(),
                 comment.getSubTimeline().getId(),
                 comment.getMember().getId(),
-                comment.getSubTimeline().getMainTimeline().getId());
+                comment.getSubTimeline().getMainTimeline().getId(),
+                savedReply.getLikes().size()
+        );
     }
 
     // 댓글 ID로 대댓글 조회
@@ -97,15 +99,19 @@ public class ReplyService {
         List<Reply> replies = replyRepository.findByCommentId(commentId);
 
         return replies.stream()
-                .map(reply -> new ReplyResponseDTO(
-                        reply.getId(),
-                        reply.getContent(),
-                        reply.getCreatedDate().toString(),
-                        reply.getMember().getNickname(),
-                        reply.getComment().getSubTimeline().getId(),
-                        reply.getMember().getId(),
-                        reply.getComment().getSubTimeline().getMainTimeline().getId()
-                        ))
+                .map(reply -> {
+                    int likeCount = reply.getLikes().size();
+                    return new ReplyResponseDTO(
+                            reply.getId(),
+                            reply.getContent(),
+                            reply.getCreatedDate().toString(),
+                            reply.getMember().getNickname(),
+                            reply.getComment().getSubTimeline().getId(),
+                            reply.getMember().getId(),
+                            reply.getComment().getSubTimeline().getMainTimeline().getId(),
+                            likeCount
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
